@@ -140,15 +140,16 @@ won't need this step, but re-imaging *this* Pi from a backup might.
 
 **TLS**
 
-`*.<domain>` is HTTPS-only in practice — browsers HSTS-preload the entire `.dev` TLD, so
-`homelab.arpa` forces HTTPS even though there's no real cert authority for a private domain.
-cert-manager (`applications/cert-manager/base`) bootstraps a self-signed CA chain via sync
-waves: `selfsigned-bootstrap` `ClusterIssuer` (wave 1) issues the `homelab-ca` `Certificate`
-(wave 2, `isCA: true`), which backs the `homelab-ca-issuer` `ClusterIssuer` (wave 3). Traefik's
-wildcard `homelab-dev-tls` `Certificate` (in the `traefik` namespace, issued by
-`homelab-ca-issuer`) backs a `websecure` Gateway listener on port 443. Trusting the CA's public
-cert (never the private key) in an OS/browser keychain is a manual, per-client step — not
-automatable from here.
+The domain used to be `homelab.dev` — browsers HSTS-preload the entire `.dev` TLD, forcing
+HTTPS with no real cert authority for a private domain. Switched to `homelab.arpa` (IANA's
+infrastructure TLD, not preloaded) to remove that problem at the root, but the self-signed CA
+built to solve it stayed since it's already useful for real encryption. cert-manager
+(`applications/cert-manager/base`) bootstraps the chain via sync waves: `selfsigned-bootstrap`
+`ClusterIssuer` (wave 1) issues the `homelab-ca` `Certificate` (wave 2, `isCA: true`), which
+backs the `homelab-ca-issuer` `ClusterIssuer` (wave 3). Traefik's wildcard `homelab-dev-tls`
+`Certificate` (in the `traefik` namespace, issued by `homelab-ca-issuer`) backs a `websecure`
+Gateway listener on port 443. Trusting the CA's public cert (never the private key) in an
+OS/browser keychain is a manual, per-client step — not automatable from here.
 
 **Gateway API implementation**
 
