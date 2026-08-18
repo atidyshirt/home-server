@@ -6,6 +6,7 @@ export interface ApplyManifestOptions {
   serverSide?: boolean;
   waitForCrd?: string;
   dependsOn?: pulumi.Resource | pulumi.Resource[];
+  parent?: pulumi.Resource;
 }
 
 export interface KubernetesProvider {

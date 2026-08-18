@@ -1,18 +1,29 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { KubernetesProvider } from "./kubernetesProvider";
+import { getKubernetesProvider } from "./raspberryPiK0s";
 
-export interface GitopsBridgeArgs {
-  repoUrl: string;
-  revision: string;
-  dependsOn: pulumi.Resource;
+export interface GitopsBridgeInstallOptions {
+  dependsOn?: pulumi.Resource | pulumi.Resource[];
 }
 
-export class GitopsBridge {
-  readonly clusterSecret: k8s.core.v1.Secret;
+export class GitopsBridge extends pulumi.ComponentResource {
+  private static instance: GitopsBridge | undefined;
 
-  constructor(k8sProvider: KubernetesProvider, args: GitopsBridgeArgs) {
-    this.clusterSecret = new k8s.core.v1.Secret(
+  static install(options: GitopsBridgeInstallOptions = {}): GitopsBridge {
+    if (!GitopsBridge.instance) {
+      GitopsBridge.instance = new GitopsBridge(options);
+    }
+    return GitopsBridge.instance;
+  }
+
+  private constructor(options: GitopsBridgeInstallOptions) {
+    super("home-server:index:GitopsBridge", "gitops-bridge");
+    const k8sProvider = getKubernetesProvider();
+    const gitConfig = new pulumi.Config();
+    const gitRepoUrl = gitConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
+    const gitRevision = gitConfig.get("gitRevision") || "main";
+
+    new k8s.core.v1.Secret(
       "argocd-in-cluster",
       {
         metadata: {
@@ -20,8 +31,8 @@ export class GitopsBridge {
           namespace: "argocd",
           labels: { "argocd.argoproj.io/secret-type": "cluster" },
           annotations: {
-            addons_repo_url: args.repoUrl,
-            addons_repo_revision: args.revision,
+            addons_repo_url: gitRepoUrl,
+            addons_repo_revision: gitRevision,
           },
         },
         stringData: {
@@ -30,7 +41,9 @@ export class GitopsBridge {
           config: JSON.stringify({ tlsClientConfig: { insecure: false } }),
         },
       },
-      { provider: k8sProvider.provider, dependsOn: args.dependsOn },
+      { provider: k8sProvider.provider, dependsOn: options.dependsOn, parent: this },
     );
+
+    this.registerOutputs({});
   }
 }

@@ -5,7 +5,7 @@ import * as command from "@pulumi/command";
 import * as k8s from "@pulumi/kubernetes";
 import { ApplyManifestOptions, KubernetesProvider } from "./kubernetesProvider";
 
-export interface RaspberryPiK0sArgs {
+interface RaspberryPiK0sArgs {
   sshHost: string;
   sshUser: string;
   nodeLanIp: string;
@@ -54,7 +54,21 @@ export class RaspberryPiK0s implements KubernetesProvider {
         connection: this.connection,
         create: `sudo k0s kubectl apply ${namespaceFlag}${serverSideFlag}-f ${manifestUrl}${waitCommand}`,
       },
-      { dependsOn: options.dependsOn ?? this.ready },
+      { dependsOn: options.dependsOn ?? this.ready, parent: options.parent },
     );
   }
+}
+
+let singleton: KubernetesProvider | undefined;
+
+export function getKubernetesProvider(): KubernetesProvider {
+  if (!singleton) {
+    const config = new pulumi.Config("raspberrypi");
+    singleton = new RaspberryPiK0s({
+      sshHost: config.require("sshHost"),
+      sshUser: config.require("sshUser"),
+      nodeLanIp: config.require("nodeLanIp"),
+    });
+  }
+  return singleton;
 }
