@@ -12,9 +12,33 @@ spec:
     metadata:
       labels:
         app: coredns-lan
+      annotations:
+        addons_domain: placeholder-domain
     spec:
       hostNetwork: true
       dnsPolicy: Default
+      initContainers:
+        - name: render-config
+          image: busybox:1.36
+          env:
+            - name: DOMAIN
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['addons_domain']
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /etc/coredns/zones
+              sed "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" /template/corefile/Corefile.tmpl > /etc/coredns/Corefile
+              sed "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" /template/zone/zone.tmpl > /etc/coredns/zones/$DOMAIN.zone
+          volumeMounts:
+            - name: corefile-template
+              mountPath: /template/corefile
+            - name: zone-template
+              mountPath: /template/zone
+            - name: rendered
+              mountPath: /etc/coredns
       containers:
         - name: coredns
           image: coredns/coredns:1.14.6
@@ -25,14 +49,14 @@ spec:
             - containerPort: 53
               protocol: TCP
           volumeMounts:
-            - name: corefile
+            - name: rendered
               mountPath: /etc/coredns
-            - name: zones
-              mountPath: /etc/coredns/zones
       volumes:
-        - name: corefile
+        - name: corefile-template
           configMap:
             name: coredns-lan-corefile
-        - name: zones
+        - name: zone-template
           configMap:
             name: coredns-lan-zones
+        - name: rendered
+          emptyDir: {}

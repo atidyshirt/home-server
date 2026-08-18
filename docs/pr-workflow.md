@@ -15,8 +15,9 @@ Switch back once you're done:
 pulumi config set argocd:gitRevision main
 ```
 
-> [!TIP]
-> `pulumi config rm argocd:gitRevision` has the same effect — `main` is the default when unset.
+> [!IMPORTANT]
+> `argocd:gitRevision` is a required config value (no default in code) — `pulumi config rm` it
+> and `pulumi up` will fail rather than silently falling back to `main`.
 
 This works because every `addon-*-appset.yaml` reads its `repoURL`/`targetRevision` from the
 `in-cluster` Secret's annotations rather than hardcoding `main` — see
@@ -31,6 +32,12 @@ namespace named `<name>` (auto-created).
 
 Need a secret? Reference a 1Password item via a `OnePasswordItem` resource — see
 `applications/onepassword-operator/`.
+
+Need the domain (`homelab:domain`)? Add the same `source.kustomize.commonAnnotations` block
+every other appset has (copy one) — it stamps `addons_domain` onto your app's resources. From
+there it's up to your `kustomization.yaml` to consume it: kustomize `replacements` for
+structured fields, or a Downward-API-fed init container for free text — see
+[AGENT.md](../AGENT.md#domain-configuration).
 
 > [!NOTE]
 > The Gateway's `web` listener allows routes from every namespace, not just its own (Gateway

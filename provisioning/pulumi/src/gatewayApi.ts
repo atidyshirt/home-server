@@ -14,7 +14,7 @@ export class GatewayApi extends pulumi.ComponentResource {
   private constructor() {
     super("home-server:index:GatewayApi", "gateway-api");
     const k8sProvider = getKubernetesProvider();
-    const version = new pulumi.Config("gatewayapi").get("version") ?? "v1.6.1";
+    const version = new pulumi.Config("gatewayapi").require("version");
 
     k8sProvider.applyManifest(
       "install-gateway-api-crds",

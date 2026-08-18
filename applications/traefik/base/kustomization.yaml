@@ -9,3 +9,26 @@ helmCharts:
     namespace: traefik
     valuesFile: values.yaml
     includeCRDs: true
+
+resources:
+  - certificate.yaml
+
+replacements:
+  - source:
+      kind: Certificate
+      name: homelab-dev-tls
+      fieldPath: metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: Certificate
+          name: homelab-dev-tls
+        fieldPaths:
+          - spec.dnsNames.0
+      - select:
+          kind: Certificate
+          name: homelab-dev-tls
+        fieldPaths:
+          - spec.dnsNames.1
+        options:
+          delimiter: '.'
+          index: 1

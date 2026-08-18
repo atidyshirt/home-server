@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/atidyshirt/home-server.git
-    targetRevision: main
+    repoURL: __GIT_REPO_URL__
+    targetRevision: __GIT_REVISION__
     path: addons
     directory:
       recurse: false

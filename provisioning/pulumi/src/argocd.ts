@@ -27,7 +27,7 @@ export class ArgoCd extends pulumi.ComponentResource {
 
   private constructor() {
     super("home-server:index:ArgoCd", "argocd");
-    const version = new pulumi.Config("argocd").get("version") ?? "v3.5.1";
+    const version = new pulumi.Config("argocd").require("version");
 
     const namespace = new k8s.core.v1.Namespace(
       "argocd",
@@ -68,13 +68,14 @@ export class ArgoCd extends pulumi.ComponentResource {
 
   private applyRootApp(dependsOn: pulumi.Resource | pulumi.Resource[]): pulumi.Resource {
     const argocdConfig = new pulumi.Config("argocd");
-    const gitRepoUrl = argocdConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
-    const gitRevision = argocdConfig.get("gitRevision") || "main";
+    const gitRepoUrl = argocdConfig.require("gitRepoUrl");
+    const gitRevision = argocdConfig.require("gitRevision");
+    const domain = new pulumi.Config("homelab").require("domain");
 
     const rootAppYaml = fs
       .readFileSync(path.join(REPO_ROOT, "bootstrap/argocd/root-app.yaml"), "utf8")
-      .replace("repoURL: https://github.com/atidyshirt/home-server.git", `repoURL: ${gitRepoUrl}`)
-      .replace("targetRevision: main", `targetRevision: ${gitRevision}`);
+      .replace("repoURL: __GIT_REPO_URL__", `repoURL: ${gitRepoUrl}`)
+      .replace("targetRevision: __GIT_REVISION__", `targetRevision: ${gitRevision}`);
 
     const rootApp = new k8s.yaml.ConfigGroup(
       "root-app",
@@ -82,9 +83,13 @@ export class ArgoCd extends pulumi.ComponentResource {
       { provider: this.k8sProvider.provider, dependsOn, parent: this },
     );
 
-    new k8s.yaml.ConfigFile(
+    const httprouteYaml = fs
+      .readFileSync(path.join(REPO_ROOT, "bootstrap/argocd/httproute.yaml"), "utf8")
+      .replace("__DOMAIN__", domain);
+
+    new k8s.yaml.ConfigGroup(
       "argocd-httproute",
-      { file: path.join(REPO_ROOT, "bootstrap/argocd/httproute.yaml") },
+      { yaml: httprouteYaml },
       { provider: this.k8sProvider.provider, dependsOn, parent: this },
     );
 

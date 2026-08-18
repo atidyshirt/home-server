@@ -69,11 +69,12 @@ against the interface, not `RaspberryPiK0s`, so none of them need to change if t
 implementation does.
 
 Config is namespaced per module: `raspberrypi:sshHost`/`sshUser`/`nodeLanIp`,
-`onepassword:serviceAccountToken`, `argocd:version` (optional), `gatewayapi:version`
-(optional), `argocd:gitRevision`/`argocd:gitRepoUrl` (both optional — `ArgoCd` and
-`GitopsBridge` each read them independently, but they're grouped under `argocd:` rather than
-each module's own namespace since they're conceptually "what ArgoCD tracks", not
-module-specific).
+`onepassword:serviceAccountToken`, `argocd:version`, `gatewayapi:version`,
+`argocd:gitRevision`/`argocd:gitRepoUrl` (`ArgoCd` and `GitopsBridge` each read the latter two
+independently, but they're grouped under `argocd:` rather than each module's own namespace
+since they're conceptually "what ArgoCD tracks", not module-specific), `homelab:domain`. All
+config is required (`.require()`, never `.get() ?? default`) — every value lives in
+`Pulumi.homelab.yaml`, not as a fallback baked into the code.
 
 **Pinning a revision (gitops-bridge pattern)**
 
@@ -86,6 +87,36 @@ then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `addon-appl
 uses a Matrix generator (clusters x git directories) so the same pinning applies to app
 auto-discovery too. `root-app.yaml` itself is templated directly by Pulumi (it's the one file
 Pulumi applies, not ArgoCD-generated).
+
+**Domain configuration**
+
+`homelab:domain` (Pulumi config) flows into the same `in-cluster` Secret as `addons_domain`,
+alongside `addons_repo_url`/`addons_repo_revision`. Every `addon-*-appset.yaml` template sets
+`source.kustomize.commonAnnotations: {addons_domain: '{{metadata.annotations.addons_domain}}'}`
+— a generic, uniform pattern across every appset, regardless of whether that addon needs the
+domain. Each app then decides internally how to consume the annotation kustomize stamped onto
+its resources:
+- Structured fields (e.g. a `Certificate`'s `spec.dnsNames`) use kustomize `replacements`
+  sourced from the resource's own `metadata.annotations.addons_domain` — see
+  `applications/traefik/base/kustomization.yaml`.
+- Free-text blobs with the domain embedded multiple times (e.g. CoreDNS's Corefile/zone file)
+  can't be patched that way — kustomize has no generic string substitution. Instead the pod
+  template's `addons_domain` annotation (kustomize's `commonAnnotations` also propagates into
+  `spec.template.metadata` for workloads) is read via the Downward API into an env var, and an
+  init container `sed`s a `PLACEHOLDER_DOMAIN` token in a template ConfigMap into a shared
+  `emptyDir` at startup — see `applications/coredns-lan/base/deployment.yaml`.
+
+Every domain-dependent base manifest carries a literal placeholder value (`placeholder-domain`
+/ `PLACEHOLDER_DOMAIN`) so `kustomize build --enable-helm` succeeds standalone without the
+appset's runtime override — `commonAnnotations` always wins over a resource's pre-existing
+annotation of the same key, confirmed empirically (`kustomize edit add annotation` upserts
+rather than erroring, as long as the *base* kustomization.yaml itself doesn't already declare
+that key in its own `commonAnnotations`).
+
+`bootstrap/argocd/root-app.yaml` and `httproute.yaml` aren't ArgoCD-managed (Pulumi applies
+them directly), so they use `__GIT_REPO_URL__`/`__GIT_REVISION__`/`__DOMAIN__` placeholders
+that `ArgoCd.applyRootApp()` string-replaces directly, the same technique as the appset
+annotations but done in TypeScript since ArgoCD's templating engine never sees these two files.
 
 **Secrets**
 
@@ -106,6 +137,18 @@ The Pi previously ran Pi-hole (`pihole-FTL`, installed 2026-06-16) bound to port
 which conflicted with coredns-lan. Disabled (`systemctl disable --now pihole-FTL`) in
 favor of coredns-lan — not reinstalled by this repo, so re-provisioning a fresh Pi
 won't need this step, but re-imaging *this* Pi from a backup might.
+
+**TLS**
+
+`*.<domain>` is HTTPS-only in practice — browsers HSTS-preload the entire `.dev` TLD, so
+`homelab.dev` forces HTTPS even though there's no real cert authority for a private domain.
+cert-manager (`applications/cert-manager/base`) bootstraps a self-signed CA chain via sync
+waves: `selfsigned-bootstrap` `ClusterIssuer` (wave 1) issues the `homelab-ca` `Certificate`
+(wave 2, `isCA: true`), which backs the `homelab-ca-issuer` `ClusterIssuer` (wave 3). Traefik's
+wildcard `homelab-dev-tls` `Certificate` (in the `traefik` namespace, issued by
+`homelab-ca-issuer`) backs a `websecure` Gateway listener on port 443. Trusting the CA's public
+cert (never the private key) in an OS/browser keychain is a manual, per-client step — not
+automatable from here.
 
 **Gateway API implementation**
 
