@@ -9,15 +9,7 @@ spec:
     - __GIT_REPO_URL__
   destinations:
     - server: https://kubernetes.default.svc
-      namespace: traefik
-    - server: https://kubernetes.default.svc
-      namespace: coredns-lan
-    - server: https://kubernetes.default.svc
-      namespace: cert-manager
-    - server: https://kubernetes.default.svc
-      namespace: onepassword
-    - server: https://kubernetes.default.svc
-      namespace: dex
+      namespace: '*'
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
@@ -28,9 +20,9 @@ metadata:
   name: golf-application
   namespace: argocd
 spec:
-  description: golf-application - one appset per namespace
+  description: golf-application
   sourceRepos:
     - __GIT_REPO_URL__
   destinations:
     - server: https://kubernetes.default.svc
-      namespace: golf-application
+      namespace: golf
