@@ -4,12 +4,6 @@ metadata:
   name: addon-applications
   namespace: argocd
 spec:
-  # Matrix of clusters (for repoURL/revision, from the `in-cluster` Secret's
-  # annotations set by Pulumi — see addon-traefik-appset.yaml) x git directories
-  # (for auto-discovering applications/*/base). The git generator's own
-  # repoURL/revision are templated from the clusters generator's output too, so
-  # a pinned branch affects which commit gets scanned for app directories, not
-  # just which commit each discovered app is deployed from.
   generators:
     - matrix:
         generators:
@@ -19,6 +13,12 @@ spec:
               revision: '{{metadata.annotations.addons_repo_revision}}'
               directories:
                 - path: applications/*/base
+                - path: applications/traefik/base
+                  exclude: true
+                - path: applications/coredns-lan/base
+                  exclude: true
+                - path: applications/onepassword-operator/base
+                  exclude: true
   template:
     metadata:
       name: '{{path[1]}}'

@@ -4,11 +4,6 @@ metadata:
   name: addon-traefik
   namespace: argocd
 spec:
-  # Cluster generator, not `list`: repoURL/targetRevision come from the
-  # `in-cluster` Secret's annotations (argocd.argoproj.io/secret-type: cluster),
-  # set by Pulumi — this is how `pulumi config set gitRevision <branch>` points
-  # every addon at a PR branch instead of main. See bootstrap/argocd/README or
-  # AGENT.md for the gitops-bridge pattern this follows.
   generators:
     - clusters: {}
   template:
@@ -19,7 +14,7 @@ spec:
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
-        path: addons/traefik/base
+        path: applications/traefik/base
       destination:
         server: https://kubernetes.default.svc
         namespace: traefik

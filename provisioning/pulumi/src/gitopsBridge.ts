@@ -19,9 +19,9 @@ export class GitopsBridge extends pulumi.ComponentResource {
   private constructor(options: GitopsBridgeInstallOptions) {
     super("home-server:index:GitopsBridge", "gitops-bridge");
     const k8sProvider = getKubernetesProvider();
-    const gitConfig = new pulumi.Config();
-    const gitRepoUrl = gitConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
-    const gitRevision = gitConfig.get("gitRevision") || "main";
+    const argocdConfig = new pulumi.Config("argocd");
+    const gitRepoUrl = argocdConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
+    const gitRevision = argocdConfig.get("gitRevision") || "main";
 
     new k8s.core.v1.Secret(
       "argocd-in-cluster",

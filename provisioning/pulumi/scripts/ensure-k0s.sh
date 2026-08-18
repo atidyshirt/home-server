@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Idempotent: installs a single-node k0s controller+worker if it isn't already running.
-# Codifies today's manual setup so a rebuild (or a different Pi) is one command.
 set -euo pipefail
 
 if sudo k0s status >/dev/null 2>&1; then

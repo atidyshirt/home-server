@@ -67,9 +67,9 @@ export class ArgoCd extends pulumi.ComponentResource {
   }
 
   private applyRootApp(dependsOn: pulumi.Resource | pulumi.Resource[]): pulumi.Resource {
-    const gitConfig = new pulumi.Config();
-    const gitRepoUrl = gitConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
-    const gitRevision = gitConfig.get("gitRevision") || "main";
+    const argocdConfig = new pulumi.Config("argocd");
+    const gitRepoUrl = argocdConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
+    const gitRevision = argocdConfig.get("gitRevision") || "main";
 
     const rootAppYaml = fs
       .readFileSync(path.join(REPO_ROOT, "bootstrap/argocd/root-app.yaml"), "utf8")
