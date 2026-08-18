@@ -13,14 +13,11 @@ addons/
     addon-*-appset.yaml      # ApplicationSets only — no content lives here
 applications/
     <name>/base/             # kustomization.yaml (+ values.yaml if wrapping a helm chart) — ALL
-                              #   content lives here, curated addons and auto-discovered apps alike
+                              #   content for every app lives here
 ```
 
-Curated addons (traefik, coredns-lan, onepassword-operator) each have their own
-`addon-*-appset.yaml` with their own sync policy, same as before — only their content moved
-from `addons/<name>/base` to `applications/<name>/base`. `addon-applications-appset.yaml`'s git
-directories generator auto-discovers everything under `applications/*/base`, so it explicitly
-`exclude`s those three paths to avoid generating a second, colliding `Application` for each.
+Every app (curated addon or otherwise) gets its own `addon-*-appset.yaml` in `addons/` pointing
+at `applications/<name>/base`. No auto-discovery generator — every app is explicit.
 
 **Provisioning**
 
@@ -82,10 +79,8 @@ Pulumi registers the local cluster as a Secret (`argocd.argoproj.io/secret-type:
 name `in-cluster`) with `addons_repo_url`/`addons_repo_revision` annotations; every
 appset's template reads `{{metadata.annotations.addons_repo_revision}}`. To point
 everything at a PR branch instead of main: `pulumi config set argocd:gitRevision <branch>`
-then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `addon-applications-appset.yaml`
-uses a Matrix generator (clusters x git directories) so the same pinning applies to app
-auto-discovery too. `root-app.yaml` itself is templated directly by Pulumi (it's the one file
-Pulumi applies, not ArgoCD-generated).
+then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `root-app.yaml` itself is
+templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
 
 **Secrets**
 
