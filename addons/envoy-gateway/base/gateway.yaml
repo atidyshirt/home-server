@@ -10,9 +10,17 @@ spec:
     type: Kubernetes
     kubernetes:
       envoyDaemonSet:
-        pod:
-          hostNetwork: true
-          dnsPolicy: ClusterFirstWithHostNet
+        # EnvoyProxy's curated `pod` fields don't include hostNetwork/dnsPolicy (SSA
+        # rejects them: "field not declared in schema") — `patch` is the documented
+        # escape hatch for anything outside that curated subset.
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              template:
+                spec:
+                  hostNetwork: true
+                  dnsPolicy: ClusterFirstWithHostNet
       envoyService:
         type: ClusterIP
 ---
