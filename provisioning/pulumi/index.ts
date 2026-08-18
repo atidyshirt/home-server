@@ -43,13 +43,20 @@ const kubeconfig = getKubeconfig.stdout.apply((kc) =>
 const k0s = new k8s.Provider("k0s", { kubeconfig });
 
 // -- Gateway API CRDs (standard channel) --
+//
+// Also a remote.Command with --server-side, for the same reason as ArgoCD below:
+// k8s.yaml.ConfigFile's dynamically-discovered children don't survive an unrelated
+// failure elsewhere in the same `pulumi up` (Pulumi "forgets" it owns them and retries
+// bare `create` on the next run, colliding with objects that already exist on the
+// cluster). `kubectl apply --server-side` is a reconciling upsert either way.
 
-const gatewayApiCrds = new k8s.yaml.ConfigFile(
-  "gateway-api-crds",
+const gatewayApiCrds = new command.remote.Command(
+  "install-gateway-api-crds",
   {
-    file: `https://github.com/kubernetes-sigs/gateway-api/releases/download/${GATEWAY_API_VERSION}/standard-install.yaml`,
+    connection,
+    create: `sudo k0s kubectl apply --server-side --force-conflicts -f https://github.com/kubernetes-sigs/gateway-api/releases/download/${GATEWAY_API_VERSION}/standard-install.yaml`,
   },
-  { provider: k0s },
+  { dependsOn: ensureK0s },
 );
 
 // -- ArgoCD --
@@ -60,16 +67,21 @@ const argocdNamespace = new k8s.core.v1.Namespace(
   { provider: k0s },
 );
 
-// Upstream install.yaml assumes `kubectl apply -n argocd`; the provider's default
-// namespace fills that in for every resource that doesn't set one itself.
-const argocdScoped = new k8s.Provider("k0s-argocd", { kubeconfig, namespace: "argocd" });
-
-const argocdInstall = new k8s.yaml.ConfigFile(
-  "argocd-install",
+// ArgoCD's install.yaml is a ~2MB, 58-document manifest with huge embedded CRD
+// schemas — k8s.yaml.ConfigFile silently decoded it to zero resources (no error,
+// no pods, no CRDs). `kubectl apply` on the node itself handles it fine, so shell
+// out over the same SSH connection instead. --server-side is required: client-side
+// apply stores the whole manifest in a last-applied-configuration annotation, and
+// applicationsets.argoproj.io's schema alone blows past the 256KiB annotation limit.
+// Waits for the Application CRD to be Established so the root Application below
+// doesn't race it.
+const argocdInstall = new command.remote.Command(
+  "install-argocd",
   {
-    file: `https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml`,
+    connection,
+    create: `sudo k0s kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml && sudo k0s kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=60s`,
   },
-  { provider: argocdScoped, dependsOn: argocdNamespace },
+  { dependsOn: [ensureK0s, argocdNamespace] },
 );
 
 // Let ArgoCD's kustomize builds inflate helm charts (addons/envoy-gateway uses this).
