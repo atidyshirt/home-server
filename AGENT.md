@@ -8,7 +8,7 @@ Public repo: github.com/atidyshirt/home-server — no secrets are ever committed
 **Structure**
 
 ```
-bootstrap/argocd/           # root Application ("app of appsets") + ArgoCD's own HTTPRoute
+bootstrap/argocd/           # root Application ("app of appsets") + AppProjects + ArgoCD's own HTTPRoute
 addons/
     addon-*-appset.yaml      # ApplicationSets only — no content lives here
 applications/
@@ -17,7 +17,9 @@ applications/
 ```
 
 Every app (curated addon or otherwise) gets its own `addon-*-appset.yaml` in `addons/` pointing
-at `applications/<name>/base`. No auto-discovery generator — every app is explicit.
+at `applications/<name>/base`, targeting exactly one namespace and belonging to an `AppProject`
+whose `destinations` whitelists that same namespace (see **AppProjects** below). No
+auto-discovery generator — every app is explicit.
 
 **Provisioning**
 
@@ -83,6 +85,32 @@ appset's template reads `{{metadata.annotations.addons_repo_revision}}`. To poin
 everything at a PR branch instead of main: `pulumi config set argocd:gitRevision <branch>`
 then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `root-app.yaml` itself is
 templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
+
+**AppProjects**
+
+One `ApplicationSet` controls exactly one namespace — enforced, not just convention, via each
+`AppProject`'s `destinations` list. `bootstrap/argocd/projects.yaml` defines them and is
+templated + applied directly by Pulumi (`ArgoCd.applyRootApp()`, same treatment as
+`root-app.yaml`/`httproute.yaml` and for the same reason: an `Application` referencing a
+`project` that doesn't exist yet fails to sync, so the `AppProject` must exist before ArgoCD
+ever tries to reconcile anything against it — not something that can wait on ArgoCD's own git
+sync loop).
+
+- `platform` — the curated infra addons (traefik, coredns-lan, cert-manager, onepassword, dex),
+  one `destinations` entry per addon namespace. `clusterResourceWhitelist: [{group: '*', kind:
+  '*'}]` since these addons legitimately create cluster-scoped resources (cert-manager's
+  `ClusterIssuer`, Traefik's `GatewayClass`, Dex/onepassword-operator's `ClusterRole`s).
+- `golf-application` — placeholder for a future app, scoped to a single `golf-application`
+  namespace, no cluster-resource access by default (a normal app shouldn't need any; loosen
+  explicitly if one genuinely does).
+
+Every `addon-*-appset.yaml` sets `spec.template.spec.project` to the `AppProject` that
+whitelists its destination namespace — `platform` for the five existing addons. `root-app.yaml`
+itself stays on ArgoCD's built-in `default` project (it deploys the `ApplicationSet`s
+themselves into `argocd`, not application content, so it doesn't belong to either project).
+Adding a new app under a new project: create the `AppProject` in `projects.yaml`, then its
+`addon-<name>-appset.yaml` referencing it — matches [docs/pr-workflow.md](docs/pr-workflow.md)'s
+"Adding a new app" section.
 
 **Domain configuration**
 
