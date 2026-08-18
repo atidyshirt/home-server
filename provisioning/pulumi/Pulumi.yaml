@@ -1,0 +1,3 @@
+name: home-server-bootstrap
+runtime: nodejs
+description: Minimal bootstrap for the homelab k0s cluster - gets k0s ready and hands it off to ArgoCD. Everything after this is gitops-managed.
