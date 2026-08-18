@@ -22,11 +22,20 @@ ports:
   web:
     port: 80
 
-# Non-root (uid 65532) needs this capability to bind port 80 directly.
+# Binding port 80 as non-root (uid 65532) with just CAP_NET_BIND_SERVICE added back
+# didn't work on this system — same "permission denied" with or without
+# allowPrivilegeEscalation: true, pointing at something broken in capability
+# granting below the Kubernetes API, not a manifest issue. Running as root
+# sidesteps it entirely; also drops the capability restriction rather than
+# relying on the same broken mechanism while root.
 securityContext:
   capabilities:
-    add:
-      - NET_BIND_SERVICE
+    drop: []
+
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  runAsGroup: 0
 
 providers:
   kubernetesGateway:
