@@ -1,27 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: addon-coredns-lan
+  name: addon-dex
   namespace: argocd
 spec:
   generators:
     - clusters: {}
   template:
     metadata:
-      name: coredns-lan
+      name: dex
     spec:
       project: default
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
-        path: applications/coredns-lan/base
+        path: applications/dex/base
         kustomize:
           commonAnnotations:
             addons_domain: '{{metadata.annotations.addons_domain}}'
             addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: coredns-lan
+        namespace: dex
       syncPolicy:
         automated:
           selfHeal: true

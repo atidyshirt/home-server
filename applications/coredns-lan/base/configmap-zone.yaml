@@ -14,5 +14,5 @@ data:
             1209600    ; expire
             3600 )     ; minimum
     @       IN  NS  ns.PLACEHOLDER_DOMAIN.
-    ns      IN  A   192.168.1.146
-    *       IN  A   192.168.1.146
+    ns      IN  A   PLACEHOLDER_NODE_IP
+    *       IN  A   PLACEHOLDER_NODE_IP

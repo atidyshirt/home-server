@@ -30,7 +30,8 @@ provisioning/pulumi/
                                   #   + getKubernetesProvider(): memoized singleton, reads "raspberrypi" config
         gatewayApi.ts             # class GatewayApi extends pulumi.ComponentResource
         argocd.ts                # class ArgoCd extends pulumi.ComponentResource
-                                  #   install(): argocd-cm/argocd-cmd-params-cm patches
+                                  #   install(): argocd-cm/argocd-cmd-params-cm/argocd-rbac-cm patches,
+                                  #   OIDC + CA-trust + Dex hostAlias patches on argocd-server
                                   #   init(): applies bootstrap/argocd/root-app.yaml + httproute.yaml
         gitopsBridge.ts          # class GitopsBridge extends pulumi.ComponentResource — the in-cluster Secret
         onePassword.ts           # class OnePassword extends pulumi.ComponentResource — reads its own
@@ -85,12 +86,12 @@ templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-gener
 
 **Domain configuration**
 
-`homelab:domain` (Pulumi config) flows into the same `in-cluster` Secret as `addons_domain`,
-alongside `addons_repo_url`/`addons_repo_revision`. Every `addon-*-appset.yaml` template sets
-`source.kustomize.commonAnnotations: {addons_domain: '{{metadata.annotations.addons_domain}}'}`
-— a generic, uniform pattern across every appset, regardless of whether that addon needs the
-domain. Each app then decides internally how to consume the annotation kustomize stamped onto
-its resources:
+`homelab:domain` and `raspberrypi:nodeLanIp` (Pulumi config) flow into the same `in-cluster`
+Secret as `addons_domain`/`addons_node_ip`, alongside `addons_repo_url`/`addons_repo_revision`.
+Every `addon-*-appset.yaml` template sets `source.kustomize.commonAnnotations` for both keys
+(`'{{metadata.annotations.addons_domain}}'` / `addons_node_ip`) — a generic, uniform pattern
+across every appset, regardless of whether that addon needs either value. Each app then decides
+internally how to consume the annotations kustomize stamped onto its resources:
 - Structured fields (e.g. a `Certificate`'s `spec.dnsNames`) use kustomize `replacements`
   sourced from the resource's own `metadata.annotations.addons_domain` — see
   `applications/traefik/base/kustomization.yaml`.
@@ -145,6 +146,54 @@ backs the `homelab-ca-issuer` `ClusterIssuer` (wave 3). Traefik's wildcard `home
 `Certificate` (in the `traefik` namespace, issued by `homelab-ca-issuer`) backs a `websecure`
 Gateway listener on port 443. Trusting the CA's public cert (never the private key) in an
 OS/browser keychain is a manual, per-client step — not automatable from here.
+
+**SSO / OIDC**
+
+Dex (`applications/dex/base`, own namespace, own HTTPRoute) is a standalone OIDC broker —
+not ArgoCD's bundled dex sidecar — so any future app can register as an additional Dex
+static client without ArgoCD-specific coupling. It federates Auth0 via Dex's generic `oidc`
+connector, mapping Auth0's `https://homelab.arpa/roles` claim (set by an Auth0 Post-Login
+Action reading Auth0 Roles, since Roles aren't in the ID token by default) into Dex's own
+`groups` claim via `claimMapping` + `insecureEnableGroups: true` (the latter is required —
+Dex silently drops mapped groups without it, regardless of `claimMapping`).
+
+Dex's config, like Traefik/coredns-lan, needs runtime values Dex itself doesn't expand
+(confirmed empirically — Dex does *not* do `$VAR` substitution in its own config file,
+despite this being a common assumption from other Dex deployment guides). It uses the same
+init-container/`sed` pattern as coredns-lan: the chart's rendered config `Secret` becomes a
+read-only template (`config-template` volume), an initContainer substitutes `PLACEHOLDER_*`
+tokens (domain via Downward API, Auth0/ArgoCD client secrets via `secretKeyRef`) into the
+`config` volume — which the chart's own `emptyDir`-replaced (not `secret`-backed) volume
+definition makes writable, so the main container's existing mount/args need no changes at all.
+
+Secrets: 1Password item `oidc.auth0` (`tenant`/`client-id`/`client-secret`) for the Auth0
+connector, synced via `OnePasswordItem` into the `dex` namespace. `oidc.dex` (a Pulumi-
+generated random secret, field `password`) is the shared ArgoCD<->Dex static-client secret —
+synced into `dex` via `OnePasswordItem` (git-managed), and copied into `argocd` directly by
+Pulumi (`k8s.core.v1.Secret.get()` + re-create) rather than a second `OnePasswordItem`, because
+ArgoCD's `$secretname:key` config substitution only resolves secrets labeled
+`app.kubernetes.io/part-of: argocd` — the operator-created secret doesn't carry that label, so
+Pulumi copies the value into a new plain `Secret` that does.
+
+ArgoCD's `oidc.config` (`argocd-cm`) points at Dex as an external OIDC provider (not
+`dex.config`, which would mean the bundled sidecar). `argocd-rbac-cm` maps
+`homelab:admin`/`homelab:user` groups to ArgoCD's built-in `role:admin`/`role:readonly` —
+`policy.default: ""` so anyone without one of those two groups gets no access at all.
+
+Two gaps the gitops-bridge/git-managed layers can't reach, patched directly onto
+`argocd-server`'s Deployment by Pulumi:
+- The cluster's own CoreDNS (`kube-system`, k0s-managed) doesn't know about `homelab.arpa` —
+  only coredns-lan does, and it only serves the host's LAN interface, not in-cluster pod
+  traffic. Patching `kube-system`'s CoreDNS ConfigMap directly conflicts with k0s's own field
+  manager (confirmed empirically, `--force-conflicts` would fight k0s's reconciler on every
+  future k0s update) — used a scoped `hostAliases` entry on `argocd-server` instead
+  (`dex.<domain>` -> node LAN IP) so it can resolve just what it needs to reach Dex.
+- ArgoCD's own outbound Go HTTP client doesn't trust the self-signed CA (that's a separate
+  trust store from the browser-local one you manually trust per docs/provisioning.md) — an
+  initContainer (same `argocd` image, so the same base system CA bundle) appends the CA cert
+  (read from `cert-manager/homelab-ca-secret` via `k8s.core.v1.Secret.get()`, re-created in
+  `argocd`) into a merged bundle mounted via `SSL_CERT_FILE`, rather than replacing the system
+  trust store outright (which would break git-repo TLS to real public hosts).
 
 **Gateway API implementation**
 

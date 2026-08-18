@@ -1,0 +1,90 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: dex
+    repo: https://charts.dexidp.io
+    version: 0.24.1
+    releaseName: dex
+    namespace: dex
+    valuesFile: values.yaml
+
+resources:
+  - onepassword-items.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: dex
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/volumes/0/secret
+      - op: add
+        path: /spec/template/spec/volumes/0/emptyDir
+        value: {}
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: config-template
+          secret:
+            secretName: dex
+      - op: add
+        path: /spec/template/spec/initContainers
+        value:
+          - name: render-config
+            image: busybox:1.36
+            env:
+              - name: DOMAIN
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.annotations['addons_domain']
+              - name: AUTH0_DOMAIN
+                valueFrom:
+                  secretKeyRef:
+                    name: oidc-auth0
+                    key: tenant
+              - name: AUTH0_CLIENT_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: oidc-auth0
+                    key: client-id
+              - name: AUTH0_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: oidc-auth0
+                    key: client-secret
+              - name: ARGOCD_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: oidc-dex
+                    key: password
+            command:
+              - sh
+              - -c
+              - |
+                sed -e "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" \
+                    -e "s/PLACEHOLDER_AUTH0_DOMAIN/$AUTH0_DOMAIN/g" \
+                    -e "s/PLACEHOLDER_AUTH0_CLIENT_ID/$AUTH0_CLIENT_ID/g" \
+                    -e "s/PLACEHOLDER_AUTH0_CLIENT_SECRET/$AUTH0_CLIENT_SECRET/g" \
+                    -e "s/PLACEHOLDER_ARGOCD_CLIENT_SECRET/$ARGOCD_CLIENT_SECRET/g" \
+                    /template/config.yaml > /etc/dex/config.yaml
+            volumeMounts:
+              - name: config-template
+                mountPath: /template
+              - name: config
+                mountPath: /etc/dex
+
+replacements:
+  - source:
+      kind: Deployment
+      name: dex
+      fieldPath: spec.template.metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: dex
+        fieldPaths:
+          - spec.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1
