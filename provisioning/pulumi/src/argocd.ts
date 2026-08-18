@@ -28,6 +28,7 @@ export class ArgoCd extends pulumi.ComponentResource {
   private constructor() {
     super("home-server:index:ArgoCd", "argocd");
     const version = new pulumi.Config("argocd").require("version");
+    const domain = new pulumi.Config("homelab").require("domain");
 
     const namespace = new k8s.core.v1.Namespace(
       "argocd",
@@ -61,6 +62,52 @@ export class ArgoCd extends pulumi.ComponentResource {
       {
         metadata: { name: "argocd-cmd-params-cm", namespace: "argocd" },
         data: { "server.insecure": "true" },
+      },
+      { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
+    );
+
+    new k8s.apiextensions.CustomResource(
+      "argocd-oidc-dex-secret",
+      {
+        apiVersion: "onepassword.com/v1",
+        kind: "OnePasswordItem",
+        metadata: { name: "oidc-dex", namespace: "argocd" },
+        spec: { itemPath: "vaults/homelab/items/oidc.dex" },
+      },
+      { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
+    );
+
+    new k8s.core.v1.ConfigMapPatch(
+      "argocd-cm-oidc",
+      {
+        metadata: { name: "argocd-cm", namespace: "argocd" },
+        data: {
+          url: `https://argo.${domain}`,
+          "oidc.config": [
+            "name: Dex",
+            `issuer: https://dex.${domain}`,
+            "clientID: argocd",
+            "clientSecret: $oidc-dex:password",
+            "requestedScopes:",
+            "  - openid",
+            "  - profile",
+            "  - email",
+            "  - groups",
+          ].join("\n"),
+        },
+      },
+      { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
+    );
+
+    new k8s.core.v1.ConfigMapPatch(
+      "argocd-rbac-cm-dex",
+      {
+        metadata: { name: "argocd-rbac-cm", namespace: "argocd" },
+        data: {
+          "policy.default": "",
+          "policy.csv": ["g, homelab:admin, role:admin", "g, homelab:user, role:readonly"].join("\n"),
+          scopes: "[groups]",
+        },
       },
       { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
     );
