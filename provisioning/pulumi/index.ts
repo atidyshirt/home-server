@@ -60,16 +60,18 @@ const argocdNamespace = new k8s.core.v1.Namespace(
   { provider: k0s },
 );
 
-// Upstream install.yaml assumes `kubectl apply -n argocd`; the provider's default
-// namespace fills that in for every resource that doesn't set one itself.
-const argocdScoped = new k8s.Provider("k0s-argocd", { kubeconfig, namespace: "argocd" });
-
-const argocdInstall = new k8s.yaml.ConfigFile(
-  "argocd-install",
+// ArgoCD's install.yaml is a ~2MB, 58-document manifest with huge embedded CRD
+// schemas — k8s.yaml.ConfigFile silently decoded it to zero resources (no error,
+// no pods, no CRDs). `kubectl apply` on the node itself handles it fine, so shell
+// out over the same SSH connection instead. Waits for the Application CRD to be
+// Established so the root Application below doesn't race it.
+const argocdInstall = new command.remote.Command(
+  "install-argocd",
   {
-    file: `https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml`,
+    connection,
+    create: `sudo k0s kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml && sudo k0s kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=60s`,
   },
-  { provider: argocdScoped, dependsOn: argocdNamespace },
+  { dependsOn: [ensureK0s, argocdNamespace] },
 );
 
 // Let ArgoCD's kustomize builds inflate helm charts (addons/envoy-gateway uses this).
