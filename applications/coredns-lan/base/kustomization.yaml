@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - configmap-corefile.yaml
   - configmap-zone.yaml
-  - deployment.yaml
+  - daemonset.yaml

@@ -20,8 +20,9 @@ export class GitopsBridge extends pulumi.ComponentResource {
     super("home-server:index:GitopsBridge", "gitops-bridge");
     const k8sProvider = getKubernetesProvider();
     const argocdConfig = new pulumi.Config("argocd");
-    const gitRepoUrl = argocdConfig.get("gitRepoUrl") || "https://github.com/atidyshirt/home-server.git";
-    const gitRevision = argocdConfig.get("gitRevision") || "main";
+    const gitRepoUrl = argocdConfig.require("gitRepoUrl");
+    const gitRevision = argocdConfig.require("gitRevision");
+    const domain = new pulumi.Config("homelab").require("domain");
 
     new k8s.core.v1.Secret(
       "argocd-in-cluster",
@@ -33,6 +34,7 @@ export class GitopsBridge extends pulumi.ComponentResource {
           annotations: {
             addons_repo_url: gitRepoUrl,
             addons_repo_revision: gitRevision,
+            addons_domain: domain,
           },
         },
         stringData: {

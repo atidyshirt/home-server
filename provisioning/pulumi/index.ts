@@ -1,3 +1,4 @@
+import * as pulumi from "@pulumi/pulumi";
 import { GatewayApi } from "./src/gatewayApi";
 import { ArgoCd } from "./src/argocd";
 import { GitopsBridge } from "./src/gitopsBridge";
@@ -10,4 +11,5 @@ const onePassword = OnePassword.install();
 
 ArgoCd.init({ dependsOn: [gatewayApi, gitopsBridge, onePassword] });
 
-export const argocdUrl = "http://argo.homelab.dev";
+const domain = new pulumi.Config("homelab").require("domain");
+export const argocdUrl = `http://argo.${domain}`;

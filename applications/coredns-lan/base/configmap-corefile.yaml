@@ -4,9 +4,9 @@ metadata:
   name: coredns-lan-corefile
   namespace: coredns-lan
 data:
-  Corefile: |
-    homelab.dev:53 {
-        file /etc/coredns/zones/homelab.dev.zone
+  Corefile.tmpl: |
+    PLACEHOLDER_DOMAIN:53 {
+        file /etc/coredns/zones/PLACEHOLDER_DOMAIN.zone
         log
         errors
     }
