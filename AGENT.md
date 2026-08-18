@@ -46,8 +46,14 @@ token, created directly by Pulumi as a Kubernetes Secret (never committed).
 **DNS**
 
 LAN hostnames resolve under `homelab.dev` via an in-cluster CoreDNS addon (wildcard
-`*.homelab.dev` -> node IP). Not the network's primary DNS — the router gets one manual
-conditional-forwarding rule for the `homelab.dev` zone. See README.md for the manual steps.
+`*.homelab.dev` -> node IP, hostNetwork on port 53). Not the network's primary DNS — the
+router gets one manual conditional-forwarding rule for the `homelab.dev` zone. See
+README.md for the manual steps.
+
+The Pi previously ran Pi-hole (`pihole-FTL`, installed 2026-06-16) bound to port 53,
+which conflicted with coredns-lan. Disabled (`systemctl disable --now pihole-FTL`) in
+favor of coredns-lan — not reinstalled by this repo, so re-provisioning a fresh Pi
+won't need this step, but re-imaging *this* Pi from a backup might.
 
 **Documentation**
 
