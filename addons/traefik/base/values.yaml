@@ -7,9 +7,20 @@
 # LAN hostnames resolve on plain port 80 with no extra port in the browser.
 # Single-node cluster, no MetalLB.
 
+# DaemonSet, not Deployment: with hostNetwork, only one pod can bind port 80 per
+# node. Deployment's RollingUpdate (maxSurge:1, maxUnavailable:0) tries to bring
+# up the new pod before tearing down the old one, which can never schedule on a
+# single-node cluster — DaemonSet's default rollout (maxUnavailable:1) tears down
+# first, avoiding the deadlock. Also just the semantically correct workload type
+# for "exactly one instance per node, bound to host ports".
 deployment:
-  replicas: 1
+  kind: DaemonSet
   dnsPolicy: ClusterFirstWithHostNet
+
+updateStrategy:
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 0
 
 hostNetwork: true
 
