@@ -28,7 +28,7 @@ Pulumi (TypeScript, provisioning/pulumi/)
    └── applies bootstrap/argocd/root-app.yaml + httproute.yaml
           │
           └── ArgoCD reads this repo from here on:
-                    ├── addons/addon-envoy-gateway-appset.yaml     (Gateway API impl, hostNetwork:80)
+                    ├── addons/addon-traefik-appset.yaml           (Gateway API impl, hostNetwork:80)
                     ├── addons/addon-coredns-lan-appset.yaml       (*.homelab.dev -> node IP)
                     ├── addons/addon-onepassword-operator-appset.yaml
                     └── addons/addon-applications-appset.yaml      (applications/*/base, auto-discovered)
@@ -54,6 +54,13 @@ The Pi previously ran Pi-hole (`pihole-FTL`, installed 2026-06-16) bound to port
 which conflicted with coredns-lan. Disabled (`systemctl disable --now pihole-FTL`) in
 favor of coredns-lan — not reinstalled by this repo, so re-provisioning a fresh Pi
 won't need this step, but re-imaging *this* Pi from a backup might.
+
+**Gateway API implementation**
+
+Traefik, not Envoy Gateway. Envoy's bundled TCMalloc assumes a 48-bit virtual address
+space and hard-crashes (`MmapAligned() failed`) on this Pi's aarch64 kernel, which
+appears to use 39-bit VA — not fixable via config, it's a compile-time constant in the
+binary. Traefik (Go, no TCMalloc) doesn't have this problem.
 
 **Documentation**
 
