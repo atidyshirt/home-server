@@ -128,9 +128,9 @@ Account token (`OP_SERVICE_ACCOUNT_TOKEN`) instead of the default Connect-server
 
 **DNS**
 
-LAN hostnames resolve under `homelab.dev` via an in-cluster CoreDNS addon (wildcard
-`*.homelab.dev` -> node IP, hostNetwork on port 53). Not the network's primary DNS — the
-router gets one manual conditional-forwarding rule for the `homelab.dev` zone. See
+LAN hostnames resolve under `homelab.arpa` via an in-cluster CoreDNS addon (wildcard
+`*.homelab.arpa` -> node IP, hostNetwork on port 53). Not the network's primary DNS — the
+router gets one manual conditional-forwarding rule for the `homelab.arpa` zone. See
 [docs/provisioning.md](docs/provisioning.md) for the manual steps.
 
 The Pi previously ran Pi-hole (`pihole-FTL`, installed 2026-06-16) bound to port 53,
@@ -141,7 +141,7 @@ won't need this step, but re-imaging *this* Pi from a backup might.
 **TLS**
 
 `*.<domain>` is HTTPS-only in practice — browsers HSTS-preload the entire `.dev` TLD, so
-`homelab.dev` forces HTTPS even though there's no real cert authority for a private domain.
+`homelab.arpa` forces HTTPS even though there's no real cert authority for a private domain.
 cert-manager (`applications/cert-manager/base`) bootstraps a self-signed CA chain via sync
 waves: `selfsigned-bootstrap` `ClusterIssuer` (wave 1) issues the `homelab-ca` `Certificate`
 (wave 2, `isCA: true`), which backs the `homelab-ca-issuer` `ClusterIssuer` (wave 3). Traefik's

@@ -26,7 +26,7 @@ This works because every `addon-*-appset.yaml` reads its `repoURL`/`targetRevisi
 ## Adding a new app
 
 Add `applications/<name>/base/kustomization.yaml` (+ `values.yaml` if wrapping a Helm chart,
-+ an `HTTPRoute` for `<name>.homelab.dev`) and push. `addon-applications-appset.yaml` picks it
++ an `HTTPRoute` for `<name>.homelab.arpa`) and push. `addon-applications-appset.yaml` picks it
 up automatically — no new ApplicationSet, no new DNS record needed (wildcard). Deployed into a
 namespace named `<name>` (auto-created).
 

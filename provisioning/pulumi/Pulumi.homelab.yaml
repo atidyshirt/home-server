@@ -8,5 +8,5 @@ config:
   argocd:version: v3.5.1
   argocd:gitRepoUrl: https://github.com/atidyshirt/home-server.git
   argocd:gitRevision: main
-  homelab:domain: homelab.dev
+  homelab:domain: homelab.arpa
 encryptionsalt: v1:FmEqm5ngaDo=:v1:OcMOGQNom+wdFhjZ:0ZbVc3/l222S9CuvoDBO7s194CAhvw==
