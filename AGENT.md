@@ -19,23 +19,26 @@ applications/
 **Provisioning**
 
 ```
-Pulumi (TypeScript, provisioning/pulumi/)
-   │  minimal, one-time bootstrap — only what ArgoCD can't do for itself
-   ├── ensures k0s is present on the Pi (no-op today, codifies it for rebuilds)
-   ├── installs Gateway API CRDs
-   ├── installs ArgoCD + patches argocd-cm/argocd-cmd-params-cm
-   ├── creates ONE secret: the 1Password Service Account token
-   └── applies bootstrap/argocd/root-app.yaml + httproute.yaml
-          │
-          └── ArgoCD reads this repo from here on:
-                    ├── addons/addon-traefik-appset.yaml           (Gateway API impl, hostNetwork:80)
-                    ├── addons/addon-coredns-lan-appset.yaml       (*.homelab.dev -> node IP)
-                    ├── addons/addon-onepassword-operator-appset.yaml
-                    └── addons/addon-applications-appset.yaml      (applications/*/base, auto-discovered)
+provisioning/pulumi/
+    index.ts                     # orchestration only
+    src/
+        kubernetesProvider.ts    # interface KubernetesProvider — ready, provider, applyManifest()
+        raspberryPiK0s.ts        # class RaspberryPiK0s implements KubernetesProvider
+        argocd.ts                # class ArgoCd — install + argocd-cm/argocd-cmd-params-cm patches
+        gitopsBridge.ts          # class GitopsBridge — the in-cluster Secret (see below)
 ```
 
-Kept deliberately swappable: if k0s is replaced later, only the Pulumi bootstrap changes —
-the addons/applications layer is untouched.
+`index.ts` reads as: construct a `RaspberryPiK0s`, install Gateway API CRDs via
+`k0s.applyManifest()`, construct `ArgoCd`, construct `GitopsBridge`, create the 1Password
+bootstrap secret, apply `bootstrap/argocd/root-app.yaml` + `httproute.yaml`. From there,
+ArgoCD reads this repo directly (`addons/addon-*-appset.yaml`).
+
+`KubernetesProvider` is the seam for swapping k0s out later — an implementation only needs
+to provide `ready`, a `@pulumi/kubernetes` `Provider`, and `applyManifest()`.
+`RaspberryPiK0s.applyManifest()` shells out over SSH to `k0s kubectl` rather than using
+`@pulumi/kubernetes`'s own YAML resources — large manifests (ArgoCD's install.yaml) were
+silently dropped through those. `ArgoCd` and `GitopsBridge` are written against the
+interface, not `RaspberryPiK0s`, so neither needs to change if the implementation does.
 
 **Pinning a revision (gitops-bridge pattern)**
 
