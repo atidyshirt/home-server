@@ -1,0 +1,4 @@
+config:
+  home-server-bootstrap:sshHost: home-server.local
+  home-server-bootstrap:sshUser: clusteradmin
+  home-server-bootstrap:nodeLanIp: 192.168.1.146
