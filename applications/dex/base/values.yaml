@@ -27,6 +27,7 @@ config:
         clientSecret: PLACEHOLDER_AUTH0_CLIENT_SECRET
         redirectURI: https://dex.PLACEHOLDER_DOMAIN/callback
         insecureSkipEmailVerified: true
+        insecureEnableGroups: true
         scopes:
           - openid
           - profile
