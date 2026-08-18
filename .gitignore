@@ -2,3 +2,5 @@ node_modules/
 provisioning/pulumi/state/
 *.log
 .claude/settings.local.json
+.devenv/
+.direnv/
