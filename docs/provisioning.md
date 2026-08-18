@@ -21,7 +21,7 @@ After that, ArgoCD owns everything under `addons/` and `applications/`.
 
 ## Manual steps
 
-Router/network specific — can't be automated from here.
+Router/network/IdP-dashboard specific — can't be automated from here.
 
 - **DHCP reservation**: reserve `192.168.1.146` for the Pi on your router. Both Traefik (hostNetwork, port 80) and the CoreDNS zone file assume this IP is stable.
 - **DNS forwarding**: add a conditional-forwarding rule on your router for the `homelab.arpa` zone → `192.168.1.146`.
@@ -29,6 +29,19 @@ Router/network specific — can't be automated from here.
   ```bash
   ssh clusteradmin@home-server.local "sudo k0s kubectl get secret homelab-ca-secret -n cert-manager -o jsonpath='{.data.ca\.crt}'" | base64 -d > homelab-ca.crt
   ```
+- **Auth0 setup** (see [AGENT.md](../AGENT.md#sso--oidc)): create an Auth0 Application, add `https://dex.homelab.arpa/callback` to its Allowed Callback URLs, create `homelab:admin`/`homelab:user` Roles and assign them to users, and attach a Post-Login Action to the Login flow that adds them as a `https://homelab.arpa/roles` custom claim:
+  ```js
+  exports.onExecutePostLogin = async (event, api) => {
+    const namespace = 'https://homelab.arpa';
+    if (event.authorization) {
+      api.idToken.setCustomClaim(`${namespace}/roles`, event.authorization.roles);
+      api.accessToken.setCustomClaim(`${namespace}/roles`, event.authorization.roles);
+    }
+  };
+  ```
 
 > [!IMPORTANT]
-> This is explicitly *not* setting it as the primary DNS server — only queries for `*.homelab.arpa` get forwarded there. If your router doesn't support conditional forwarding, set `192.168.1.146` as a secondary DNS server on individual devices instead.
+> The DNS forwarding rule is explicitly *not* setting it as the primary DNS server — only queries for `*.homelab.arpa` get forwarded there. If your router doesn't support conditional forwarding, set `192.168.1.146` as a secondary DNS server on individual devices instead.
+
+> [!WARNING]
+> Logging in via a different Auth0 connection (e.g. Google) than the one your Roles are assigned to creates a separate Auth0 user with no roles, and ArgoCD will show zero applications — not a bug, just a different identity underneath.

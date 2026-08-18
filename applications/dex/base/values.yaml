@@ -2,9 +2,6 @@ podAnnotations:
   addons_domain: placeholder-domain
 
 config:
-  logger:
-    level: debug
-    format: json
   issuer: https://dex.PLACEHOLDER_DOMAIN
   storage:
     type: kubernetes
