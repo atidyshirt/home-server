@@ -37,6 +37,18 @@ Pulumi (TypeScript, provisioning/pulumi/)
 Kept deliberately swappable: if k0s is replaced later, only the Pulumi bootstrap changes —
 the addons/applications layer is untouched.
 
+**Pinning a revision (gitops-bridge pattern)**
+
+`addon-*-appset.yaml` use ArgoCD's Cluster generator, not hardcoded `targetRevision: main`.
+Pulumi registers the local cluster as a Secret (`argocd.argoproj.io/secret-type: cluster`,
+name `in-cluster`) with `addons_repo_url`/`addons_repo_revision` annotations; every
+appset's template reads `{{metadata.annotations.addons_repo_revision}}`. To point
+everything at a PR branch instead of main:
+`pulumi config set gitRevision <branch>` then `pulumi up` (see provisioning/pulumi/README
+or README.md). `addon-applications-appset.yaml` uses a Matrix generator (clusters x git
+directories) so the same pinning applies to app auto-discovery too. `root-app.yaml` itself
+is templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
+
 **Secrets**
 
 All credentials flow through the 1Password Kubernetes Operator via `OnePasswordItem` CRDs.
