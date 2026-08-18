@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  description: Core cluster infrastructure addons - one appset per namespace
+  sourceRepos:
+    - __GIT_REPO_URL__
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: traefik
+    - server: https://kubernetes.default.svc
+      namespace: coredns-lan
+    - server: https://kubernetes.default.svc
+      namespace: cert-manager
+    - server: https://kubernetes.default.svc
+      namespace: onepassword
+    - server: https://kubernetes.default.svc
+      namespace: dex
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: golf-application
+  namespace: argocd
+spec:
+  description: golf-application - one appset per namespace
+  sourceRepos:
+    - __GIT_REPO_URL__
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: golf-application

@@ -30,6 +30,12 @@ Add `applications/<name>/base/kustomization.yaml` (+ `values.yaml` if wrapping a
 existing one) and push. No new DNS record needed (wildcard). Deployed into a namespace named
 `<name>` (auto-created).
 
+Your appset's `spec.template.spec.project` needs an `AppProject` whose `destinations`
+whitelists that namespace — see [AGENT.md](../AGENT.md#appprojects). Add a `destinations` entry
+to an existing project if it fits (e.g. `platform` for infra addons), or add a new `AppProject`
+to `bootstrap/argocd/projects.yaml` for a standalone app. One `ApplicationSet` per namespace is
+enforced this way, not just convention.
+
 Need a secret? Reference a 1Password item via a `OnePasswordItem` resource — see
 `applications/onepassword-operator/`.
 
