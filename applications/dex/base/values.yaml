@@ -38,7 +38,9 @@ config:
 httpRoute:
   enabled: true
   parentRefs:
-    - name: lan-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: lan-gateway
       namespace: traefik
   hostnames:
     - dex.placeholder-domain

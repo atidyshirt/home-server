@@ -42,7 +42,9 @@ gateway:
       protocol: HTTPS
       mode: Terminate
       certificateRefs:
-        - name: homelab-dev-tls
+        - group: ''
+          kind: Secret
+          name: homelab-dev-tls
       namespacePolicy:
         from: All
 
