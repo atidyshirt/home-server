@@ -9,6 +9,10 @@ updateStrategy:
 
 hostNetwork: true
 
+service:
+  spec:
+    type: ClusterIP
+
 ports:
   traefik:
     port: 9000
