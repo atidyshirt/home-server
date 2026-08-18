@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coredns-lan
+  namespace: coredns-lan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coredns-lan
+  template:
+    metadata:
+      labels:
+        app: coredns-lan
+    spec:
+      hostNetwork: true
+      dnsPolicy: Default
+      containers:
+        - name: coredns
+          image: coredns/coredns:1.14.6
+          args: ["-conf", "/etc/coredns/Corefile"]
+          ports:
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 53
+              protocol: TCP
+          volumeMounts:
+            - name: corefile
+              mountPath: /etc/coredns
+            - name: zones
+              mountPath: /etc/coredns/zones
+      volumes:
+        - name: corefile
+          configMap:
+            name: coredns-lan-corefile
+        - name: zones
+          configMap:
+            name: coredns-lan-zones
