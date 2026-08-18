@@ -19,23 +19,53 @@ applications/
 **Provisioning**
 
 ```
-Pulumi (TypeScript, provisioning/pulumi/)
-   │  minimal, one-time bootstrap — only what ArgoCD can't do for itself
-   ├── ensures k0s is present on the Pi (no-op today, codifies it for rebuilds)
-   ├── installs Gateway API CRDs
-   ├── installs ArgoCD + patches argocd-cm/argocd-cmd-params-cm
-   ├── creates ONE secret: the 1Password Service Account token
-   └── applies bootstrap/argocd/root-app.yaml + httproute.yaml
-          │
-          └── ArgoCD reads this repo from here on:
-                    ├── addons/addon-traefik-appset.yaml           (Gateway API impl, hostNetwork:80)
-                    ├── addons/addon-coredns-lan-appset.yaml       (*.homelab.dev -> node IP)
-                    ├── addons/addon-onepassword-operator-appset.yaml
-                    └── addons/addon-applications-appset.yaml      (applications/*/base, auto-discovered)
+provisioning/pulumi/
+    index.ts                     # 4 lines of orchestration: install() every module, ArgoCd.init() last
+    src/
+        kubernetesProvider.ts    # interface KubernetesProvider — ready, provider, applyManifest()
+        raspberryPiK0s.ts        # class RaspberryPiK0s implements KubernetesProvider
+                                  #   + getKubernetesProvider(): memoized singleton, reads "raspberrypi" config
+        gatewayApi.ts             # class GatewayApi extends pulumi.ComponentResource
+        argocd.ts                # class ArgoCd extends pulumi.ComponentResource
+                                  #   install(): argocd-cm/argocd-cmd-params-cm patches
+                                  #   init(): applies bootstrap/argocd/root-app.yaml + httproute.yaml
+        gitopsBridge.ts          # class GitopsBridge extends pulumi.ComponentResource — the in-cluster Secret
+        onePassword.ts           # class OnePassword extends pulumi.ComponentResource — reads its own
+                                  #   "onepassword" config for the bootstrap Service Account token
 ```
 
-Kept deliberately swappable: if k0s is replaced later, only the Pulumi bootstrap changes —
-the addons/applications layer is untouched.
+Every module is a `pulumi.ComponentResource` with a memoized `static install()` (`ArgoCd` also
+has `static init()`). Each module is self-contained: it calls `getKubernetesProvider()` and
+reads its own config internally rather than taking them as constructor args. Dependencies
+between modules are expressed by passing the *module itself* as `dependsOn` —
+`GitopsBridge.install({ dependsOn: argocd })` — not a manually-captured resource handle,
+because Pulumi resolves a `ComponentResource` dependency against everything parented under it
+(`parent: this` on every child resource each module creates).
+
+`index.ts` is just: `GatewayApi.install()`, `ArgoCd.install()`,
+`GitopsBridge.install({ dependsOn: argocd })`, `OnePassword.install()`, then
+`ArgoCd.init({ dependsOn: [gatewayApi, gitopsBridge, onePassword] })` last, since `init()` (the
+hand-off — applies `root-app.yaml` + `httproute.yaml`) needs those three already installed. From
+there, ArgoCD reads this repo directly (`addons/addon-*-appset.yaml`).
+
+The `argocd`/`onepassword` `Namespace`s are `protect: true` — a Kubernetes namespace delete
+cascades to everything inside it (every ArgoCD-managed `Application` CR lives in the `argocd`
+namespace), so a `pulumi down`/replace of either is destructive far beyond "recreate a
+namespace." Pulumi refuses to delete a protected resource; `pulumi state unprotect` is required
+first if that's ever genuinely intended.
+
+`KubernetesProvider` is the seam for swapping k0s out later — an implementation only needs to
+provide `ready`, a `@pulumi/kubernetes` `Provider`, and `applyManifest()`.
+`RaspberryPiK0s.applyManifest()` shells out over SSH to `k0s kubectl` rather than using
+`@pulumi/kubernetes`'s own YAML resources — large manifests (ArgoCD's install.yaml) were
+silently dropped through those. `ArgoCd`/`GitopsBridge`/`OnePassword`/`GatewayApi` are written
+against the interface, not `RaspberryPiK0s`, so none of them need to change if the
+implementation does.
+
+Config is namespaced per module: `raspberrypi:sshHost`/`sshUser`/`nodeLanIp`,
+`onepassword:serviceAccountToken`, `argocd:version` (optional), `gatewayapi:version`
+(optional). `gitRevision` and `gitRepoUrl` stay unnamespaced/project-level since both `ArgoCd`
+and `GitopsBridge` read them independently.
 
 **Pinning a revision (gitops-bridge pattern)**
 

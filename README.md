@@ -13,11 +13,12 @@ cd provisioning/pulumi
 npm install
 pulumi login file://./state
 pulumi stack init homelab
-pulumi config set --secret opServiceAccountToken <your 1Password Service Account token>
+pulumi config set --secret onepassword:serviceAccountToken <your 1Password Service Account token>
 PULUMI_CONFIG_PASSPHRASE=<your passphrase> pulumi up
 ```
 
-`sshHost`, `sshUser`, and `nodeLanIp` are already set in `Pulumi.homelab.yaml`.
+`raspberrypi:sshHost`, `raspberrypi:sshUser`, and `raspberrypi:nodeLanIp` are already set in
+`Pulumi.homelab.yaml`. Config is namespaced per module — see `AGENT.md`.
 
 After that, ArgoCD owns everything under `addons/` and `applications/` — see `AGENT.md`.
 
