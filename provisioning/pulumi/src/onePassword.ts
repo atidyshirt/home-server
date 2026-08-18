@@ -20,7 +20,7 @@ export class OnePassword extends pulumi.ComponentResource {
     const namespace = new k8s.core.v1.Namespace(
       "onepassword",
       { metadata: { name: "onepassword" } },
-      { provider: k8sProvider.provider, parent: this },
+      { provider: k8sProvider.provider, parent: this, protect: true },
     );
 
     new k8s.core.v1.Secret(

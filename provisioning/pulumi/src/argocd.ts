@@ -32,7 +32,7 @@ export class ArgoCd extends pulumi.ComponentResource {
     const namespace = new k8s.core.v1.Namespace(
       "argocd",
       { metadata: { name: "argocd" } },
-      { provider: this.k8sProvider.provider, parent: this },
+      { provider: this.k8sProvider.provider, parent: this, protect: true },
     );
 
     const installed = this.k8sProvider.applyManifest(

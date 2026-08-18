@@ -48,6 +48,12 @@ because Pulumi resolves a `ComponentResource` dependency against everything pare
 hand-off — applies `root-app.yaml` + `httproute.yaml`) needs those three already installed. From
 there, ArgoCD reads this repo directly (`addons/addon-*-appset.yaml`).
 
+The `argocd`/`onepassword` `Namespace`s are `protect: true` — a Kubernetes namespace delete
+cascades to everything inside it (every ArgoCD-managed `Application` CR lives in the `argocd`
+namespace), so a `pulumi down`/replace of either is destructive far beyond "recreate a
+namespace." Pulumi refuses to delete a protected resource; `pulumi state unprotect` is required
+first if that's ever genuinely intended.
+
 `KubernetesProvider` is the seam for swapping k0s out later — an implementation only needs to
 provide `ready`, a `@pulumi/kubernetes` `Provider`, and `applyManifest()`.
 `RaspberryPiK0s.applyManifest()` shells out over SSH to `k0s kubectl` rather than using
