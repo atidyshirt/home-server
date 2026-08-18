@@ -67,13 +67,21 @@ export class ArgoCd extends pulumi.ComponentResource {
       { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
     );
 
-    new k8s.apiextensions.CustomResource(
+    const dexClientSecret = k8s.core.v1.Secret.get(
+      "dex-oidc-dex-secret",
+      "dex/oidc-dex",
+      { provider: this.k8sProvider.provider, parent: this },
+    );
+
+    new k8s.core.v1.Secret(
       "argocd-oidc-dex-secret",
       {
-        apiVersion: "onepassword.com/v1",
-        kind: "OnePasswordItem",
-        metadata: { name: "oidc-dex", namespace: "argocd" },
-        spec: { itemPath: "vaults/homelab/items/oidc.dex" },
+        metadata: {
+          name: "oidc-dex",
+          namespace: "argocd",
+          labels: { "app.kubernetes.io/part-of": "argocd" },
+        },
+        data: { password: dexClientSecret.data["password"] },
       },
       { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
     );
