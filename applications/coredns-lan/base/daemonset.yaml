@@ -17,6 +17,7 @@ spec:
         app: coredns-lan
       annotations:
         addons_domain: placeholder-domain
+        addons_node_ip: placeholder-node-ip
     spec:
       hostNetwork: true
       dnsPolicy: Default
@@ -28,13 +29,17 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['addons_domain']
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['addons_node_ip']
           command:
             - sh
             - -c
             - |
               mkdir -p /etc/coredns/zones
               sed "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" /template/corefile/Corefile.tmpl > /etc/coredns/Corefile
-              sed "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" /template/zone/zone.tmpl > /etc/coredns/zones/$DOMAIN.zone
+              sed -e "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" -e "s/PLACEHOLDER_NODE_IP/$NODE_IP/g" /template/zone/zone.tmpl > /etc/coredns/zones/$DOMAIN.zone
           volumeMounts:
             - name: corefile-template
               mountPath: /template/corefile

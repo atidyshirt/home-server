@@ -18,6 +18,7 @@ spec:
         kustomize:
           commonAnnotations:
             addons_domain: '{{metadata.annotations.addons_domain}}'
+            addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: dex
