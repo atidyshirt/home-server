@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: onepassword
+
+resources:
+  - https://github.com/1Password/onepassword-operator/config/default?ref=v1.12.0
+
+images:
+  - name: 1password/onepassword-operator
+    newTag: "1.12.0"
+
+# Swap the upstream Connect-based env vars for Service Account auth. Expects a Secret
+# `onepassword-service-account-token` (key: token) — created once by Pulumi, never committed.
+patches:
+  - target:
+      kind: Deployment
+      name: onepassword-connect-operator
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: OPERATOR_NAME
+            value: "onepassword-connect-operator"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: WATCH_NAMESPACE
+            value: ""
+          - name: POLLING_INTERVAL
+            value: "600"
+          - name: AUTO_RESTART
+            value: "true"
+          - name: OP_SERVICE_ACCOUNT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: onepassword-service-account-token
+                key: token

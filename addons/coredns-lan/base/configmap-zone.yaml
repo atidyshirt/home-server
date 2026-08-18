@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-lan-zones
+  namespace: coredns-lan
+data:
+  homelab.dev.zone: |
+    $ORIGIN homelab.dev.
+    $TTL 3600
+    @   IN  SOA ns.homelab.dev. admin.homelab.dev. (
+            2026081800 ; serial
+            7200       ; refresh
+            3600       ; retry
+            1209600    ; expire
+            3600 )     ; minimum
+    @       IN  NS  ns.homelab.dev.
+    ns      IN  A   192.168.1.146
+    *       IN  A   192.168.1.146

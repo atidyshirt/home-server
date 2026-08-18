@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-coredns-lan
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - {}
+  template:
+    metadata:
+      name: coredns-lan
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/atidyshirt/home-server.git
+        targetRevision: main
+        path: addons/coredns-lan/base
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: coredns-lan
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
