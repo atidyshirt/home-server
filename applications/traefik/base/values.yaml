@@ -9,6 +9,10 @@ updateStrategy:
 
 hostNetwork: true
 
+service:
+  spec:
+    type: ClusterIP
+
 ports:
   traefik:
     port: 9000
@@ -42,7 +46,9 @@ gateway:
       protocol: HTTPS
       mode: Terminate
       certificateRefs:
-        - name: homelab-dev-tls
+        - group: ''
+          kind: Secret
+          name: homelab-dev-tls
       namespacePolicy:
         from: All
 
