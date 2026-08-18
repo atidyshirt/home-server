@@ -1,10 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: coredns-lan
   namespace: coredns-lan
 spec:
-  replicas: 1
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: coredns-lan
