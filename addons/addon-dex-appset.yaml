@@ -11,6 +11,11 @@ spec:
       name: dex
     spec:
       project: platform
+      info:
+        - name: Documentation
+          value: https://dexidp.io/docs/
+        - name: Source Code
+          value: https://github.com/dexidp/dex
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
