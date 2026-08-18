@@ -10,8 +10,6 @@ images:
   - name: 1password/onepassword-operator
     newTag: "1.12.0"
 
-# Swap the upstream Connect-based env vars for Service Account auth. Expects a Secret
-# `onepassword-service-account-token` (key: token) — created once by Pulumi, never committed.
 patches:
   - target:
       kind: Deployment

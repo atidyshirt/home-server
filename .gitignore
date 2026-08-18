@@ -6,4 +6,4 @@ provisioning/pulumi/state/
 .direnv/
 
 # local `kustomize build --enable-helm` chart cache
-addons/*/base/charts/
+applications/*/base/charts/

@@ -10,11 +10,17 @@ Public repo: github.com/atidyshirt/home-server — no secrets are ever committed
 ```
 bootstrap/argocd/           # root Application ("app of appsets") + ArgoCD's own HTTPRoute
 addons/
-    addon-*-appset.yaml      # one ApplicationSet per curated infra addon
-    <addon>/base/            # kustomization.yaml (+ values.yaml if wrapping a helm chart)
+    addon-*-appset.yaml      # ApplicationSets only — no content lives here
 applications/
-    <name>/base/             # auto-registered by addon-applications-appset.yaml (git directories generator)
+    <name>/base/             # kustomization.yaml (+ values.yaml if wrapping a helm chart) — ALL
+                              #   content lives here, curated addons and auto-discovered apps alike
 ```
+
+Curated addons (traefik, coredns-lan, onepassword-operator) each have their own
+`addon-*-appset.yaml` with their own sync policy, same as before — only their content moved
+from `addons/<name>/base` to `applications/<name>/base`. `addon-applications-appset.yaml`'s git
+directories generator auto-discovers everything under `applications/*/base`, so it explicitly
+`exclude`s those three paths to avoid generating a second, colliding `Application` for each.
 
 **Provisioning**
 
@@ -64,8 +70,10 @@ implementation does.
 
 Config is namespaced per module: `raspberrypi:sshHost`/`sshUser`/`nodeLanIp`,
 `onepassword:serviceAccountToken`, `argocd:version` (optional), `gatewayapi:version`
-(optional). `gitRevision` and `gitRepoUrl` stay unnamespaced/project-level since both `ArgoCd`
-and `GitopsBridge` read them independently.
+(optional), `argocd:gitRevision`/`argocd:gitRepoUrl` (both optional — `ArgoCd` and
+`GitopsBridge` each read them independently, but they're grouped under `argocd:` rather than
+each module's own namespace since they're conceptually "what ArgoCD tracks", not
+module-specific).
 
 **Pinning a revision (gitops-bridge pattern)**
 
@@ -73,24 +81,26 @@ and `GitopsBridge` read them independently.
 Pulumi registers the local cluster as a Secret (`argocd.argoproj.io/secret-type: cluster`,
 name `in-cluster`) with `addons_repo_url`/`addons_repo_revision` annotations; every
 appset's template reads `{{metadata.annotations.addons_repo_revision}}`. To point
-everything at a PR branch instead of main:
-`pulumi config set gitRevision <branch>` then `pulumi up` (see provisioning/pulumi/README
-or README.md). `addon-applications-appset.yaml` uses a Matrix generator (clusters x git
-directories) so the same pinning applies to app auto-discovery too. `root-app.yaml` itself
-is templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
+everything at a PR branch instead of main: `pulumi config set argocd:gitRevision <branch>`
+then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `addon-applications-appset.yaml`
+uses a Matrix generator (clusters x git directories) so the same pinning applies to app
+auto-discovery too. `root-app.yaml` itself is templated directly by Pulumi (it's the one file
+Pulumi applies, not ArgoCD-generated).
 
 **Secrets**
 
 All credentials flow through the 1Password Kubernetes Operator via `OnePasswordItem` CRDs.
 The only credential handled outside of 1Password is the operator's own Service Account
-token, created directly by Pulumi as a Kubernetes Secret (never committed).
+token, created directly by Pulumi as a Kubernetes Secret (never committed). The
+`onepassword-operator` addon patches the upstream `config/default` base to use that Service
+Account token (`OP_SERVICE_ACCOUNT_TOKEN`) instead of the default Connect-server flow.
 
 **DNS**
 
 LAN hostnames resolve under `homelab.dev` via an in-cluster CoreDNS addon (wildcard
 `*.homelab.dev` -> node IP, hostNetwork on port 53). Not the network's primary DNS — the
 router gets one manual conditional-forwarding rule for the `homelab.dev` zone. See
-README.md for the manual steps.
+[docs/provisioning.md](docs/provisioning.md) for the manual steps.
 
 The Pi previously ran Pi-hole (`pihole-FTL`, installed 2026-06-16) bound to port 53,
 which conflicted with coredns-lan. Disabled (`systemctl disable --now pihole-FTL`) in
@@ -102,13 +112,27 @@ won't need this step, but re-imaging *this* Pi from a backup might.
 Traefik, not Envoy Gateway. Envoy's bundled TCMalloc assumes a 48-bit virtual address
 space and hard-crashes (`MmapAligned() failed`) on this Pi's aarch64 kernel, which
 appears to use 39-bit VA — not fixable via config, it's a compile-time constant in the
-binary. Traefik (Go, no TCMalloc) doesn't have this problem.
+binary. Traefik (Go, no TCMalloc) doesn't have this problem. Runs as root (uid 0, no
+capability restrictions) — two non-root approaches (`NET_BIND_SERVICE`,
+`allowPrivilegeEscalation`) failed identically binding port 80 for reasons that trace to
+something below the Kubernetes API, not the manifest (ATI-32).
 
 **Documentation**
 
-Be extremely concise and to the point. Avoid unnecessary words or explanations. Use bullet points for clarity.
+Be extremely concise and to the point. Avoid unnecessary words or explanations. Use bullet
+points for clarity. Docs (this file, `docs/*.md`) cover patterns and workflows — not
+implementation details, which live in the code and rot fast if duplicated in prose.
+
+**Code comments**
+
+None — names and structure carry the meaning. Non-trivial context belongs in the Linear issue
+for that change (this project has one per fix already) or, if it's a reusable pattern, here.
+If something is genuinely undiscoverable from code + these docs, use a Kubernetes `annotation`
+linking to the doc/issue rather than a comment — none needed yet, this project is too early for
+anything to have earned one.
 
 **Deployment**
 
 A raspberry pi is accessable from `ssh clusteradmin@home-server.local`. This is a role you are allowed
-to use. Node LAN IP: `192.168.1.146` (should be a DHCP reservation — see README.md).
+to use. Node LAN IP: `192.168.1.146` (should be a DHCP reservation — see
+[docs/provisioning.md](docs/provisioning.md)).
