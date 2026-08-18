@@ -4,18 +4,20 @@ GitOps repo for the homelab k0s cluster. See `AGENT.md` for the architecture sum
 
 ## One-time bootstrap
 
+`devenv.nix` provides `pulumi`, `node`, `npm`, and `kubectl` — run `devenv shell` (or
+`direnv allow` if you use direnv) before the commands below.
+
 ```
+devenv shell
 cd provisioning/pulumi
 npm install
 pulumi login file://./state
 pulumi stack init homelab
-pulumi config set sshHost home-server.local
-pulumi config set sshUser clusteradmin
-pulumi config set nodeLanIp 192.168.1.146
-pulumi config set gitRepoUrl https://github.com/atidyshirt/home-server.git
 pulumi config set --secret opServiceAccountToken <your 1Password Service Account token>
 PULUMI_CONFIG_PASSPHRASE=<your passphrase> pulumi up
 ```
+
+`sshHost`, `sshUser`, and `nodeLanIp` are already set in `Pulumi.homelab.yaml`.
 
 After that, ArgoCD owns everything under `addons/` and `applications/` — see `AGENT.md`.
 
