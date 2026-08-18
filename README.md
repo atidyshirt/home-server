@@ -23,8 +23,8 @@ After that, ArgoCD owns everything under `addons/` and `applications/` — see `
 
 ## Manual steps (not automated, router/network specific)
 
-- **DHCP reservation**: reserve `192.168.1.146` for the Pi on your router. Both the Envoy
-  Gateway (hostNetwork, port 80) and the CoreDNS zone file assume this IP is stable.
+- **DHCP reservation**: reserve `192.168.1.146` for the Pi on your router. Both Traefik
+  (hostNetwork, port 80) and the CoreDNS zone file assume this IP is stable.
 - **DNS forwarding**: add a conditional-forwarding rule on your router for the `homelab.dev`
   zone → `192.168.1.146`. This is explicitly *not* setting it as the primary DNS server —
   only queries for `*.homelab.dev` get forwarded there. If your router doesn't support

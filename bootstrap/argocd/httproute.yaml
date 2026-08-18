@@ -6,7 +6,7 @@ metadata:
 spec:
   parentRefs:
     - name: lan-gateway
-      namespace: envoy-gateway-system
+      namespace: traefik
   hostnames:
     - argo.homelab.dev
   rules:

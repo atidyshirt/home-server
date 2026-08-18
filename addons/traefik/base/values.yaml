@@ -1,0 +1,41 @@
+# Gateway API implementation, replacing envoy-gateway: Envoy's bundled TCMalloc
+# assumes a 48-bit virtual address space and hard-crashes on this Pi's 39-bit-VA
+# aarch64 kernel (not fixable via config — it's a compile-time constant in the
+# binary). Traefik is written in Go and doesn't have this problem.
+#
+# Runs hostNetwork on the node's LAN IP, same as envoy-gateway was meant to, so
+# LAN hostnames resolve on plain port 80 with no extra port in the browser.
+# Single-node cluster, no MetalLB.
+
+deployment:
+  replicas: 1
+  dnsPolicy: ClusterFirstWithHostNet
+
+hostNetwork: true
+
+ports:
+  web:
+    port: 80
+
+# Non-root (uid 65532) needs this capability to bind port 80 directly.
+securityContext:
+  capabilities:
+    add:
+      - NET_BIND_SERVICE
+
+providers:
+  kubernetesGateway:
+    enabled: true
+
+gateway:
+  name: lan-gateway
+  listeners:
+    web:
+      port: 80
+      # Default restricts routes to the Gateway's own namespace; apps/addons
+      # live in their own namespaces (argocd, applications/*), so allow all.
+      namespacePolicy:
+        from: All
+
+gatewayClass:
+  name: traefik

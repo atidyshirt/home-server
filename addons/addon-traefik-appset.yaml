@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: addon-envoy-gateway
+  name: addon-traefik
   namespace: argocd
 spec:
   generators:
@@ -10,16 +10,16 @@ spec:
           - {}
   template:
     metadata:
-      name: envoy-gateway
+      name: traefik
     spec:
       project: default
       source:
         repoURL: https://github.com/atidyshirt/home-server.git
         targetRevision: main
-        path: addons/envoy-gateway/base
+        path: addons/traefik/base
       destination:
         server: https://kubernetes.default.svc
-        namespace: envoy-gateway-system
+        namespace: traefik
       syncPolicy:
         automated:
           selfHeal: true
