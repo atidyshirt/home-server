@@ -9,9 +9,13 @@ const sshHost = config.require("sshHost");
 const sshUser = config.require("sshUser");
 const nodeLanIp = config.require("nodeLanIp");
 const opServiceAccountToken = config.requireSecret("opServiceAccountToken");
+// `pulumi config set gitRevision <branch>` to point every addon at a PR branch
+// instead of main — see the gitops-bridge Secret below.
+const gitRevision = config.get("gitRevision") || "main";
 
 const GATEWAY_API_VERSION = "v1.6.1";
 const ARGOCD_VERSION = "v3.5.1";
+const GIT_REPO_URL = "https://github.com/atidyshirt/home-server.git";
 
 const connection: command.types.input.remote.ConnectionArgs = {
   host: sshHost,
@@ -84,7 +88,7 @@ const argocdInstall = new command.remote.Command(
   { dependsOn: [ensureK0s, argocdNamespace] },
 );
 
-// Let ArgoCD's kustomize builds inflate helm charts (addons/envoy-gateway uses this).
+// Let ArgoCD's kustomize builds inflate helm charts (addons/traefik uses this).
 const argocdCmPatch = new k8s.core.v1.ConfigMapPatch(
   "argocd-cm-kustomize-helm",
   {
@@ -100,6 +104,31 @@ const argocdCmdParamsPatch = new k8s.core.v1.ConfigMapPatch(
   {
     metadata: { name: "argocd-cmd-params-cm", namespace: "argocd" },
     data: { "server.insecure": "true" },
+  },
+  { provider: k0s, dependsOn: argocdInstall },
+);
+
+// gitops-bridge pattern: register the local cluster as an ArgoCD-managed Secret
+// so every addon's ApplicationSet (Cluster generator) can read repoURL/revision
+// off its annotations, instead of hardcoding `main` in every appset file. See
+// addons/addon-traefik-appset.yaml for how this gets consumed.
+const argocdClusterSecret = new k8s.core.v1.Secret(
+  "argocd-in-cluster",
+  {
+    metadata: {
+      name: "in-cluster",
+      namespace: "argocd",
+      labels: { "argocd.argoproj.io/secret-type": "cluster" },
+      annotations: {
+        addons_repo_url: GIT_REPO_URL,
+        addons_repo_revision: gitRevision,
+      },
+    },
+    stringData: {
+      name: "in-cluster",
+      server: "https://kubernetes.default.svc",
+      config: JSON.stringify({ tlsClientConfig: { insecure: false } }),
+    },
   },
   { provider: k0s, dependsOn: argocdInstall },
 );
@@ -126,12 +155,27 @@ const onepasswordServiceAccountSecret = new k8s.core.v1.Secret(
 
 const repoRoot = path.join(__dirname, "..", "..");
 
-const rootApp = new k8s.yaml.ConfigFile(
+// root-app.yaml is the one Application Pulumi applies directly (everything else
+// is ArgoCD-generated), so it's simplest to just template its targetRevision
+// here rather than route it through the gitops-bridge Secret too.
+const rootAppYaml = fs
+  .readFileSync(path.join(repoRoot, "bootstrap/argocd/root-app.yaml"), "utf8")
+  .replace("repoURL: https://github.com/atidyshirt/home-server.git", `repoURL: ${GIT_REPO_URL}`)
+  .replace("targetRevision: main", `targetRevision: ${gitRevision}`);
+
+const rootApp = new k8s.yaml.ConfigGroup(
   "root-app",
-  { file: path.join(repoRoot, "bootstrap/argocd/root-app.yaml") },
+  { yaml: rootAppYaml },
   {
     provider: k0s,
-    dependsOn: [gatewayApiCrds, argocdInstall, argocdCmPatch, argocdCmdParamsPatch, onepasswordServiceAccountSecret],
+    dependsOn: [
+      gatewayApiCrds,
+      argocdInstall,
+      argocdCmPatch,
+      argocdCmdParamsPatch,
+      argocdClusterSecret,
+      onepasswordServiceAccountSecret,
+    ],
   },
 );
 

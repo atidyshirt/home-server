@@ -21,6 +21,19 @@ PULUMI_CONFIG_PASSPHRASE=<your passphrase> pulumi up
 
 After that, ArgoCD owns everything under `addons/` and `applications/` — see `AGENT.md`.
 
+## Testing a PR branch
+
+By default every addon deploys from `main`. To point the whole tree at a branch instead
+(e.g. to test a PR before merging):
+
+```
+pulumi config set gitRevision <branch-name>
+PULUMI_CONFIG_PASSPHRASE=<your passphrase> pulumi up
+```
+
+Switch back with `pulumi config set gitRevision main` (or `pulumi config rm gitRevision`,
+same effect — it's the default).
+
 ## Manual steps (not automated, router/network specific)
 
 - **DHCP reservation**: reserve `192.168.1.146` for the Pi on your router. Both Traefik
