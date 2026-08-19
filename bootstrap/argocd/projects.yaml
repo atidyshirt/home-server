@@ -7,11 +7,6 @@ spec:
   description: Core cluster infrastructure addons - one appset per namespace
   sourceRepos:
     - __GIT_REPO_URL__
-    # Shared by every project's own per-repo AutoscalingRunnerSet (see
-    # projects/golfapp-appset.yaml's golfapp-arc-runner-set Application) -
-    # whitelisted once here so future projects don't need their own
-    # AppProject edit, just a values file + Application block.
-    - oci://ghcr.io/actions/actions-runner-controller-charts
   destinations:
     - server: https://kubernetes.default.svc
       namespace: '*'

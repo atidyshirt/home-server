@@ -1,36 +1,45 @@
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
-  name: addon-arc-runners
+  name: arc-runners
   namespace: argocd
 spec:
-  generators:
-    - clusters: {}
-  template:
-    metadata:
-      name: arc-runners
-    spec:
-      project: platform
-      info:
-        - name: Documentation
-          value: https://github.com/actions/actions-runner-controller/blob/master/docs/gha-runner-scale-set-controller/README.md
-        - name: Source Code
-          value: https://github.com/actions/actions-runner-controller
-      source:
-        repoURL: '{{metadata.annotations.addons_repo_url}}'
-        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
-        path: applications/arc-runners/base
-        kustomize:
-          commonAnnotations:
-            addons_domain: '{{metadata.annotations.addons_domain}}'
-            addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: arc-runners
-      syncPolicy:
-        automated:
-          selfHeal: true
-          prune: true
-        syncOptions:
-          - CreateNamespace=true
-          - ServerSideApply=true
+  project: platform
+  sources:
+    - repoURL: '{{metadata.annotations.addons_repo_url}}'
+      targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+      path: applications/arc-runners/onepassword-items
+    - repoURL: '{{metadata.annotations.addons_repo_url}}'
+      targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+      path: applications/arc-runners/base
+      helm:
+        valuesObject:
+          gha-runner-scale-set:
+            githubConfigUrl: https://github.com/atidyshirt/home-server
+            runnerScaleSetName: home-server-runner-set
+    - repoURL: '{{metadata.annotations.addons_repo_url}}'
+      targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+      path: applications/arc-runners/base
+      helm:
+        valuesObject:
+          gha-runner-scale-set:
+            githubConfigUrl: https://github.com/atidyshirt/golf-ai-experiment
+            runnerScaleSetName: golfapp-runner-set
+    - repoURL: '{{metadata.annotations.addons_repo_url}}'
+      targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+      path: applications/arc-runners/base
+      helm:
+        valuesObject:
+          gha-runner-scale-set:
+            githubConfigUrl: https://github.com/atidyshirt/golfapp-platform
+            runnerScaleSetName: golfapp-platform-runner-set
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arc-runners
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

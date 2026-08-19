@@ -1,0 +1,15 @@
+# Defaults only, for `helm lint`/local testing - every real consumer
+# (see addons/addon-arc-runners-appset.yaml) overrides these via
+# `helm.valuesObject` per source. Subchart values must nest under the
+# dependency's own name (see Chart.yaml).
+gha-runner-scale-set:
+  githubConfigUrl: https://github.com/PLACEHOLDER_ORG/placeholder-repo
+  runnerScaleSetName: placeholder-runner-set
+  githubConfigSecret: arc-github-token
+
+  # Same controller for every runner set, cluster-wide - ArgoCD's
+  # repo-server can't auto-discover this the way the chart normally
+  # would at install-time, so it's always set explicitly.
+  controllerServiceAccount:
+    namespace: arc-systems
+    name: arc-controller-gha-rs-controller

@@ -7,3 +7,8 @@ provisioning/pulumi/state/
 
 # local `kustomize build --enable-helm` chart cache
 applications/*/base/charts/
+# ...except arc-runners/base, which is a real Helm chart (not a kustomize
+# helmCharts base) - its charts/ is a deliberately-vendored dependency,
+# not a disposable cache. See applications/arc-runners/base/Chart.yaml.
+!applications/arc-runners/base/charts/
+!applications/arc-runners/base/charts/**

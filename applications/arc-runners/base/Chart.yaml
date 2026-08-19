@@ -1,0 +1,17 @@
+apiVersion: v2
+name: arc-runner-set
+description: >-
+  Thin wrapper around the upstream gha-runner-scale-set chart, vendored
+  (see charts/) rather than pulled live at ArgoCD-sync time - ArgoCD's own
+  native OCI Helm chart resolution 403'd pulling this exact chart+version
+  from ghcr.io directly (no repo-creds registered anywhere in argocd),
+  even though the identical artifact is a perfectly public, anonymously
+  pullable OCI chart (confirmed: `helm pull` from outside ArgoCD works
+  fine). Vendoring sidesteps that entirely - ArgoCD only ever needs to
+  read this git repo, no live registry round-trip.
+type: application
+version: 0.1.0
+dependencies:
+  - name: gha-runner-scale-set
+    version: 0.14.2
+    repository: oci://ghcr.io/actions/actions-runner-controller-charts
