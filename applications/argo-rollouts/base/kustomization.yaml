@@ -7,3 +7,26 @@ helmCharts:
     version: 2.41.1
     releaseName: argo-rollouts
     namespace: argo-rollouts
+    valuesInline:
+      dashboard:
+        enabled: true
+
+resources:
+  - httproute.yaml
+
+# See applications/traefik/base's Certificate self-reference for the full
+# explanation of this gitops-bridge domain-templating pattern.
+replacements:
+  - source:
+      kind: HTTPRoute
+      name: argo-rollouts
+      fieldPath: metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: argo-rollouts
+        fieldPaths:
+          - spec.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1

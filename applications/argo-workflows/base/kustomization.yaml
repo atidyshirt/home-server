@@ -16,3 +16,21 @@ resources:
   - sensor-rbac.yaml
   - onepassword-items.yaml
   - workflowtemplates/build-and-deploy.yaml
+  - httproute.yaml
+
+# See applications/traefik/base's Certificate self-reference for the full
+# explanation of this gitops-bridge domain-templating pattern.
+replacements:
+  - source:
+      kind: HTTPRoute
+      name: argo-workflows
+      fieldPath: metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: argo-workflows
+        fieldPaths:
+          - spec.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1
