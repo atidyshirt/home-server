@@ -1,0 +1,13 @@
+# githubConfigSecret must reference a pre-existing Secret named "arc-github-token"
+# in this namespace (see onepassword-items.yaml) with a `github_token` key.
+githubConfigUrl: https://github.com/atidyshirt
+runnerScaleSetName: arc-runner-set
+githubConfigSecret: arc-github-token
+
+# The chart normally auto-discovers the controller's ServiceAccount via a
+# cluster-side label lookup at template time. ArgoCD's repo-server can't do
+# that lookup, so it must be set explicitly to match the arc-controller
+# release name/namespace (applications/arc-controller/base).
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-controller-gha-rs-controller

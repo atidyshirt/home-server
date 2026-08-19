@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-arc-runners
+  namespace: argocd
+spec:
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: arc-runners
+    spec:
+      project: platform
+      info:
+        - name: Documentation
+          value: https://github.com/actions/actions-runner-controller/blob/master/docs/gha-runner-scale-set-controller/README.md
+        - name: Source Code
+          value: https://github.com/actions/actions-runner-controller
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/arc-runners/base
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
+            addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: arc-runners
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
