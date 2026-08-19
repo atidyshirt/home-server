@@ -10,3 +10,4 @@ helmCharts:
 
 resources:
   - eventbus.yaml
+  - pipeline/eventsource.yaml
