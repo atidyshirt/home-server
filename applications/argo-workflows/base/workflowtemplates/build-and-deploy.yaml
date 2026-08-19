@@ -6,7 +6,14 @@
 #
 # Three sequential steps, each its own pod (kaniko's executor image is
 # distroless - no shell - so it can't share a container with anything
-# else), sharing a workspace via a per-run PVC:
+# else), sharing a workspace via a per-run PVC mounted at /mnt/workspace
+# (deliberately not /workspace - every golfapp Dockerfile sets
+# `WORKDIR /workspace`, and kaniko builds happen inside the same
+# filesystem as any of its own volume mounts, no isolation between them.
+# Mounting the shared PVC at /workspace collided with that WORKDIR:
+# Nx's project graph found "web" defined in both apps/web (the image's
+# own COPY'd content) and src/apps/web (the raw host clone, still
+# visible at /workspace/src through the mount) - confirmed live):
 #   1. prepare      - clone {{repo}}@{{sha}}, compute the destination
 #                      image name, write kaniko's GHCR auth config
 #   2. build-and-push - kaniko build/push using that image name
@@ -68,7 +75,7 @@ spec:
         parameters:
           - name: image
             valueFrom:
-              path: /workspace/image
+              path: /mnt/workspace/image
       container:
         image: alpine/git:2.43.0
         command: [sh, -c]
@@ -83,20 +90,20 @@ spec:
             ORG="${REPO%%/*}"
             REPO_NAME="${REPO#*/}"
             IMAGE_NAME="${APP:-$REPO_NAME}"
-            printf '%s' "ghcr.io/${ORG}/${IMAGE_NAME}" > /workspace/image
+            printf '%s' "ghcr.io/${ORG}/${IMAGE_NAME}" > /mnt/workspace/image
 
-            git clone "https://x-access-token:${GIT_TOKEN}@github.com/${REPO}.git" /workspace/src
-            cd /workspace/src
+            git clone "https://x-access-token:${GIT_TOKEN}@github.com/${REPO}.git" /mnt/workspace/src
+            cd /mnt/workspace/src
             git checkout "{{workflow.parameters.sha}}"
 
-            mkdir -p /workspace/docker-config
+            mkdir -p /mnt/workspace/docker-config
             AUTH=$(printf '%s' "atidyshirt:${GHCR_TOKEN}" | base64 | tr -d '\n')
-            cat > /workspace/docker-config/config.json <<EOF
+            cat > /mnt/workspace/docker-config/config.json <<EOF
             {"auths":{"ghcr.io":{"auth":"${AUTH}"}}}
             EOF
         volumeMounts:
           - name: workspace
-            mountPath: /workspace
+            mountPath: /mnt/workspace
         env:
           - name: GIT_TOKEN
             valueFrom:
@@ -116,12 +123,12 @@ spec:
       container:
         image: gcr.io/kaniko-project/executor:latest
         args:
-          - --context=dir:///workspace/src/{{workflow.parameters.context}}
-          - --dockerfile=/workspace/src/{{workflow.parameters.dockerfile}}
+          - --context=dir:///mnt/workspace/src/{{workflow.parameters.context}}
+          - --dockerfile=/mnt/workspace/src/{{workflow.parameters.dockerfile}}
           - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
         volumeMounts:
           - name: workspace
-            mountPath: /workspace
+            mountPath: /mnt/workspace
           - name: workspace
             mountPath: /kaniko/.docker
             subPath: docker-config
@@ -140,8 +147,8 @@ spec:
             curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" \
               | bash -s -- 5.6.0 /usr/local/bin >/dev/null
 
-            git clone "https://x-access-token:${GITOPS_TOKEN}@github.com/{{workflow.parameters.deploy_repo}}.git" /workspace/deploy
-            cd "/workspace/deploy/{{workflow.parameters.deploy_path}}"
+            git clone "https://x-access-token:${GITOPS_TOKEN}@github.com/{{workflow.parameters.deploy_repo}}.git" /mnt/workspace/deploy
+            cd "/mnt/workspace/deploy/{{workflow.parameters.deploy_path}}"
             kustomize edit set image "{{inputs.parameters.image}}={{inputs.parameters.image}}:{{workflow.parameters.sha}}"
             kustomize build . >/dev/null
 
@@ -152,7 +159,7 @@ spec:
             git push
         volumeMounts:
           - name: workspace
-            mountPath: /workspace
+            mountPath: /mnt/workspace
         env:
           - name: GITOPS_TOKEN
             valueFrom:
