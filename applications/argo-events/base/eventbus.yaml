@@ -7,3 +7,9 @@ spec:
   jetstream:
     version: latest
     replicas: 1
+    # The controller's default stream replica count is 3 (for HA), but NATS
+    # rejects stream replicas > 1 when running non-clustered (a single
+    # JetStream server pod, as above) -- causes every EventSource/Sensor to
+    # crash-loop on "replicas > 1 not supported in non-clustered mode".
+    streamConfig:
+      replicas: 1
