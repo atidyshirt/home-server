@@ -1,0 +1,21 @@
+# Real Helm values for golfapp's own per-repo AutoscalingRunnerSet (see
+# projects/golfapp-appset.yaml's golfapp-arc-runner-set Application, which
+# supplies this file as a multi-source `ref: values` - not a kustomize
+# valuesFile, so these are genuinely real values, not placeholders).
+#
+# githubConfigSecret references the *existing* Secret synced by
+# applications/arc-runners/base's own OnePasswordItem, not a new one -
+# it's a classic PAT with broad `repo` scope (confirmed, not
+# fine-grained), so it's valid for registering a scale set against any
+# atidyshirt repo, not just home-server. One shared credential, N
+# AutoscalingRunnerSets.
+githubConfigUrl: https://github.com/atidyshirt/golf-ai-experiment
+runnerScaleSetName: golfapp-runner-set
+githubConfigSecret: arc-github-token
+
+# Same controller for every runner set, cluster-wide - see
+# applications/arc-runners/base/runner-values.yaml for why this can't be
+# auto-discovered by ArgoCD's repo-server.
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-controller-gha-rs-controller
