@@ -11,3 +11,6 @@ helmCharts:
       server:
         extraArgs:
           - --auth-mode=server
+
+resources:
+  - sensor-rbac.yaml
