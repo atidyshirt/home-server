@@ -1,0 +1,142 @@
+# Shared build-and-deploy pipeline (ATI-48/49). Submitted by the Sensor
+# (applications/argo-events/base/pipeline/sensor.yaml) with repo/sha/
+# deploy_repo/app/context/dockerfile/deploy_path parameters - see that
+# file's header comment for why app/context/dockerfile/deploy_path exist
+# (monorepos with more than one buildable image, e.g. golfapp).
+#
+# Three sequential steps, each its own pod (kaniko's executor image is
+# distroless - no shell - so it can't share a container with anything
+# else), sharing a workspace via a per-run PVC:
+#   1. prepare      - clone {{repo}}@{{sha}}, compute the destination
+#                      image name, write kaniko's GHCR auth config
+#   2. build-and-push - kaniko build/push using that image name
+#   3. bump-deploy-repo - clone {{deploy_repo}}, `kustomize edit set
+#                      image` in {{deploy_path}}, commit + push
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: build-and-deploy
+  namespace: argo-workflows
+spec:
+  entrypoint: build-and-deploy
+  arguments:
+    parameters:
+      - name: repo
+      - name: sha
+      - name: deploy_repo
+      - name: app
+        value: ""
+      - name: context
+        value: "."
+      - name: dockerfile
+        value: Dockerfile
+      - name: deploy_path
+        value: deploy
+  volumeClaimTemplates:
+    - metadata:
+        name: workspace
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+  templates:
+    - name: build-and-deploy
+      steps:
+        - - name: prepare
+            template: prepare
+        - - name: build-and-push
+            template: build-and-push
+        - - name: bump-deploy-repo
+            template: bump-deploy-repo
+
+    - name: prepare
+      outputs:
+        parameters:
+          - name: image
+            valueFrom:
+              path: /workspace/image
+      container:
+        image: alpine/git:2.43.0
+        command: [sh, -c]
+        # image name = app if the caller set one (monorepo, e.g.
+        # golfapp-api), else the repo's own name - matches the Sensor's
+        # default (empty app) for plain single-Dockerfile-at-root repos.
+        args:
+          - |
+            set -eu
+            REPO="{{workflow.parameters.repo}}"
+            APP="{{workflow.parameters.app}}"
+            ORG="${REPO%%/*}"
+            REPO_NAME="${REPO#*/}"
+            IMAGE_NAME="${APP:-$REPO_NAME}"
+            printf '%s' "ghcr.io/${ORG}/${IMAGE_NAME}" > /workspace/image
+
+            git clone "https://x-access-token:${GIT_TOKEN}@github.com/${REPO}.git" /workspace/src
+            cd /workspace/src
+            git checkout "{{workflow.parameters.sha}}"
+
+            mkdir -p /workspace/docker-config
+            AUTH=$(printf '%s' "atidyshirt:${GHCR_TOKEN}" | base64 | tr -d '\n')
+            cat > /workspace/docker-config/config.json <<EOF
+            {"auths":{"ghcr.io":{"auth":"${AUTH}"}}}
+            EOF
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+        env:
+          - name: GIT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: arc-github-token
+                key: github_token
+          - name: GHCR_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: ghcr-push
+                key: github_token
+
+    - name: build-and-push
+      container:
+        image: gcr.io/kaniko-project/executor:latest
+        args:
+          - --context=dir:///workspace/src/{{workflow.parameters.context}}
+          - --dockerfile=/workspace/src/{{workflow.parameters.dockerfile}}
+          - --destination={{steps.prepare.outputs.parameters.image}}:{{workflow.parameters.sha}}
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+          - name: workspace
+            mountPath: /kaniko/.docker
+            subPath: docker-config
+
+    - name: bump-deploy-repo
+      container:
+        image: alpine:3.20
+        command: [sh, -c]
+        args:
+          - |
+            set -eu
+            apk add --no-cache git curl >/dev/null
+            curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" \
+              | bash -s -- 5.6.0 /usr/local/bin >/dev/null
+
+            git clone "https://x-access-token:${GITOPS_TOKEN}@github.com/{{workflow.parameters.deploy_repo}}.git" /workspace/deploy
+            cd "/workspace/deploy/{{workflow.parameters.deploy_path}}"
+            kustomize edit set image "{{steps.prepare.outputs.parameters.image}}={{steps.prepare.outputs.parameters.image}}:{{workflow.parameters.sha}}"
+            kustomize build . >/dev/null
+
+            git config user.name "gitops-bot"
+            git config user.email "gitops-bot@users.noreply.github.com"
+            git add kustomization.yaml
+            git commit -m "Bump image to {{workflow.parameters.sha}}"
+            git push
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+        env:
+          - name: GITOPS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gitops-bot
+                key: github_token
