@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: build-trigger
+  namespace: argo-events
+spec:
+  eventBusName: default
+  # No `type: LoadBalancer`/Ingress — the auto-created Service defaults to
+  # ClusterIP, and that's intentional: this endpoint is only ever called
+  # in-cluster (by the ARC runner's thin trigger job), never exposed publicly.
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  webhook:
+    push:
+      port: "12000"
+      endpoint: /push
+      method: POST
