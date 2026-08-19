@@ -11,5 +11,11 @@ spec:
     # rejects stream replicas > 1 when running non-clustered (a single
     # JetStream server pod, as above) -- causes every EventSource/Sensor to
     # crash-loop on "replicas > 1 not supported in non-clustered mode".
-    streamConfig:
+    #
+    # streamConfig is a raw YAML *string* (block scalar), not a nested
+    # mapping -- the first attempt at this fix used a nested `replicas: 1`
+    # object here, which the CRD's schema-less spec silently accepted but
+    # the controller never actually parsed, so it kept using its built-in
+    # default template (replicas: 3) regardless.
+    streamConfig: |
       replicas: 1
