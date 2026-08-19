@@ -40,6 +40,23 @@ spec:
                       value: placeholder
                     - name: deploy_repo
                       value: placeholder
+                    # app/context/dockerfile/deploy_path exist for monorepos
+                    # with more than one buildable image (e.g. golfapp's
+                    # api/web/dotgolf-service, which all need the repo root
+                    # as kaniko's build context - shared Nx libs - but a
+                    # per-app Dockerfile path). A plain single-Dockerfile-
+                    # at-root project can omit them from its trigger payload
+                    # and fall back to these defaults via each parameter's
+                    # `src.value` below. Not yet consumed by a
+                    # WorkflowTemplate (ATI-48/49) - passthrough only today.
+                    - name: app
+                      value: ""
+                    - name: context
+                      value: "."
+                    - name: dockerfile
+                      value: Dockerfile
+                    - name: deploy_path
+                      value: deploy
           parameters:
             - src:
                 dependencyName: push-dep
@@ -53,3 +70,23 @@ spec:
                 dependencyName: push-dep
                 dataKey: body.deploy_repo
               dest: spec.arguments.parameters.2.value
+            - src:
+                dependencyName: push-dep
+                dataKey: body.app
+                value: ""
+              dest: spec.arguments.parameters.3.value
+            - src:
+                dependencyName: push-dep
+                dataKey: body.context
+                value: "."
+              dest: spec.arguments.parameters.4.value
+            - src:
+                dependencyName: push-dep
+                dataKey: body.dockerfile
+                value: Dockerfile
+              dest: spec.arguments.parameters.5.value
+            - src:
+                dependencyName: push-dep
+                dataKey: body.deploy_path
+                value: deploy
+              dest: spec.arguments.parameters.6.value

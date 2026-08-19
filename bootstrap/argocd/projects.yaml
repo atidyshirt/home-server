@@ -21,8 +21,11 @@ metadata:
   namespace: argocd
 spec:
   description: golf-application
+  # Not __GIT_REPO_URL__ (that macro means home-server's own repo) - golf's
+  # deploy manifests live in a separate repo, per the app-template/
+  # deploy-template split (see projects/golfapp-appset.yaml).
   sourceRepos:
-    - __GIT_REPO_URL__
+    - https://github.com/atidyshirt/golfapp-platform
   destinations:
     - server: https://kubernetes.default.svc
       namespace: golf

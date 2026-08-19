@@ -1,0 +1,42 @@
+# Git directory generator: each deploy/* folder in golfapp-platform
+# (github.com/atidyshirt/golfapp-platform, the deploy-side repo for
+# golfapp - see homelab-deploy-template) becomes its own ArgoCD
+# Application, so golfapp's 3 independently-built apps (api, web,
+# dotgolf-service) are each deployed/synced independently. Literal
+# repoURL (not the templated addons_repo_url annotation used by
+# addons/*-appset.yaml) - this points at golfapp-platform, a different
+# repo from home-server itself.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: golfapp
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/atidyshirt/golfapp-platform
+        revision: main
+        directories:
+          - path: deploy/*
+  template:
+    metadata:
+      name: 'golfapp-{{path.basename}}'
+    spec:
+      project: golf-application
+      source:
+        repoURL: https://github.com/atidyshirt/golfapp-platform
+        targetRevision: main
+        path: '{{path}}'
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: golf
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
