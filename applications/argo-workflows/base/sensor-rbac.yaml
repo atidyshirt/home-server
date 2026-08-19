@@ -1,0 +1,32 @@
+# Grants the argo-events Sensor's ServiceAccount (build-trigger-sensor, in the
+# argo-events namespace — see applications/argo-events/base/pipeline/sensor.yaml)
+# permission to submit Workflows here via its argoWorkflow trigger.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sensor-workflow-submit
+  namespace: argo-workflows
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflows
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sensor-workflow-submit
+  namespace: argo-workflows
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sensor-workflow-submit
+subjects:
+  - kind: ServiceAccount
+    name: build-trigger-sensor
+    namespace: argo-events
