@@ -19,6 +19,11 @@ metadata:
   namespace: argo-workflows
 spec:
   entrypoint: build-and-deploy
+  # Needed for step output parameters (e.g. prepare's `image`) to report
+  # back to the controller - the workflowtaskresults RBAC the chart
+  # provisions targets this specific SA name, not the namespace default
+  # (see applications/argo-workflows/base/kustomization.yaml).
+  serviceAccountName: argo-workflow
   arguments:
     parameters:
       - name: repo

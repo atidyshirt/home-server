@@ -11,6 +11,17 @@ helmCharts:
       server:
         extraArgs:
           - --auth-mode=server
+      # The chart provisions RBAC (Role+RoleBinding granting
+      # workflowtaskresults create/patch, needed to report step outputs
+      # like build-and-deploy's `image` parameter) for a ServiceAccount
+      # named "argo-workflow" - but doesn't create it by default. Without
+      # this, Workflow pods fall back to the namespace's `default` SA,
+      # which lacks that RBAC entirely (confirmed live: "workflowtask
+      # results.argoproj.io is forbidden"). build-and-deploy.yaml sets
+      # `serviceAccountName: argo-workflow` to match.
+      workflow:
+        serviceAccount:
+          create: true
 
 resources:
   - sensor-rbac.yaml
