@@ -47,8 +47,16 @@ spec:
             template: prepare
         - - name: build-and-push
             template: build-and-push
+            arguments:
+              parameters:
+                - name: image
+                  value: '{{steps.prepare.outputs.parameters.image}}'
         - - name: bump-deploy-repo
             template: bump-deploy-repo
+            arguments:
+              parameters:
+                - name: image
+                  value: '{{steps.prepare.outputs.parameters.image}}'
 
     - name: prepare
       outputs:
@@ -97,12 +105,15 @@ spec:
                 key: github_token
 
     - name: build-and-push
+      inputs:
+        parameters:
+          - name: image
       container:
         image: gcr.io/kaniko-project/executor:latest
         args:
           - --context=dir:///workspace/src/{{workflow.parameters.context}}
           - --dockerfile=/workspace/src/{{workflow.parameters.dockerfile}}
-          - --destination={{steps.prepare.outputs.parameters.image}}:{{workflow.parameters.sha}}
+          - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
         volumeMounts:
           - name: workspace
             mountPath: /workspace
@@ -111,6 +122,9 @@ spec:
             subPath: docker-config
 
     - name: bump-deploy-repo
+      inputs:
+        parameters:
+          - name: image
       container:
         image: alpine:3.20
         command: [sh, -c]
@@ -123,7 +137,7 @@ spec:
 
             git clone "https://x-access-token:${GITOPS_TOKEN}@github.com/{{workflow.parameters.deploy_repo}}.git" /workspace/deploy
             cd "/workspace/deploy/{{workflow.parameters.deploy_path}}"
-            kustomize edit set image "{{steps.prepare.outputs.parameters.image}}={{steps.prepare.outputs.parameters.image}}:{{workflow.parameters.sha}}"
+            kustomize edit set image "{{inputs.parameters.image}}={{inputs.parameters.image}}:{{workflow.parameters.sha}}"
             kustomize build . >/dev/null
 
             git config user.name "gitops-bot"
