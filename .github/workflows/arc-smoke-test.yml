@@ -5,6 +5,6 @@ on:
 
 jobs:
   smoke-test:
-    runs-on: [self-hosted, home-server-runner-set]
+    runs-on: home-server-runner-set
     steps:
       - run: echo "ARC ephemeral runner picked up the job on $(hostname)"
