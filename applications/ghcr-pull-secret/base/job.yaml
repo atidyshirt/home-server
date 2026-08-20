@@ -1,0 +1,41 @@
+# OnePasswordItem has no way to control the resulting Secret's type (its
+# CRD only exposes `itemPath` - confirmed against the installed CRD), so
+# it can only ever produce a plain Opaque secret with one key per
+# 1Password field (github_token here). kubelet's imagePullSecrets
+# handling specifically requires type: kubernetes.io/dockerconfigjson,
+# which nothing upstream of this Job can produce - hence converting the
+# raw token into a properly-typed secret here, as an ArgoCD PreSync hook
+# so it re-runs (and stays current) on every sync, not just once.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ghcr-pull-secret
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      serviceAccountName: ghcr-pull-secret-writer
+      restartPolicy: Never
+      containers:
+        - name: create-pull-secret
+          image: bitnami/kubectl:1.31
+          command: [sh, -c]
+          args:
+            - |
+              set -eu
+              kubectl create secret docker-registry ghcr-pull \
+                --docker-server=ghcr.io \
+                --docker-username=atidyshirt \
+                --docker-password="${GHCR_TOKEN}" \
+                --dry-run=client -o yaml | kubectl apply -f -
+              kubectl patch serviceaccount default \
+                -p '{"imagePullSecrets":[{"name":"ghcr-pull"}]}'
+          env:
+            - name: GHCR_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ghcr-push
+                  key: github_token
