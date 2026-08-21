@@ -5,26 +5,22 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - matrix:
-        generators:
-          - git:
-              repoURL: https://github.com/atidyshirt/golfapp-platform
-              revision: main
-              directories:
-                - path: deploy/*
-          - clusters: {}
+    - clusters: {}
   template:
     metadata:
-      name: 'golfapp-{{path.basename}}'
+      name: golfapp
     spec:
       project: golf-application
-      source:
-        repoURL: https://github.com/atidyshirt/golfapp-platform
-        targetRevision: main
-        path: '{{path}}'
-        kustomize:
-          commonAnnotations:
-            addons_domain: '{{metadata.annotations.addons_domain}}'
+      sources:
+        - repoURL: https://github.com/atidyshirt/golfapp-platform
+          targetRevision: main
+          path: deploy
+          kustomize:
+            commonAnnotations:
+              addons_domain: '{{metadata.annotations.addons_domain}}'
+        - repoURL: https://github.com/atidyshirt/home-server.git
+          targetRevision: main
+          path: applications/ghcr-pull-secret/base
       destination:
         server: https://kubernetes.default.svc
         namespace: golf
@@ -35,34 +31,3 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
----
-# GHCR image pull secret for golfapp's Rollouts - the golfapp-* packages
-# are private by default, and there's no other way to make them
-# pullable without either flipping visibility on GitHub (rejected) or
-# this. See applications/ghcr-pull-secret/base's own header comment for
-# why a PreSync Job is needed instead of a plain OnePasswordItem.
-# project: platform (not golf-application) - same reasoning as
-# golfapp-arc-runner-set in addon-arc-runners-appset.yaml: this is
-# platform/CI plumbing, not part of golfapp's own deploy surface, so it
-# sources from home-server rather than golfapp-platform.
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: golfapp-ghcr-pull-secret
-  namespace: argocd
-spec:
-  project: platform
-  source:
-    repoURL: https://github.com/atidyshirt/home-server.git
-    targetRevision: main
-    path: applications/ghcr-pull-secret/base
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: golf
-  syncPolicy:
-    automated:
-      selfHeal: true
-      prune: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
