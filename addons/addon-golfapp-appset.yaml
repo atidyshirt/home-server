@@ -12,6 +12,10 @@ spec:
     spec:
       project: golf-application
       info:
+        - name: Web
+          value: 'golf.{{metadata.annotations.addons_domain}}'
+        - name: Canary
+          value: 'golf-canary.{{metadata.annotations.addons_domain}}'
         - name: Deployment
           value: https://github.com/atidyshirt/golfapp-platform
         - name: Source Code

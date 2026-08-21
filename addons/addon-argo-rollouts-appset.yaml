@@ -12,6 +12,8 @@ spec:
     spec:
       project: platform
       info:
+        - name: Web
+          value: 'argo-rollouts.{{metadata.annotations.addons_domain}}'
         - name: Documentation
           value: https://argo-rollouts.readthedocs.io/
         - name: Source Code
