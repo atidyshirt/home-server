@@ -13,11 +13,15 @@ spec:
       restartPolicy: Never
       containers:
         - name: create-pull-secret
-          image: rancher/kubectl:v1.31.14
+          image: alpine:3.20
           command: [sh, -c]
           args:
             - |
               set -eu
+              apk add --no-cache curl >/dev/null
+              curl -sL "https://dl.k8s.io/release/v1.35.8/bin/linux/arm64/kubectl" -o /usr/local/bin/kubectl
+              chmod +x /usr/local/bin/kubectl
+
               kubectl create secret docker-registry ghcr-pull \
                 --docker-server=ghcr.io \
                 --docker-username=atidyshirt \
