@@ -205,17 +205,6 @@ export class ArgoCd extends pulumi.ComponentResource {
       { provider: this.k8sProvider.provider, dependsOn: [...(Array.isArray(dependsOn) ? dependsOn : [dependsOn]), projects], parent: this },
     );
 
-    const projectsRootYaml = fs
-      .readFileSync(path.join(REPO_ROOT, "bootstrap/argocd/projects-root.yaml"), "utf8")
-      .replace("repoURL: __GIT_REPO_URL__", `repoURL: ${gitRepoUrl}`)
-      .replace("targetRevision: __GIT_REVISION__", `targetRevision: ${gitRevision}`);
-
-    new k8s.yaml.ConfigGroup(
-      "projects-root-app",
-      { yaml: projectsRootYaml },
-      { provider: this.k8sProvider.provider, dependsOn: [...(Array.isArray(dependsOn) ? dependsOn : [dependsOn]), projects], parent: this },
-    );
-
     const httprouteYaml = fs
       .readFileSync(path.join(REPO_ROOT, "bootstrap/argocd/httproute.yaml"), "utf8")
       .replace("__DOMAIN__", domain);
