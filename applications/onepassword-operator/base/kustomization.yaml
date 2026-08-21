@@ -26,8 +26,14 @@ patches:
                 fieldPath: metadata.name
           - name: WATCH_NAMESPACE
             value: ""
+          # 1800, not the chart default 600 - found live: every
+          # OnePasswordItem (now 10, up from ~6) reconciles on every
+          # poll, and 1Password's service-account API rate limit is
+          # tight enough that a 10-minute full reconcile cycle alone was
+          # enough to hit "1Password rate limit exceeded" on every item,
+          # every cycle.
           - name: POLLING_INTERVAL
-            value: "600"
+            value: "1800"
           - name: AUTO_RESTART
             value: "true"
           - name: OP_SERVICE_ACCOUNT_TOKEN
@@ -35,3 +41,16 @@ patches:
               secretKeyRef:
                 name: onepassword-service-account-token
                 key: token
+      # Found live: liveness/readiness timeout=1s was tripping
+      # ("context deadline exceeded") whenever the operator was
+      # momentarily busy working through rate-limited 1Password API
+      # calls - kubelet would then kill and restart it, which triggers
+      # a fresh reconcile of *every* item on startup, immediately
+      # re-hitting the rate limit and restarting the exact cycle that
+      # caused the timeout in the first place (37 restarts in 2.5 days).
+      - op: replace
+        path: /spec/template/spec/containers/0/livenessProbe/timeoutSeconds
+        value: 10
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe/timeoutSeconds
+        value: 10
