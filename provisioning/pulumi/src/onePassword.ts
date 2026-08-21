@@ -15,7 +15,10 @@ export class OnePassword extends pulumi.ComponentResource {
   private constructor() {
     super("home-server:index:OnePassword", "onepassword");
     const k8sProvider = getKubernetesProvider();
-    const serviceAccountToken = new pulumi.Config("onepassword").requireSecret("serviceAccountToken");
+    const config = new pulumi.Config("onepassword");
+    const serviceAccountToken = config.requireSecret("serviceAccountToken");
+    const connectCredentials = config.requireSecret("connectCredentials");
+    const connectToken = config.requireSecret("connectToken");
 
     const namespace = new k8s.core.v1.Namespace(
       "onepassword",
@@ -28,6 +31,24 @@ export class OnePassword extends pulumi.ComponentResource {
       {
         metadata: { name: "onepassword-service-account-token", namespace: "onepassword" },
         stringData: { token: serviceAccountToken },
+      },
+      { provider: k8sProvider.provider, dependsOn: namespace, parent: this },
+    );
+
+    new k8s.core.v1.Secret(
+      "op-credentials",
+      {
+        metadata: { name: "op-credentials", namespace: "onepassword" },
+        stringData: { "1password-credentials.json": connectCredentials },
+      },
+      { provider: k8sProvider.provider, dependsOn: namespace, parent: this },
+    );
+
+    new k8s.core.v1.Secret(
+      "onepassword-token",
+      {
+        metadata: { name: "onepassword-token", namespace: "onepassword" },
+        stringData: { token: connectToken },
       },
       { provider: k8sProvider.provider, dependsOn: namespace, parent: this },
     );

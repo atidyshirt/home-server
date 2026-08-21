@@ -1,56 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: onepassword
-
-resources:
-  - https://github.com/1Password/onepassword-operator/config/default?ref=v1.12.0
-
-images:
-  - name: 1password/onepassword-operator
-    newTag: "1.12.0"
-
-patches:
-  - target:
-      kind: Deployment
-      name: onepassword-connect-operator
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/env
-        value:
-          - name: OPERATOR_NAME
-            value: "onepassword-connect-operator"
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: WATCH_NAMESPACE
-            value: ""
-          # 1800, not the chart default 600 - found live: every
-          # OnePasswordItem (now 10, up from ~6) reconciles on every
-          # poll, and 1Password's service-account API rate limit is
-          # tight enough that a 10-minute full reconcile cycle alone was
-          # enough to hit "1Password rate limit exceeded" on every item,
-          # every cycle.
-          - name: POLLING_INTERVAL
-            value: "1800"
-          - name: AUTO_RESTART
-            value: "true"
-          - name: OP_SERVICE_ACCOUNT_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: onepassword-service-account-token
-                key: token
-      # Found live: liveness/readiness timeout=1s was tripping
-      # ("context deadline exceeded") whenever the operator was
-      # momentarily busy working through rate-limited 1Password API
-      # calls - kubelet would then kill and restart it, which triggers
-      # a fresh reconcile of *every* item on startup, immediately
-      # re-hitting the rate limit and restarting the exact cycle that
-      # caused the timeout in the first place (37 restarts in 2.5 days).
-      - op: replace
-        path: /spec/template/spec/containers/0/livenessProbe/timeoutSeconds
-        value: 10
-      - op: replace
-        path: /spec/template/spec/containers/0/readinessProbe/timeoutSeconds
-        value: 10
+helmCharts:
+  - name: connect
+    repo: https://1password.github.io/connect-helm-charts
+    version: 2.4.1
+    releaseName: onepassword-connect
+    namespace: onepassword
+    valuesInline:
+      operator:
+        create: true
+        authMethod: connect
+        autoRestart: true
+        pollingInterval: 1800
+      acceptanceTests:
+        healthCheck:
+          enabled: false
