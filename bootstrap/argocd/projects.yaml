@@ -23,7 +23,6 @@ spec:
   description: golf-application
   sourceRepos:
     - https://github.com/atidyshirt/golfapp-platform
-    - https://github.com/atidyshirt/home-server.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: golf

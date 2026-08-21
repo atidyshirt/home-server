@@ -1,8 +1,8 @@
 # Adding a new project
 
 Onboarding a project (its own repo, own build/deploy pipeline, own namespace) — `golfapp` is
-the worked example throughout. Three steps: an `AppProject` (Pulumi), an appset (git), a runner
-(git).
+the worked example throughout. Four steps: an `AppProject` (Pulumi), project defaults (git), an
+appset (git), a runner (git).
 
 Not the same as [pr-workflow.md](../pr-workflow.md)'s "Adding a new app" — that's for platform
 addons living in this repo. A project has its own source + deploy repos (from the templates
@@ -33,8 +33,6 @@ spec:
   description: <name>-application
   sourceRepos:
     - https://github.com/atidyshirt/<name>-platform
-    # Needed for the ghcr-pull-secret source in step 2.
-    - https://github.com/atidyshirt/home-server.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: <name>
@@ -43,7 +41,7 @@ spec:
       kind: Namespace
 ```
 
-`clusterResourceWhitelist` is needed because `CreateNamespace=true` (step 2) creates a
+`clusterResourceWhitelist` is needed because `CreateNamespace=true` (step 3) creates a
 cluster-scoped `Namespace` — AppProjects default-deny those.
 
 This is the one step that needs Pulumi: `bootstrap/argocd/*.yaml` is applied directly, not
@@ -55,10 +53,27 @@ cd provisioning/pulumi
 PULUMI_CONFIG_PASSPHRASE=<passphrase> pulumi up
 ```
 
-## 2. Appset (git)
+## 2. Project defaults (git)
 
-Add `addons/addon-<name>-appset.yaml` — one source for your deploy repo, one reusing the shared
-GHCR pull secret (your images are private by default; nothing else makes them pullable):
+Add your project as one more `list` element to `addons/addon-project-template-appset.yaml`:
+
+```yaml
+                - name: <name>
+                  namespace: <name>
+```
+
+This is what actually makes your namespace usable — a restrictive default `ServiceAccount`
+(read-only on a small resource allowlist, `automountServiceAccountToken: false`) and the shared
+GHCR pull secret (your images are private by default; nothing else makes them pullable). It
+lives here rather than in your own appset because it needs cluster-elevated permission
+(RBAC/`ServiceAccount` edits) your project's own `AppProject` shouldn't have — see
+`applications/project-template/base`.
+
+Push.
+
+## 3. Appset (git)
+
+Add `addons/addon-<name>-appset.yaml`:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -74,16 +89,13 @@ spec:
       name: <name>
     spec:
       project: <name>-application
-      sources:
-        - repoURL: https://github.com/atidyshirt/<name>-platform
-          targetRevision: main
-          path: deploy
-          kustomize:
-            commonAnnotations:
-              addons_domain: '{{metadata.annotations.addons_domain}}'
-        - repoURL: '{{metadata.annotations.addons_repo_url}}'
-          targetRevision: '{{metadata.annotations.addons_repo_revision}}'
-          path: applications/ghcr-pull-secret/base
+      source:
+        repoURL: https://github.com/atidyshirt/<name>-platform
+        targetRevision: main
+        path: deploy
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: <name>
@@ -104,7 +116,7 @@ Push. From here it's pure GitOps — `root-app.yaml` already scans `addons/*-app
 > `deploy/kustomization.yaml`. One `Application`, one health status, still one commit per app
 > from the build pipeline.
 
-## 3. Runner (git)
+## 4. Runner (git)
 
 ARC runner registration is repo-scoped on this (personal) GitHub account — no account-wide
 option, so the shared `home-server-runner-set` can't serve your project's jobs (see

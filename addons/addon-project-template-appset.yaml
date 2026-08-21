@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-project-template
+  namespace: argocd
+  description: |
+    Generic per-project defaults - one Application per project namespace,
+    not per project's own repo, and lives here under `platform` rather
+    than in each project's own appset
+spec:
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - name: golf
+                  namespace: golf
+          - clusters: {}
+  template:
+    metadata:
+      name: 'project-template-{{name}}'
+    spec:
+      project: platform
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/project-template/base
+        kustomize:
+          namespace: '{{namespace}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
