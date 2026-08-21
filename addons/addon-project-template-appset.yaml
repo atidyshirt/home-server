@@ -3,10 +3,11 @@ kind: ApplicationSet
 metadata:
   name: addon-project-template
   namespace: argocd
-  description: |
-    Generic per-project defaults - one Application per project namespace,
-    not per project's own repo, and lives here under `platform` rather
-    than in each project's own appset
+  annotations:
+    atidyshirt/home-server.description: |
+      Generic per-project defaults - one Application per project namespace,
+      not per project's own repo, and lives here under `platform` rather
+      than in each project's own appset
 spec:
   generators:
     - matrix:
