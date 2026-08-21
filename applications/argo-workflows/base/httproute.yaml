@@ -13,8 +13,18 @@ spec:
   hostnames:
     - argo-workflows.placeholder-domain
   rules:
-    - backendRefs:
+    # matches/weight declared explicitly, not left to defaulting - the
+    # Gateway API implementation fills these in server-side when
+    # omitted (matches defaults to PathPrefix "/", weight defaults to 1),
+    # which ArgoCD then sees as permanent drift against the git manifest.
+    # Same fix as applications/dex/base's own HTTPRoute chart template.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
         - group: ''
           kind: Service
           name: argo-workflows-server
           port: 2746
+          weight: 1
