@@ -11,6 +11,11 @@ spec:
       name: golfapp
     spec:
       project: golf-application
+      info:
+        - name: Deployment
+          value: https://github.com/atidyshirt/golfapp-platform
+        - name: Source Code
+          value: https://github.com/atidyshirt/golf-ai-experiment
       sources:
         - repoURL: https://github.com/atidyshirt/golfapp-platform
           targetRevision: main
@@ -18,8 +23,8 @@ spec:
           kustomize:
             commonAnnotations:
               addons_domain: '{{metadata.annotations.addons_domain}}'
-        - repoURL: https://github.com/atidyshirt/home-server.git
-          targetRevision: main
+        - repoURL: '{{metadata.annotations.addons_repo_url}}'
+          targetRevision: '{{metadata.annotations.addons_repo_revision}}'
           path: applications/ghcr-pull-secret/base
       destination:
         server: https://kubernetes.default.svc
