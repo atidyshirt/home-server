@@ -1,11 +1,3 @@
-# OnePasswordItem has no way to control the resulting Secret's type (its
-# CRD only exposes `itemPath` - confirmed against the installed CRD), so
-# it can only ever produce a plain Opaque secret with one key per
-# 1Password field (github_token here). kubelet's imagePullSecrets
-# handling specifically requires type: kubernetes.io/dockerconfigjson,
-# which nothing upstream of this Job can produce - hence converting the
-# raw token into a properly-typed secret here, as an ArgoCD PreSync hook
-# so it re-runs (and stays current) on every sync, not just once.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -21,7 +13,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: create-pull-secret
-          image: bitnami/kubectl:1.31
+          image: rancher/kubectl:v1.31.14
           command: [sh, -c]
           args:
             - |
