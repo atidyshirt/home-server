@@ -13,12 +13,12 @@ spec:
         generators:
           - list:
               elements:
-                - project: golf
+                - appName: golf
                   namespace: golf
           - clusters: {}
   template:
     metadata:
-      name: 'project-template-{{project}}'
+      name: 'project-template-{{appName}}'
     spec:
       project: platform
       source:
