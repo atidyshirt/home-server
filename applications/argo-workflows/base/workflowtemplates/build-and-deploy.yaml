@@ -1,24 +1,3 @@
-# Shared build-and-deploy pipeline (ATI-48/49). Submitted by the Sensor
-# (applications/argo-events/base/pipeline/sensor.yaml) with repo/sha/
-# deploy_repo/app/context/dockerfile/deploy_path parameters - see that
-# file's header comment for why app/context/dockerfile/deploy_path exist
-# (monorepos with more than one buildable image, e.g. golfapp).
-#
-# Three sequential steps, each its own pod (kaniko's executor image is
-# distroless - no shell - so it can't share a container with anything
-# else), sharing a workspace via a per-run PVC mounted at /mnt/workspace
-# (deliberately not /workspace - every golfapp Dockerfile sets
-# `WORKDIR /workspace`, and kaniko builds happen inside the same
-# filesystem as any of its own volume mounts, no isolation between them.
-# Mounting the shared PVC at /workspace collided with that WORKDIR:
-# Nx's project graph found "web" defined in both apps/web (the image's
-# own COPY'd content) and src/apps/web (the raw host clone, still
-# visible at /workspace/src through the mount) - confirmed live):
-#   1. prepare      - clone {{repo}}@{{sha}}, compute the destination
-#                      image name, write kaniko's GHCR auth config
-#   2. build-and-push - kaniko build/push using that image name
-#   3. bump-deploy-repo - clone {{deploy_repo}}, `kustomize edit set
-#                      image` in {{deploy_path}}, commit + push
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
@@ -26,10 +5,6 @@ metadata:
   namespace: argo-workflows
 spec:
   entrypoint: build-and-deploy
-  # Needed for step output parameters (e.g. prepare's `image`) to report
-  # back to the controller - the workflowtaskresults RBAC the chart
-  # provisions targets this specific SA name, not the namespace default
-  # (see applications/argo-workflows/base/kustomization.yaml).
   serviceAccountName: argo-workflow
   arguments:
     parameters:
@@ -79,9 +54,6 @@ spec:
       container:
         image: alpine/git:2.43.0
         command: [sh, -c]
-        # image name = app if the caller set one (monorepo, e.g.
-        # golfapp-api), else the repo's own name - matches the Sensor's
-        # default (empty app) for plain single-Dockerfile-at-root repos.
         args:
           - |
             set -eu
@@ -126,6 +98,7 @@ spec:
           - --context=dir:///mnt/workspace/src/{{workflow.parameters.context}}
           - --dockerfile=/mnt/workspace/src/{{workflow.parameters.dockerfile}}
           - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
+          - --snapshot-mode=redo
           - --cache=true
           - --cache-repo={{inputs.parameters.image}}/cache
           - --cache-ttl=168h
