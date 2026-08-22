@@ -99,6 +99,9 @@ spec:
           - --dockerfile=/mnt/workspace/src/{{workflow.parameters.dockerfile}}
           - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
           - --snapshot-mode=redo
+          - --cache=true
+          - --cache-repo={{inputs.parameters.image}}/cache
+          - --cache-ttl=168h
         volumeMounts:
           - name: workspace
             mountPath: /mnt/workspace

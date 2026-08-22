@@ -9,6 +9,8 @@ spec:
   template:
     metadata:
       name: golfapp
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
     spec:
       project: golf-application
       info:
