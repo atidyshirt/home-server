@@ -92,9 +92,12 @@ spec:
             IMAGE_NAME="${APP:-$REPO_NAME}"
             printf '%s' "ghcr.io/${ORG}/${IMAGE_NAME}" > /mnt/workspace/image
 
-            git clone "https://x-access-token:${GIT_TOKEN}@github.com/${REPO}.git" /mnt/workspace/src
+            mkdir -p /mnt/workspace/src
             cd /mnt/workspace/src
-            git checkout "{{workflow.parameters.sha}}"
+            git init -q
+            git remote add origin "https://x-access-token:${GIT_TOKEN}@github.com/${REPO}.git"
+            git fetch --depth=1 origin "{{workflow.parameters.sha}}"
+            git checkout -q FETCH_HEAD
 
             mkdir -p /mnt/workspace/docker-config
             AUTH=$(printf '%s' "atidyshirt:${GHCR_TOKEN}" | base64 | tr -d '\n')
