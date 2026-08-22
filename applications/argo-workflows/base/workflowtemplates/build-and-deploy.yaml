@@ -98,6 +98,7 @@ spec:
           - --context=dir:///mnt/workspace/src/{{workflow.parameters.context}}
           - --dockerfile=/mnt/workspace/src/{{workflow.parameters.dockerfile}}
           - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
+          - --snapshot-mode=redo
         volumeMounts:
           - name: workspace
             mountPath: /mnt/workspace
