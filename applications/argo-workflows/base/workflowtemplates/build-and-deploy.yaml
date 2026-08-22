@@ -126,6 +126,9 @@ spec:
           - --context=dir:///mnt/workspace/src/{{workflow.parameters.context}}
           - --dockerfile=/mnt/workspace/src/{{workflow.parameters.dockerfile}}
           - --destination={{inputs.parameters.image}}:{{workflow.parameters.sha}}
+          - --cache=true
+          - --cache-repo={{inputs.parameters.image}}/cache
+          - --cache-ttl=168h
         volumeMounts:
           - name: workspace
             mountPath: /mnt/workspace
