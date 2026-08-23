@@ -6,6 +6,10 @@ import { getKubernetesProvider } from "./raspberryPiK0s";
 
 const REPO_ROOT = path.join(__dirname, "..", "..", "..");
 
+// argoproj-labs/rollout-extension requires Argo CD v3.5+; check both when bumping either.
+const ROLLOUTS_EXTENSION_VERSION = "v0.4.0";
+const ROLLOUTS_EXTENSION_INSTALLER_VERSION = "v1.0.1";
+
 export interface ArgoCdInitOptions {
   dependsOn: pulumi.Resource | pulumi.Resource[];
 }
@@ -172,6 +176,41 @@ export class ArgoCd extends pulumi.ComponentResource {
           "policy.default": "",
           "policy.csv": ["g, homelab:admin, role:admin", "g, homelab:user, role:readonly"].join("\n"),
           scopes: "[groups]",
+        },
+      },
+      { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
+    );
+
+    new k8s.apps.v1.DeploymentPatch(
+      "argocd-server-rollouts-extension",
+      {
+        metadata: { name: "argocd-server", namespace: "argocd" },
+        spec: {
+          template: {
+            spec: {
+              volumes: [{ name: "extensions", emptyDir: {} }],
+              initContainers: [
+                {
+                  name: "rollout-extension",
+                  image: `quay.io/argoprojlabs/argocd-extension-installer:${ROLLOUTS_EXTENSION_INSTALLER_VERSION}`,
+                  env: [
+                    {
+                      name: "EXTENSION_URL",
+                      value: `https://github.com/argoproj-labs/rollout-extension/releases/download/${ROLLOUTS_EXTENSION_VERSION}/extension.tar`,
+                    },
+                  ],
+                  volumeMounts: [{ name: "extensions", mountPath: "/tmp/extensions/" }],
+                  securityContext: { runAsUser: 1000, allowPrivilegeEscalation: false },
+                },
+              ],
+              containers: [
+                {
+                  name: "argocd-server",
+                  volumeMounts: [{ name: "extensions", mountPath: "/tmp/extensions/", readOnly: true }],
+                },
+              ],
+            },
+          },
         },
       },
       { provider: this.k8sProvider.provider, dependsOn: installed, parent: this },
