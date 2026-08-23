@@ -16,3 +16,4 @@ data:
     @       IN  NS  ns.PLACEHOLDER_DOMAIN.
     ns      IN  A   PLACEHOLDER_NODE_IP
     *       IN  A   PLACEHOLDER_NODE_IP
+    *       IN  AAAA PLACEHOLDER_NODE_IP_V6

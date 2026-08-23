@@ -29,6 +29,25 @@ Router/network/IdP-dashboard specific — can't be automated from here.
   ```bash
   ssh clusteradmin@home-server.local "sudo k0s kubectl get secret homelab-ca-secret -n cert-manager -o jsonpath='{.data.ca\.crt}'" | base64 -d > homelab-ca.crt
   ```
+- **Tailscale access** (external, off-LAN access): installs on the Pi itself, not the cluster.
+  ```bash
+  ssh clusteradmin@home-server.local "curl -fsSL https://tailscale.com/install.sh | sh"
+  ssh clusteradmin@home-server.local "echo 'net.ipv4.ip_forward = 1' | sudo tee /etc/sysctl.d/99-tailscale.conf && echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf && sudo sysctl -p /etc/sysctl.d/99-tailscale.conf"
+  ssh clusteradmin@home-server.local "sudo tailscale up --accept-dns=false"
+  ```
+  `tailscale up` prints a login URL on first run (no auth key used here) — open it to authorize the Pi's machine in your tailnet. `--accept-dns=false` stops MagicDNS from rewriting the Pi's own system resolver; coredns-lan's hostNetwork listener on port 53 is unaffected either way, this just avoids the Pi's own outbound traffic resolving through Tailscale instead of your router.
+
+  A plain `--advertise-routes=192.168.1.0/24` subnet route was tried first and dropped: any client physically connected to *another* network that also happens to use `192.168.1.0/24` (extremely common — it's the default on most consumer routers) will route traffic for `192.168.1.146` onto that foreign network instead of through Tailscale, since an on-link route always wins over a same-prefix-length tunnel route. Same failure mode hits the DNS *answer* too, since the wildcard zone record is a hardcoded IPv4 literal.
+
+  Instead the Pi advertises a single-host route via [4via6](https://tailscale.com/kb/1201/4via6-subnets) — mapping just `192.168.1.146/32` into a Tailscale-unique IPv6 address, which can never collide with any physical network's addressing:
+  ```bash
+  ssh clusteradmin@home-server.local "tailscale debug via 1 192.168.1.146/32"
+  # -> fd7a:115c:a1e0:b1a:0:1:c0a8:192/128
+  ssh clusteradmin@home-server.local "sudo tailscale set --advertise-routes=fd7a:115c:a1e0:b1a:0:1:c0a8:192/128"
+  ```
+  `1` is an arbitrary site ID (only matters if you ever add a second subnet router — must be unique across the tailnet). The resulting `/128` is deterministic from the site ID + IPv4 address, and is wired into `raspberrypi:nodeLanIpV6` (`Pulumi.homelab.yaml`) → `addons_node_ip_v6` → an `AAAA` record alongside the existing `A` record in coredns-lan's zone (see `applications/coredns-lan/base`). Browsers try the `AAAA` first and fall back to the `A` record (Happy Eyeballs), so LAN clients keep working exactly as before, and tailnet clients on any network reach it via the collision-proof IPv6 path.
+
+  Then in the [Tailscale admin console](https://login.tailscale.com/admin/machines): approve the advertised `/128` route on the Pi's machine (subnet routes require manual approval), and under **DNS → Split DNS**, add a nameserver for the `homelab.arpa` domain pointing at the Pi's own Tailscale IP (`tailscale ip -4` on the Pi) — not its LAN IP, for the same collision reason above. The Pi's own Tailscale IP needs no route/approval to reach; it's directly addressable between any two tailnet nodes. Trust the CA (above) on each tailnet device too — Tailscale carries the traffic, but TLS trust is still per-device.
 - **Auth0 setup** (see [AGENT.md](../AGENT.md#sso--oidc)): create an Auth0 Application, add `https://dex.homelab.arpa/callback` to its Allowed Callback URLs, create `homelab:admin`/`homelab:user` Roles and assign them to users, and attach a Post-Login Action to the Login flow that adds them as a `https://homelab.arpa/roles` custom claim:
   ```js
   exports.onExecutePostLogin = async (event, api) => {

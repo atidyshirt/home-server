@@ -24,6 +24,7 @@ spec:
           commonAnnotations:
             addons_domain: '{{metadata.annotations.addons_domain}}'
             addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
+            addons_node_ip_v6: '{{metadata.annotations.addons_node_ip_v6}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: cert-manager

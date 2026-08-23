@@ -23,7 +23,9 @@ export class GitopsBridge extends pulumi.ComponentResource {
     const gitRepoUrl = argocdConfig.require("gitRepoUrl");
     const gitRevision = argocdConfig.require("gitRevision");
     const domain = new pulumi.Config("homelab").require("domain");
-    const nodeLanIp = new pulumi.Config("raspberrypi").require("nodeLanIp");
+    const raspberrypiConfig = new pulumi.Config("raspberrypi");
+    const nodeLanIp = raspberrypiConfig.require("nodeLanIp");
+    const nodeLanIpV6 = raspberrypiConfig.require("nodeLanIpV6");
 
     new k8s.core.v1.Secret(
       "argocd-in-cluster",
@@ -37,6 +39,7 @@ export class GitopsBridge extends pulumi.ComponentResource {
             addons_repo_revision: gitRevision,
             addons_domain: domain,
             addons_node_ip: nodeLanIp,
+            addons_node_ip_v6: nodeLanIpV6,
           },
         },
         stringData: {

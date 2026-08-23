@@ -162,6 +162,20 @@ which conflicted with coredns-lan. Disabled (`systemctl disable --now pihole-FTL
 favor of coredns-lan — not reinstalled by this repo, so re-provisioning a fresh Pi
 won't need this step, but re-imaging *this* Pi from a backup might.
 
+Off-LAN access goes through Tailscale running on the Pi itself (host-level, not a cluster
+addon). A plain subnet-router route (`--advertise-routes=192.168.1.0/24`) collides with any
+foreign network that happens to use the same common subnet — an on-link route always wins over
+a same-prefix-length tunnel route, and the wildcard zone record is a hardcoded IPv4 literal
+either way. Instead the Pi advertises a single-host [4via6](https://tailscale.com/kb/1201/4via6-subnets)
+route (`192.168.1.146/32` mapped into a Tailscale-unique IPv6 address via `tailscale debug via`),
+which can never collide with a physical network's own addressing. `raspberrypi:nodeLanIpV6`
+(Pulumi config) carries that address into the same `addons_node_ip_v6` annotation pattern as
+`addons_node_ip`/`addons_domain`, and coredns-lan's zone gets an `AAAA` record alongside the
+existing `A` record — browsers fall back from `AAAA` to `A` (Happy Eyeballs), so LAN clients are
+unaffected. Tailscale's Split DNS then points `homelab.arpa` at the Pi's own Tailscale IP
+(directly reachable, no route/approval needed), not its LAN IP. See
+[docs/provisioning.md](docs/provisioning.md)'s Manual steps.
+
 **TLS**
 
 The domain used to be `homelab.dev` — browsers HSTS-preload the entire `.dev` TLD, forcing
