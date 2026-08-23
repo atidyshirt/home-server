@@ -17,6 +17,7 @@ config:
       secret: PLACEHOLDER_ARGOCD_CLIENT_SECRET
       redirectURIs:
         - https://argo.PLACEHOLDER_DOMAIN/auth/callback
+        - argocd://auth/callback
   connectors:
     - type: oidc
       id: auth0
