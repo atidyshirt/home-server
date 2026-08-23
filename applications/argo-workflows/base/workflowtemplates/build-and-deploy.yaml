@@ -3,14 +3,12 @@ kind: WorkflowTemplate
 metadata:
   name: build-and-deploy
   namespace: argo-workflows
-  annotations:
-    argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:
   entrypoint: build-and-deploy
   serviceAccountName: argo-workflow
   synchronization:
-    mutex:
-      name: build-and-deploy
+    mutexes:
+      - name: build-and-deploy
   arguments:
     parameters:
       - name: repo
