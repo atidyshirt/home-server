@@ -6,6 +6,9 @@ metadata:
 spec:
   entrypoint: build-and-deploy
   serviceAccountName: argo-workflow
+  synchronization:
+    mutex:
+      name: build-and-deploy
   arguments:
     parameters:
       - name: repo
