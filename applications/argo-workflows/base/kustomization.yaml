@@ -22,7 +22,8 @@ resources:
   - onepassword-items.yaml
   - workflowtemplates/build-and-deploy.yaml
   - httproute.yaml
-  - ../../ghcr-pull-secret/base
+  - ../../ghcr-pull-secret/base/rbac.yaml
+  - ../../ghcr-pull-secret/base/job.yaml
 
 replacements:
   - source:
