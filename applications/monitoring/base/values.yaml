@@ -86,6 +86,13 @@ kubeProxy:
 
 grafana:
   enabled: true
+  # SQLite (the default DB) lives on a single ReadWriteOnce PVC - the chart's default
+  # RollingUpdate strategy briefly runs two replicas during a rollout, and two pods
+  # writing the same SQLite file at once corrupts migrations (SQLITE_BUSY, then a
+  # failed migration leaves the schema inconsistent). Recreate avoids that since only
+  # one pod ever has the volume mounted.
+  deploymentStrategy:
+    type: Recreate
   podAnnotations:
     addons_domain: placeholder-domain
   defaultDashboardsEnabled: true
