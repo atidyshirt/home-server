@@ -57,6 +57,13 @@ spec:
                       value: Dockerfile
                     - name: deploy_path
                       value: deploy
+                    # Set by projects that build+push on their own
+                    # GitHub-hosted Actions runners instead of this
+                    # pipeline's kaniko step (see build-and-deploy.yaml's
+                    # prebuilt_image parameter). Absent/empty for every
+                    # other project.
+                    - name: prebuilt_image
+                      value: ""
           parameters:
             - src:
                 dependencyName: push-dep
@@ -90,3 +97,8 @@ spec:
                 dataKey: body.deploy_path
                 value: deploy
               dest: spec.arguments.parameters.6.value
+            - src:
+                dependencyName: push-dep
+                dataKey: body.image
+                value: ""
+              dest: spec.arguments.parameters.7.value
