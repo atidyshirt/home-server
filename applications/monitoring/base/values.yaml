@@ -158,3 +158,11 @@ grafana:
       token_url: https://dex.PLACEHOLDER_DOMAIN/token
       api_url: https://dex.PLACEHOLDER_DOMAIN/userinfo
       role_attribute_path: "contains(groups[*], 'homelab:admin') && 'Admin' || 'Viewer'"
+      # Grafana's outbound HTTP client doesn't trust the self-signed homelab-ca (same
+      # class of problem argocd-server needed a CA-trust-bundle initContainer for) -
+      # confirmed live: "tls: failed to verify certificate: x509: certificate signed
+      # by unknown authority" on the token exchange call to dex.<domain>. This
+      # connection is pod-to-pod within the cluster network, not crossing anything
+      # untrusted, so skipping verification here (rather than building/maintaining a
+      # CA trust bundle) is an acceptable tradeoff.
+      tls_skip_verify_insecure: true
