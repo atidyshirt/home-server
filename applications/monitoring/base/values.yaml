@@ -95,6 +95,17 @@ grafana:
     type: Recreate
   podAnnotations:
     addons_domain: placeholder-domain
+    addons_node_ip: placeholder-node-ip
+  # The cluster's own kube-system CoreDNS doesn't know about the homelab.arpa zone
+  # (only the LAN-facing coredns-lan addon does, and it only serves the host's LAN
+  # interface, not in-cluster pod traffic) - so Grafana's server-to-server OAuth
+  # token exchange with Dex can't resolve dex.<domain> on its own. Same fix as
+  # argocd-server's own hostAliases patch (applied directly by Pulumi there, since
+  # that Deployment isn't GitOps-managed).
+  hostAliases:
+    - ip: placeholder-node-ip
+      hostnames:
+        - dex.placeholder-domain
   defaultDashboardsEnabled: true
   resources:
     requests:

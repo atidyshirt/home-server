@@ -80,3 +80,26 @@ replacements:
         options:
           delimiter: '.'
           index: 1
+  - source:
+      kind: Deployment
+      name: kube-prometheus-stack-grafana
+      fieldPath: spec.template.metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: Deployment
+          name: kube-prometheus-stack-grafana
+        fieldPaths:
+          - spec.template.spec.hostAliases.0.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1
+  - source:
+      kind: Deployment
+      name: kube-prometheus-stack-grafana
+      fieldPath: spec.template.metadata.annotations.addons_node_ip
+    targets:
+      - select:
+          kind: Deployment
+          name: kube-prometheus-stack-grafana
+        fieldPaths:
+          - spec.template.spec.hostAliases.0.ip
