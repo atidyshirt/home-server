@@ -117,6 +117,18 @@ grafana:
       hostnames:
         - dex.placeholder-domain
   defaultDashboardsEnabled: true
+  # The chart's own livenessProbe gets a generous timeout (30s, failureThreshold 10),
+  # but readinessProbe is left at Kubernetes' aggressive default (1s timeout, 3
+  # failures) - on this hardware, a brief response-time hiccup under load (confirmed
+  # live: "Readiness probe failed: context deadline exceeded" on a container that
+  # never actually restarted) is enough to flap Grafana out of the Service. Matching
+  # the liveness probe's tolerance here avoids that.
+  readinessProbe:
+    httpGet:
+      path: /api/health
+      port: grafana
+    timeoutSeconds: 30
+    failureThreshold: 10
   resources:
     requests:
       cpu: 50m
