@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argo-workflows-workflow-controller
+  namespace: argo-workflows
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: argo-workflows
+      app.kubernetes.io/name: argo-workflows-workflow-controller
+  endpoints:
+    - port: metrics
+      interval: 30s
