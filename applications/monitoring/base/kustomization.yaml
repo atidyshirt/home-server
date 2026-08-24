@@ -1,0 +1,67 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: kube-prometheus-stack
+    repo: https://prometheus-community.github.io/helm-charts
+    version: 88.5.4
+    releaseName: kube-prometheus-stack
+    namespace: monitoring
+    valuesFile: values.yaml
+
+resources:
+  - onepassword-items.yaml
+  - httproute.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: kube-prometheus-stack-grafana
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/volumes/0/configMap
+      - op: add
+        path: /spec/template/spec/volumes/0/emptyDir
+        value: {}
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: config-template
+          configMap:
+            name: kube-prometheus-stack-grafana
+      - op: add
+        path: /spec/template/spec/initContainers/-
+        value:
+          name: render-config
+          image: busybox:1.36
+          env:
+            - name: DOMAIN
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['addons_domain']
+          command:
+            - sh
+            - -c
+            - |
+              sed -e "s/PLACEHOLDER_DOMAIN/$DOMAIN/g" \
+                  /template/grafana.ini > /etc/grafana/grafana.ini
+          volumeMounts:
+            - name: config-template
+              mountPath: /template
+            - name: config
+              mountPath: /etc/grafana
+
+replacements:
+  - source:
+      kind: HTTPRoute
+      name: grafana
+      fieldPath: metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: grafana
+        fieldPaths:
+          - spec.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1

@@ -63,6 +63,11 @@ patches:
                   secretKeyRef:
                     name: oidc-dex
                     key: golfapp
+              - name: GRAFANA_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: oidc-dex
+                    key: grafana
             command:
               - sh
               - -c
@@ -73,6 +78,7 @@ patches:
                     -e "s/PLACEHOLDER_AUTH0_CLIENT_SECRET/$AUTH0_CLIENT_SECRET/g" \
                     -e "s/PLACEHOLDER_ARGOCD_CLIENT_SECRET/$ARGOCD_CLIENT_SECRET/g" \
                     -e "s/PLACEHOLDER_GOLFAPP_CLIENT_SECRET/$GOLFAPP_CLIENT_SECRET/g" \
+                    -e "s/PLACEHOLDER_GRAFANA_CLIENT_SECRET/$GRAFANA_CLIENT_SECRET/g" \
                     /template/config.yaml > /etc/dex/config.yaml
             volumeMounts:
               - name: config-template
