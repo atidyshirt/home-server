@@ -18,6 +18,12 @@ config:
       redirectURIs:
         - https://argo.PLACEHOLDER_DOMAIN/auth/callback
         - argocd://auth/callback
+    - id: golfapp
+      name: GolfApp
+      secret: PLACEHOLDER_GOLFAPP_CLIENT_SECRET
+      redirectURIs:
+        - https://golf.PLACEHOLDER_DOMAIN/api/auth/dex/callback
+        - https://golf-canary.PLACEHOLDER_DOMAIN/api/auth/dex/callback
   connectors:
     - type: oidc
       id: auth0
