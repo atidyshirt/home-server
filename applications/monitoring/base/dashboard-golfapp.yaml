@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-golfapp
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  golfapp.json: |
+    {
+      "title": "GolfApp",
+      "uid": "golfapp",
+      "tags": ["golfapp"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "time": { "from": "now-6h", "to": "now" },
+      "refresh": "30s",
+      "templating": {
+        "list": [
+          {
+            "name": "datasource",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {}
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Pods by Phase",
+          "type": "stat",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+          "targets": [
+            {
+              "expr": "count by (phase) (kube_pod_status_phase{namespace=\"golf\"} == 1)",
+              "legendFormat": "{{phase}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "CPU Usage by Pod",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"golf\", container!=\"\", container!=\"POD\"}[5m]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Memory Usage by Pod",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"golf\", container!=\"\", container!=\"POD\"})",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "CPU: Usage vs Limit",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"golf\", container!=\"\", container!=\"POD\"}[5m]))",
+              "legendFormat": "usage",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(kube_pod_container_resource_limits{namespace=\"golf\", resource=\"cpu\"})",
+              "legendFormat": "limit",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Memory: Usage vs Limit",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"golf\", container!=\"\", container!=\"POD\"})",
+              "legendFormat": "usage",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(kube_pod_container_resource_limits{namespace=\"golf\", resource=\"memory\"})",
+              "legendFormat": "limit",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Pod Restarts (1h)",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "$datasource" },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"golf\"}[1h]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    }
