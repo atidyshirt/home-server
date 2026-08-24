@@ -24,6 +24,11 @@ config:
       redirectURIs:
         - https://golf.PLACEHOLDER_DOMAIN/api/auth/dex/callback
         - https://golf-canary.PLACEHOLDER_DOMAIN/api/auth/dex/callback
+    - id: grafana
+      name: Grafana
+      secret: PLACEHOLDER_GRAFANA_CLIENT_SECRET
+      redirectURIs:
+        - https://grafana.PLACEHOLDER_DOMAIN/login/generic_oauth
   connectors:
     - type: oidc
       id: auth0

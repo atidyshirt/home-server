@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-monitoring
+  namespace: argocd
+spec:
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: monitoring
+    spec:
+      project: platform
+      info:
+        - name: Documentation
+          value: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+        - name: Source Code
+          value: https://github.com/prometheus-community/helm-charts
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/monitoring/base
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
+            addons_node_ip: '{{metadata.annotations.addons_node_ip}}'
+            addons_node_ip_v6: '{{metadata.annotations.addons_node_ip_v6}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: monitoring
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

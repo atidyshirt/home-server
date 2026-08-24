@@ -1,0 +1,115 @@
+crds:
+  enabled: true
+
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 4Gi
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 50m
+        memory: 64Mi
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 32Mi
+
+# k0s doesn't expose these the standard upstream way - default ServiceMonitors for
+# them just sit permanently down. kubelet (incl. cAdvisor per-pod/container CPU+memory)
+# stays enabled - that's what actually shows kaniko build usage relative to everything else.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+grafana:
+  enabled: true
+  podAnnotations:
+    addons_domain: placeholder-domain
+  defaultDashboardsEnabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: local-path
+    size: 1Gi
+  envValueFrom:
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+      secretKeyRef:
+        name: oidc-dex
+        key: grafana
+  grafana.ini:
+    server:
+      root_url: https://grafana.PLACEHOLDER_DOMAIN
+    auth.generic_oauth:
+      enabled: true
+      name: Dex
+      client_id: grafana
+      scopes: openid profile email
+      auth_url: https://dex.PLACEHOLDER_DOMAIN/auth
+      token_url: https://dex.PLACEHOLDER_DOMAIN/token
+      api_url: https://dex.PLACEHOLDER_DOMAIN/userinfo
+      role_attribute_path: "contains(groups[*], 'homelab:admin') && 'Admin' || 'Viewer'"
