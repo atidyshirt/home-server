@@ -5,7 +5,10 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - clusters: {}
+    - clusters:
+        selector:
+          matchLabels:
+            monitoring.stack.enabled: "true"
   template:
     metadata:
       name: monitoring
