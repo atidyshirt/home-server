@@ -86,6 +86,16 @@ kubeProxy:
 
 grafana:
   enabled: true
+  # Without this, the chart tries to reuse an existing admin-password Secret via Helm's
+  # `lookup` function - which doesn't work through ArgoCD's repo-server (kustomize's
+  # helmCharts generator runs `helm template` without live cluster access), so it falls
+  # back to generating a brand new random password on every single sync. That changes
+  # the Secret every time, which changes the pod template's checksum/secret annotation
+  # every time, which never lets the Deployment stabilize (confirmed empirically - the
+  # Application never left OutOfSync/Progressing). A fixed password breaks that loop.
+  # This is a break-glass fallback only - Dex SSO (mapped to the homelab:admin group) is
+  # the primary login path, same security model as ArgoCD itself.
+  adminPassword: 2fikIr4ssiCnMgF5sMCWZUuDpdSlTncT
   # SQLite (the default DB) lives on a single ReadWriteOnce PVC - the chart's default
   # RollingUpdate strategy briefly runs two replicas during a rollout, and two pods
   # writing the same SQLite file at once corrupts migrations (SQLITE_BUSY, then a
