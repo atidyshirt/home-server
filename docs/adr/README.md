@@ -18,3 +18,4 @@ Format: [Michael Nygard's ADR template](https://github.com/architecture-decision
 - [Commit image tag bumps back to git rather than patching the cluster directly](commit-image-tags-back-to-git.md)
 - [Use canary-with-manual-pause as the default Rollout strategy](use-canary-with-manual-pause-for-rollouts.md)
 - [Run EventBus JetStream single-replica for single-node topology](run-single-replica-eventbus-jetstream.md)
+- [Build golfapp's images with GitHub Actions, keep Argo Workflows for deploy](build-golfapp-images-with-github-actions.md)
