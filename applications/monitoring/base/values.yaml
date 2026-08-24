@@ -129,13 +129,20 @@ grafana:
       port: grafana
     timeoutSeconds: 30
     failureThreshold: 10
+  # Original sizing (50m/128Mi request, 200m/256Mi limit) was too conservative - sized
+  # off the cluster's overall starved state at the start of this rollout, before
+  # knowing the other components (Prometheus/Alertmanager/node-exporter/kube-state-
+  # metrics) are all lean. Confirmed live: grafana was pegged at 197m/200m CPU
+  # (constant throttling, explains slow WS/live requests) and got OOMKilled at the
+  # 256Mi limit (explains the "bad gateway" during its restart). Other components
+  # have plenty of headroom to give Grafana real resources instead.
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 100m
+      memory: 192Mi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 750m
+      memory: 512Mi
   persistence:
     enabled: true
     type: pvc
