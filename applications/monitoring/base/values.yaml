@@ -59,6 +59,11 @@ kube-state-metrics:
       memory: 128Mi
 
 prometheus-node-exporter:
+  # Traefik (hostNetwork: true) already binds the host's port 9100 for its own metrics
+  # endpoint - node-exporter needs a different port since it also runs on hostNetwork.
+  service:
+    port: 9101
+    targetPort: 9101
   resources:
     requests:
       cpu: 10m
