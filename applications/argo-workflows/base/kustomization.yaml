@@ -8,6 +8,9 @@ helmCharts:
     releaseName: argo-workflows
     namespace: argo-workflows
     valuesInline:
+      controller:
+        metricsConfig:
+          enabled: true
       server:
         extraArgs:
           - --auth-mode=server
@@ -23,6 +26,13 @@ resources:
   - workflowtemplates/build-and-deploy.yaml
   - httproute.yaml
   - ghcr-pull-secret.yaml
+  # The chart's own ServiceMonitor template is gated behind
+  # `.Capabilities.APIVersions.Has "monitoring.coreos.com/v1"`, which requires live
+  # cluster API access ArgoCD's repo-server doesn't have during `kustomize build`
+  # (same class of limitation as the Grafana admin-password `lookup` issue) - so it
+  # never renders regardless of the values toggle. Hand-written here instead,
+  # targeting the metrics port the chart's own Service already exposes.
+  - servicemonitor.yaml
 
 replacements:
   - source:
