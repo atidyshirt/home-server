@@ -30,7 +30,7 @@ flowchart TD
     Secret -.->|annotations read via<br/>the clusters generator| Appsets
     ArgoCD --> Root --> Appsets
     Appsets -->|sync| DeployRepo
-    SourceRepo -.->|CI/CD pipeline bumps<br/>the image tag - see<br/>continous_delivery.md| DeployRepo
+    SourceRepo -.->|CI/CD pipeline bumps<br/>the image tag - see<br/>continuous_delivery.md| DeployRepo
 ```
 
 ## Provisioning
@@ -63,7 +63,7 @@ ArgoCD syncs these directly; nothing here is built, only applied.
 ## Source repos
 
 Own the Dockerfile and a thin CI trigger — no build logic (see
-[continous_delivery.md](continous_delivery.md) for what happens after the trigger fires).
+[continuous_delivery.md](continuous_delivery.md) for what happens after the trigger fires).
 Scaffolded from [homelab-app-template](https://github.com/atidyshirt/homelab-app-template).
 Deliberately a separate repo from its deployment repo, so the pipeline's own commits never
 collide with app commits.
