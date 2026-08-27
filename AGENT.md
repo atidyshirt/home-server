@@ -252,7 +252,9 @@ something below the Kubernetes API, not the manifest (ATI-32).
 
 Be extremely concise and to the point. Avoid unnecessary words or explanations. Use bullet
 points for clarity. Docs (this file, `docs/*.md`) cover patterns and workflows — not
-implementation details, which live in the code and rot fast if duplicated in prose.
+implementation details, which live in the code and rot fast if duplicated in prose. ADRs in
+particular stay decision-level (the *why* + alternatives), not a running log of policy nuance —
+see [the ADR](docs/adr/keep-adrs-decision-level-no-code-comments.md).
 
 **Code comments**
 
@@ -260,7 +262,9 @@ None — names and structure carry the meaning. Non-trivial context belongs in t
 for that change (this project has one per fix already) or, if it's a reusable pattern, here.
 If something is genuinely undiscoverable from code + these docs, use a Kubernetes `annotation`
 linking to the doc/issue rather than a comment — none needed yet, this project is too early for
-anything to have earned one.
+anything to have earned one. See
+[the ADR](docs/adr/keep-adrs-decision-level-no-code-comments.md) for why this applies to YAML
+too, not just code.
 
 **Deployment**
 
