@@ -247,6 +247,18 @@ capability restrictions) — two non-root approaches (`NET_BIND_SERVICE`,
 `allowPrivilegeEscalation`) failed identically binding port 80 for reasons that trace to
 something below the Kubernetes API, not the manifest (ATI-32).
 
+**Manifest validation**
+
+`kustomize build --enable-helm`/`helm template` output of every `applications/*/base` is
+validated by `kubeconform` (`-strict`, default schemas + the
+[Datree CRDs-catalog](https://github.com/datreeio/CRDs-catalog) for CRDs, falling back to
+`-ignore-missing-schemas` for anything still unresolved) — see `scripts/validate-manifests.sh`.
+Runs as a git pre-commit hook via devenv's `git-hooks.hooks` (`cachix/git-hooks.nix`, declared as
+an explicit `devenv.yaml` input — required, not auto-fetched). `devenv shell` installs the hook
+automatically (`devenv:git-hooks:install` task); run `devenv shell` once after cloning, or after
+editing `devenv.nix`/the script, to (re)install it. Manual run: `devenv shell -- bash
+scripts/validate-manifests.sh`.
+
 **Documentation**
 
 Be extremely concise and to the point. Avoid unnecessary words or explanations. Use bullet
