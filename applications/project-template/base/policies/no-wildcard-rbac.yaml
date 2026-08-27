@@ -1,0 +1,49 @@
+# Plain manifest, never applied to the cluster as a live ClusterPolicy CR -
+# bundled into the kyverno-policies ConfigMap (see ../kustomization.yaml)
+# and read back out by the kyverno-validate WorkflowTemplate, which feeds
+# it straight to `kyverno apply` (CLI-only usage - no Kyverno controller/CRD
+# installed in-cluster). See docs/adr/use-kyverno-cli-postsync-gate.md.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-role-wildcard
+  annotations:
+    policies.kyverno.io/title: Disallow Wildcard Role Rules
+    policies.kyverno.io/category: RBAC
+    policies.kyverno.io/severity: medium
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: no-wildcard-resources
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+      validate:
+        message: A Role's rules may not use a wildcard (*) in resources.
+        foreach:
+          - list: request.object.rules
+            deny:
+              conditions:
+                any:
+                  - key: "*"
+                    operator: In
+                    value: "{{ element.resources }}"
+    - name: no-wildcard-verbs
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+      validate:
+        message: A Role's rules may not use a wildcard (*) in verbs.
+        foreach:
+          - list: request.object.rules
+            deny:
+              conditions:
+                any:
+                  - key: "*"
+                    operator: In
+                    value: "{{ element.verbs }}"

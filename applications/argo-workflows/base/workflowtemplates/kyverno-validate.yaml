@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: kyverno-validate
+  namespace: argo-workflows
+spec:
+  entrypoint: kyverno-validate
+  serviceAccountName: argo-workflow
+  arguments:
+    parameters:
+      - name: namespace
+      - name: policies_configmap
+        value: kyverno-policies
+      - name: resource_kinds
+        value: roles.rbac.authorization.k8s.io
+  volumeClaimTemplates:
+    - metadata:
+        name: workspace
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 100Mi
+  templates:
+    - name: kyverno-validate
+      steps:
+        - - name: fetch
+            template: fetch
+        - - name: validate
+            template: validate
+
+    - name: fetch
+      container:
+        image: alpine:3.20
+        command: [sh, -c]
+        args:
+          - |
+            set -eu
+            apk add --no-cache curl >/dev/null
+            curl -sL "https://dl.k8s.io/release/v1.35.8/bin/linux/arm64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+
+            kubectl get configmap "{{workflow.parameters.policies_configmap}}" \
+              -n "{{workflow.parameters.namespace}}" \
+              -o go-template='{{range $k, $v := .data}}{{$v}}{{"\n---\n"}}{{end}}' \
+              > /mnt/workspace/policies.yaml
+
+            # -o yaml would wrap multiple matches in a `kind: List`, which the
+            # kyverno CLI's resource loader does not unwrap into individual
+            # items - jsonpath instead emits one JSON document per item
+            # (valid YAML), `---`-separated, so each is evaluated on its own.
+            kubectl get "{{workflow.parameters.resource_kinds}}" \
+              -n "{{workflow.parameters.namespace}}" \
+              -o jsonpath='{range .items[*]}{@}{"\n---\n"}{end}' \
+              > /mnt/workspace/resources.yaml
+        volumeMounts:
+          - name: workspace
+            mountPath: /mnt/workspace
+
+    - name: validate
+      container:
+        image: ghcr.io/kyverno/kyverno-cli:v1.19.0
+        command: [sh, -c]
+        args:
+          - kyverno apply /mnt/workspace/policies.yaml --resource /mnt/workspace/resources.yaml
+        volumeMounts:
+          - name: workspace
+            mountPath: /mnt/workspace

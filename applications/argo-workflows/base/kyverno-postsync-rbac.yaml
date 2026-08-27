@@ -1,0 +1,45 @@
+# Grants the project-template pilot's PostSync hook Job ServiceAccount
+# (kyverno-postsync-hook, in the golf namespace - see
+# applications/project-template/base/kyverno-postsync-hook.yaml) permission
+# to submit into the kyverno-validate WorkflowTemplate here. Same
+# cross-namespace RoleBinding shape as sensor-rbac.yaml's grant to the
+# argo-events sensor SA. Pilot-scoped: hardcoded to the golf namespace/SA -
+# a repo-wide rollout would need one such binding (or a broader mechanism)
+# per onboarded addon namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kyverno-postsync-submit
+  namespace: argo-workflows
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflows
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtemplates
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kyverno-postsync-submit
+  namespace: argo-workflows
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kyverno-postsync-submit
+subjects:
+  - kind: ServiceAccount
+    name: kyverno-postsync-hook
+    namespace: golf

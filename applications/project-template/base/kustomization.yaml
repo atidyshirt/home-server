@@ -5,3 +5,16 @@ resources:
   - service-account.yaml
   - rbac.yaml
   - ../../ghcr-pull-secret/base
+  - kyverno-validate-rbac.yaml
+  - kyverno-postsync-hook.yaml
+
+# Bundles policies/*.yaml as plain ConfigMap data (never applied as live
+# ClusterPolicy CRs - no Kyverno controller/CRDs in this cluster) so the
+# kyverno-validate WorkflowTemplate can read them back out at PostSync time.
+configMapGenerator:
+  - name: kyverno-policies
+    files:
+      - policies/no-wildcard-rbac.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true

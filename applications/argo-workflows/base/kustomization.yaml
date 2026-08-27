@@ -21,6 +21,8 @@ resources:
   - sensor-rbac.yaml
   - onepassword-items.yaml
   - workflowtemplates/build-and-deploy.yaml
+  - workflowtemplates/kyverno-validate.yaml
+  - kyverno-postsync-rbac.yaml
   - httproute.yaml
   - ghcr-pull-secret.yaml
 

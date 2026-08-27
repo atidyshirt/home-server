@@ -1,0 +1,45 @@
+# PostSync gate: submits the argo-workflows kyverno-validate WorkflowTemplate
+# and waits for it, so a Kyverno policy violation makes this Job (and
+# therefore the ArgoCD sync) fail instead of just logging a warning. Job, not
+# a bare Workflow hook resource, because ArgoCD has no built-in health check
+# for argoproj.io/Workflow - a Job's exit code gives ArgoCD native
+# success/failure semantics for free. See
+# docs/adr/use-kyverno-cli-postsync-gate.md.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kyverno-postsync-hook
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-weight: '-1'
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kyverno-postsync-validate
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: kyverno-postsync-hook
+      restartPolicy: Never
+      containers:
+        - name: kyverno-validate
+          image: quay.io/argoproj/argocli:v4.1.1
+          command: [sh, -c]
+          args:
+            - |
+              set -eu
+              argo submit --from=workflowtemplate/kyverno-validate \
+                -p namespace="$NAMESPACE" \
+                --wait
+          env:
+            - name: ARGO_NAMESPACE
+              value: argo-workflows
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

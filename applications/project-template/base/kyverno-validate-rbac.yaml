@@ -1,0 +1,31 @@
+# Grants the kyverno-validate WorkflowTemplate (applications/argo-workflows/base/
+# workflowtemplates/kyverno-validate.yaml, running as the argo-workflow
+# ServiceAccount in the argo-workflows namespace) read access to this
+# namespace's Roles and its bundled kyverno-policies ConfigMap - the
+# WorkflowTemplate's own pod has no permissions here otherwise, since it
+# runs in a different namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kyverno-validate-read
+rules:
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles]
+    verbs: [get, list]
+  - apiGroups: ['']
+    resources: [configmaps]
+    resourceNames: [kyverno-policies]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kyverno-validate-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kyverno-validate-read
+subjects:
+  - kind: ServiceAccount
+    name: argo-workflow
+    namespace: argo-workflows
