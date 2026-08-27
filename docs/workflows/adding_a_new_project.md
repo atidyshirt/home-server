@@ -4,9 +4,9 @@ Onboarding a project (its own repo, own build/deploy pipeline, own namespace) �
 the worked example throughout. Four steps: an `AppProject` (Pulumi), project defaults (git), an
 appset (git), a runner (git).
 
-Not the same as [pr-workflow.md](../pr-workflow.md)'s "Adding a new app" — that's for platform
-addons living in this repo. A project has its own source + deploy repos (from the templates
-below) and its own CI pipeline.
+Not the same as adding a platform addon (see [AGENT.md](../../AGENT.md#structure)) — that's for
+addons living in this repo, each with its own explicit `addon-*-appset.yaml`. A project has its
+own source + deploy repos (from the templates below) and its own CI pipeline.
 
 ## 0. Scaffold from the templates
 

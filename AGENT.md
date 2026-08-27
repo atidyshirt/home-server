@@ -83,7 +83,7 @@ Pulumi registers the local cluster as a Secret (`argocd.argoproj.io/secret-type:
 name `in-cluster`) with `addons_repo_url`/`addons_repo_revision` annotations; every
 appset's template reads `{{metadata.annotations.addons_repo_revision}}`. To point
 everything at a PR branch instead of main: `pulumi config set argocd:gitRevision <branch>`
-then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `root-app.yaml` itself is
+then `pulumi up`. `root-app.yaml` itself is
 templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
 
 **AppProjects**
@@ -109,8 +109,9 @@ whitelists its destination namespace — `platform` for the five existing addons
 itself stays on ArgoCD's built-in `default` project (it deploys the `ApplicationSet`s
 themselves into `argocd`, not application content, so it doesn't belong to either project).
 Adding a new app under a new project: create the `AppProject` in `projects.yaml`, then its
-`addon-<name>-appset.yaml` referencing it — matches [docs/pr-workflow.md](docs/pr-workflow.md)'s
-"Adding a new app" section.
+`addon-<name>-appset.yaml` referencing it — matches
+[docs/workflows/adding_a_new_project.md](docs/workflows/adding_a_new_project.md)'s "AppProject"
+and "Appset" steps.
 
 **Domain configuration**
 

@@ -29,7 +29,7 @@ Pulumi registers the local cluster as an ArgoCD cluster Secret
 ## Consequences
 
 - Pointing the entire cluster at a PR branch is `pulumi config set argocd:gitRevision <branch>`
-  + `pulumi up` — see `docs/pr-workflow.md`.
+  + `pulumi up` — see [AGENT.md](../../AGENT.md#pinning-a-revision-gitops-bridge-pattern).
 - Every appset is identical in shape regardless of environment; there's only one "real" appset
   per addon to maintain.
 - Future improvement: an ApplicationSet-level Pull Request generator could replace this manual

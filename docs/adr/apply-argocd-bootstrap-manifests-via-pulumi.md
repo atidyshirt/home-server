@@ -31,7 +31,8 @@ on, ArgoCD reads everything else (`addons/addon-*-appset.yaml` and beyond) from 
 ## Consequences
 
 - These three files can't be edited purely through the normal GitOps PR flow — a change to
-  them requires `pulumi up`, not just a merge (see `docs/pr-workflow.md`).
+  them requires `pulumi up`, not just a merge (see
+  [AGENT.md](../../AGENT.md#pinning-a-revision-gitops-bridge-pattern)).
 - Bootstrapping a fresh cluster is a single `pulumi up`, no manual `kubectl apply` step.
 - Future improvement: if these files need to change often, consider a thin ArgoCD
   `Application`-of-`Application`s layer so more of the bootstrap becomes git-editable — not
