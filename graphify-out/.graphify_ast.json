@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge",
+      "label": "gitopsBridge.ts",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge_gitopsbridgeinstalloptions",
+      "label": "GitopsBridgeInstallOptions",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L5",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "label": "AddonToggles",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L13",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge_gitopsbridge",
+      "label": "GitopsBridge",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L20",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge_gitopsbridge_install",
+      "label": ".install()",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L23",
+      "_callable": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "provisioning_pulumi_src_gitopsbridge_gitopsbridge_constructor",
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L30",
+      "_callable": true,
+      "_origin": "ast"
+    }
+  ],
+  "edges": [
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "ref_pulumi_pulumi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "ref_pulumi_kubernetes",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "provisioning_pulumi_src_raspberrypik0s",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "provisioning_pulumi_src_raspberrypik0s_getkubernetesprovider",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "provisioning_pulumi_src_gitopsbridge_gitopsbridgeinstalloptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge",
+      "target": "provisioning_pulumi_src_gitopsbridge_gitopsbridge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge_gitopsbridge",
+      "target": "provisioning_pulumi_src_gitopsbridge_gitopsbridge_install",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "provisioning_pulumi_src_gitopsbridge_gitopsbridge",
+      "target": "provisioning_pulumi_src_gitopsbridge_gitopsbridge_constructor",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "failed_sources": []
+}

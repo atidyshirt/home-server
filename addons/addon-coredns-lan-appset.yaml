@@ -5,7 +5,10 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - clusters: {}
+    - clusters:
+        selector:
+          matchLabels:
+            coredns-lan.stack.enabled: "true"
   template:
     metadata:
       name: coredns-lan

@@ -1,0 +1,683 @@
+{
+  "nodes": [
+    {
+      "id": "addon_dex_appset_platform_stack_enabled_selector",
+      "label": "addon-dex-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-dex-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_arc_controller_appset_platform_stack_enabled_selector",
+      "label": "addon-arc-controller-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-arc-controller-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_arc_runners_appset_platform_stack_enabled_selector",
+      "label": "addon-arc-runners-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-arc-runners-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_argo_events_appset_platform_stack_enabled_selector",
+      "label": "addon-argo-events-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-argo-events-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_argo_rollouts_appset_platform_stack_enabled_selector",
+      "label": "addon-argo-rollouts-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-argo-rollouts-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_argo_workflows_appset_platform_stack_enabled_selector",
+      "label": "addon-argo-workflows-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-argo-workflows-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_cert_manager_appset_platform_stack_enabled_selector",
+      "label": "addon-cert-manager-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-cert-manager-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_onepassword_operator_appset_platform_stack_enabled_selector",
+      "label": "addon-onepassword-operator-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-onepassword-operator-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_traefik_appset_platform_stack_enabled_selector",
+      "label": "addon-traefik-appset cluster selector: platform.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-traefik-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_coredns_lan_appset_coredns_lan_stack_enabled_selector",
+      "label": "addon-coredns-lan-appset cluster selector: coredns-lan.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-coredns-lan-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_golfapp_appset_golfapp_stack_enabled_selector",
+      "label": "addon-golfapp-appset cluster selector: golfapp.stack.enabled",
+      "file_type": "code",
+      "source_file": "addons/addon-golfapp-appset.yaml",
+      "source_location": "8-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "platform_stack_enabled_toggle",
+      "label": "platform.stack.enabled toggle (shared config value)",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "coredns_lan_stack_enabled_toggle",
+      "label": "coredns-lan.stack.enabled toggle (shared config value)",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "monitoring_stack_enabled_toggle",
+      "label": "monitoring.stack.enabled toggle (shared config value)",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "golfapp_stack_enabled_toggle",
+      "label": "golfapp.stack.enabled toggle (shared config value)",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "label": "ADR Decision: Gate addon stacks behind Pulumi-managed cluster labels",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "18-36",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gate_addon_stacks_via_pulumi_managed_cluster_labels_context",
+      "label": "ADR Context: monitoring toggle precedent and unrestricted clusters:{} gap",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "7-16",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gate_addon_stacks_via_pulumi_managed_cluster_labels_rationale",
+      "label": "ADR Rationale: grouped toggles, not fully per-addon",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "25-36",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "adr_readme_gate_addon_stacks_entry",
+      "label": "ADR index entry: Gate addon stacks behind Pulumi-managed cluster labels",
+      "file_type": "document",
+      "source_file": "docs/adr/README.md",
+      "source_location": "21",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "architecture_gitops_bridge_toggle_labels",
+      "label": "architecture.md GitOps bridge section: toggle label selection",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "52-55",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pulumi_homelab_yaml_addontoggles_config",
+      "label": "Pulumi.homelab.yaml homelab:addonToggles config object",
+      "file_type": "document",
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "13-17",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "addon_project_template_appset_unaffected",
+      "label": "addon-project-template-appset.yaml (untouched, matrix generator, not gated)",
+      "file_type": "document",
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "35-36",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "addon_dex_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-dex-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_arc_controller_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-arc-controller-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_arc_runners_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-arc-runners-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_argo_events_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-argo-events-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_argo_rollouts_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-argo-rollouts-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_argo_workflows_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-argo-workflows-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_cert_manager_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-cert-manager-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_onepassword_operator_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-onepassword-operator-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_traefik_appset_platform_stack_enabled_selector",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-traefik-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_coredns_lan_appset_coredns_lan_stack_enabled_selector",
+      "target": "coredns_lan_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-coredns-lan-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_golfapp_appset_golfapp_stack_enabled_selector",
+      "target": "golfapp_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "addons/addon-golfapp-appset.yaml",
+      "source_location": "8-11",
+      "weight": 1.0
+    },
+    {
+      "source": "platform_stack_enabled_toggle",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "coredns_lan_stack_enabled_toggle",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "monitoring_stack_enabled_toggle",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "golfapp_stack_enabled_toggle",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "pulumi_homelab_yaml_addontoggles_config",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "13-17",
+      "weight": 1.0
+    },
+    {
+      "source": "pulumi_homelab_yaml_addontoggles_config",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "14",
+      "weight": 1.0
+    },
+    {
+      "source": "pulumi_homelab_yaml_addontoggles_config",
+      "target": "coredns_lan_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "15",
+      "weight": 1.0
+    },
+    {
+      "source": "pulumi_homelab_yaml_addontoggles_config",
+      "target": "monitoring_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "16",
+      "weight": 1.0
+    },
+    {
+      "source": "pulumi_homelab_yaml_addontoggles_config",
+      "target": "golfapp_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/Pulumi.homelab.yaml",
+      "source_location": "17",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "27-29",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "coredns_lan_stack_enabled_toggle",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "30-31",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "monitoring_stack_enabled_toggle",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "32",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "golfapp_stack_enabled_toggle",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "33",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_rationale",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "25-29",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_context",
+      "target": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "7-18",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "pulumi_homelab_yaml_addontoggles_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "21-23",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "provisioning_pulumi_src_gitopsbridge_addontoggles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "21",
+      "weight": 1.0
+    },
+    {
+      "source": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "target": "addon_project_template_appset_unaffected",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "35-36",
+      "weight": 1.0
+    },
+    {
+      "source": "adr_readme_gate_addon_stacks_entry",
+      "target": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/README.md",
+      "source_location": "21",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "55",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "52-54",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "coredns_lan_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "53-54",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "monitoring_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "53-54",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "golfapp_stack_enabled_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "53-54",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_gitops_bridge_toggle_labels",
+      "target": "pulumi_homelab_yaml_addontoggles_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/architecture.md",
+      "source_location": "54-55",
+      "weight": 1.0
+    },
+    {
+      "source": "monitoring_stack_enabled_toggle",
+      "target": "pulumi_homelab_yaml_addontoggles_config",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "61-63",
+      "weight": 1.0
+    },
+    {
+      "source": "addon_project_template_appset_unaffected",
+      "target": "platform_stack_enabled_toggle",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md",
+      "source_location": "35-36",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "platform_stack_enabled_appset_group",
+      "label": "Platform-tier addons sharing the platform.stack.enabled toggle",
+      "nodes": [
+        "addon_dex_appset_platform_stack_enabled_selector",
+        "addon_arc_controller_appset_platform_stack_enabled_selector",
+        "addon_arc_runners_appset_platform_stack_enabled_selector",
+        "addon_argo_events_appset_platform_stack_enabled_selector",
+        "addon_argo_rollouts_appset_platform_stack_enabled_selector",
+        "addon_argo_workflows_appset_platform_stack_enabled_selector",
+        "addon_cert_manager_appset_platform_stack_enabled_selector",
+        "addon_onepassword_operator_appset_platform_stack_enabled_selector",
+        "addon_traefik_appset_platform_stack_enabled_selector",
+        "platform_stack_enabled_toggle"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md"
+    },
+    {
+      "id": "addon_toggle_groups_defined_by_adr",
+      "label": "Four toggle groups defined by the gate-addon-stacks ADR",
+      "nodes": [
+        "gate_addon_stacks_via_pulumi_managed_cluster_labels_decision",
+        "platform_stack_enabled_toggle",
+        "coredns_lan_stack_enabled_toggle",
+        "monitoring_stack_enabled_toggle",
+        "golfapp_stack_enabled_toggle"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md"
+    },
+    {
+      "id": "gitops_bridge_toggle_config_chain",
+      "label": "Config chain: Pulumi.homelab.yaml addonToggles feeds AddonToggles interface feeds cluster labels feeds appset selectors",
+      "nodes": [
+        "pulumi_homelab_yaml_addontoggles_config",
+        "provisioning_pulumi_src_gitopsbridge_addontoggles",
+        "platform_stack_enabled_toggle",
+        "coredns_lan_stack_enabled_toggle",
+        "monitoring_stack_enabled_toggle",
+        "golfapp_stack_enabled_toggle"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "provisioning/pulumi/src/gitopsBridge.ts"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
