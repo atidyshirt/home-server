@@ -1,0 +1,1 @@
+{"nodes": [{"id": "servicemonitor_argo_workflows_controller", "label": "ServiceMonitor argo-workflows-workflow-controller", "file_type": "code", "source_file": "applications/argo-workflows/base/servicemonitor.yaml", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
