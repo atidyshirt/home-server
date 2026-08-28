@@ -18,3 +18,4 @@ Format: [Michael Nygard's ADR template](https://github.com/architecture-decision
 - [Commit image tag bumps back to git rather than patching the cluster directly](commit-image-tags-back-to-git.md)
 - [Use canary-with-manual-pause as the default Rollout strategy](use-canary-with-manual-pause-for-rollouts.md)
 - [Run EventBus JetStream single-replica for single-node topology](run-single-replica-eventbus-jetstream.md)
+- [Gate addon stacks behind Pulumi-managed cluster labels](gate-addon-stacks-via-pulumi-managed-cluster-labels.md)
