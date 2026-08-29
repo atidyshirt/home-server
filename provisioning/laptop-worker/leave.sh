@@ -10,7 +10,7 @@ set -euo pipefail
 VM_NAME="k0s-laptop-worker"
 
 if [[ "${1:-}" == "--delete" ]]; then
-  limactl delete --force "${VM_NAME}"
+  orbctl delete -f "${VM_NAME}"
 else
-  limactl stop "${VM_NAME}"
+  orbctl stop "${VM_NAME}"
 fi

@@ -40,11 +40,15 @@ strands that run rather than shifting it back to the Pi.
   stable address until after it joins. This matches the existing precedent of per-device manual
   steps (CA trust, Tailscale admin approval, Auth0 setup) living in `docs/provisioning.md` as
   plain shell commands.
-- **The worker runs inside a Lima VM**, with `tailscaled` running inside the VM guest, not the
-  macOS host. The VM's kubelet/pod traffic needs a source address the Pi can always route to;
-  a host-side Tailscale with the VM merely NAT'd through it leaves the VM on an unreachable
-  Lima-internal subnet. `--node-ip` is pinned explicitly to the VM's Tailscale IP rather than
-  auto-detected, which would follow whatever Wi-Fi is currently active.
+- **The worker runs inside an OrbStack Linux machine**, with `tailscaled` running inside the
+  guest, not the macOS host. The requirement is the same regardless of which VM tool is used:
+  the guest's kubelet/pod traffic needs its own distinct, Tailscale-routable node identity, not
+  one collapsed into the host's own Tailscale IP via NAT. `orbctl create` supports the same
+  resource-limit knobs (`--cpus`/`--memory`/`--disk`) the original Lima config used, and
+  `--user-data` accepts a plain cloud-init file for the same idempotent `tailscale`/`k0s`
+  install this needs — see `provisioning/laptop-worker/cloud-init.yaml`. `--node-ip` is pinned
+  explicitly to the VM's Tailscale IP rather than auto-detected, which would follow whatever
+  Wi-Fi is currently active.
 - **A taint on the laptop node, tolerations on the two allowed workloads.** Every existing addon
   has zero node-placement config today (there's only ever been one node); the moment a second
   schedulable node exists, everything becomes schedulable there unless something stops it.
@@ -70,8 +74,14 @@ strands that run rather than shifting it back to the Pi.
   unsupported/risky per the k0s community; this repo's design already supports a clean rebuild
   from git + 1Password, at far lower risk.
 - **Tailscale on the macOS host, VM routed through it**: rejected — the VM's own traffic would
-  originate from a Lima-internal NAT'd address unreachable from the Pi; Tailscale has to
-  originate inside the network namespace that needs to be reached.
+  originate from a NAT'd address unreachable from the Pi; Tailscale has to originate inside the
+  network namespace that needs to be reached.
+- **Lima** (the original choice for this ADR): superseded by OrbStack before this PR merged —
+  the user already runs OrbStack for other workflows, so it avoids maintaining a second
+  virtualization stack purely for this one feature, and its `--user-data` cloud-init flag covers
+  the same two-package guest provisioning Lima's `provision.script` did. Nothing about the
+  underlying design (Tailscale-inside-guest, pinned `--node-ip`, taint/toleration scheme) changes
+  — only the tool that creates and runs the guest.
 - **Per-workload `nodeSelector` pinning every Pi-only addon**: rejected — doesn't generalize,
   and it's easy to forget one addon when a new one is added later. A taint makes "stay on the
   Pi" the default that costs nothing to maintain.
