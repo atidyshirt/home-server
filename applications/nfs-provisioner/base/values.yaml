@@ -1,0 +1,12 @@
+# nfs.server carries a literal placeholder so `kustomize build --enable-helm` succeeds
+# standalone - addon-nfs-provisioner-appset.yaml's commonAnnotations + the replacements
+# in kustomization.yaml overwrite it with addons_node_ip at sync time (see AGENT.md's
+# "Domain configuration" section for this pattern).
+nfs:
+  server: placeholder-node-ip
+  path: /srv/nfs/homelab-workspace
+
+storageClass:
+  name: workspace-nfs
+  accessModes: ReadWriteMany
+  reclaimPolicy: Delete

@@ -1,202 +1,260 @@
-# Graph Report - home-server  (2026-08-28)
+# Graph Report - /Users/jordanp/projects/home-server__worktrees/feat-explore-transient-k3s-node  (2026-08-29)
 
 ## Corpus Check
-- Corpus is ~16,483 words - fits in a single context window. You may not need a graph.
+- 6 files · ~45,830 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 348 nodes · 489 edges · 27 communities (21 shown, 6 thin omitted)
-- Extraction: 81% EXTRACTED · 18% INFERRED · 1% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.81)
+- 95 nodes · 125 edges · 28 communities detected
+- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- GitOps Platform Concepts
-- Homelab Design Rationale
-- Pulumi Bootstrap Modules
-- Grafana Dashboards & Metrics
-- ARC Runner & Build Infra
-- ArgoCD Bootstrap & Ingress
-- Pulumi npm Dependencies
-- ARC Controller & Runners Addons
-- GolfApp CI Runners & Repos
-- Project Template RBAC & Secrets
-- Argo Events/Workflows Addons
-- TypeScript Config
-- GHCR Pull Secret Provisioning
-- Cert-Manager & Dex Addons
-- Project Template & Traefik Addons
-- Home-Server Runner & CoreDNS Addon
-- TLS Certificate Chain
-- CoreDNS LAN Resources
-- Argo Rollouts Addon
-- Monitoring Addon
-- Pulumi Bootstrap Package
-- TLS Bootstrap Rationale
-- Documentation Philosophy
-- Graphify Tooling
-- Devenv Nix Config
-- k0s Bootstrap Script
-- CA Trust Secret (duplicate)
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `ADR Index` - 16 edges
-2. `clusters: {} generator pattern (all-clusters rollout)` - 11 edges
-3. `addons_repo_url / addons_repo_revision cluster annotations` - 11 edges
-4. `addons_domain / addons_node_ip / addons_node_ip_v6 commonAnnotations` - 11 edges
-5. `ArgoCd ComponentResource` - 10 edges
-6. `golfapp ApplicationSet` - 10 edges
-7. `Commit Image Tag Bumps Back to Git` - 10 edges
-8. `Architecture Overview` - 10 edges
-9. `Continuous Delivery Pipeline` - 10 edges
-10. `addon-arc-controller ApplicationSet` - 9 edges
+2. `Architecture Overview` - 10 edges
+3. `Commit Image Tag Bumps Back to Git` - 10 edges
+4. `Continuous Delivery Pipeline` - 10 edges
+5. `Adding a New Project Workflow` - 8 edges
+6. `Provisioning Guide` - 8 edges
+7. `Apply ArgoCD Bootstrap Manifests Directly via Pulumi` - 7 edges
+8. `Use App-of-Appsets GitOps Pattern` - 7 edges
+9. `Use ARC Only as NAT-Traversal Trigger Bridge` - 7 edges
+10. `Use Argo Workflows for Image Builds, Not GitHub Actions Compute` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `ARC Smoke Test Workflow` --conceptually_related_to--> `home-server-bootstrap Package`  [AMBIGUOUS]
-  /Users/jordanp/projects/home-server/.github/workflows/arc-smoke-test.yml → /Users/jordanp/projects/home-server/provisioning/pulumi/package.json
-- `addon-argo-rollouts ApplicationSet` --semantically_similar_to--> `golf-canary Web info entry`  [INFERRED] [semantically similar]
-  /Users/jordanp/projects/home-server/addons/addon-argo-rollouts-appset.yaml → /Users/jordanp/projects/home-server/addons/addon-golfapp-appset.yaml
-- `Role: default-restricted` --semantically_similar_to--> `GatewayClass: traefik`  [INFERRED] [semantically similar]
-  /Users/jordanp/projects/home-server/applications/project-template/base/rbac.yaml → /Users/jordanp/projects/home-server/applications/traefik/base/values.yaml
-- `Graphify Project Rules` --implements--> `Graphify PreToolUse Hook`  [INFERRED]
-  /Users/jordanp/projects/home-server/CLAUDE.md → /Users/jordanp/projects/home-server/.claude/settings.json
-- `home-server-bootstrap Package` --conceptually_related_to--> `home-server-bootstrap Pulumi Project`  [INFERRED]
-  /Users/jordanp/projects/home-server/provisioning/pulumi/package.json → /Users/jordanp/projects/home-server/provisioning/pulumi/Pulumi.yaml
-
-## Import Cycles
-- None detected.
+- `GHCR (GitHub Container Registry)` --conceptually_related_to--> `Commit Image Tag Bumps Back to Git`  [INFERRED]
+  /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md → /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md
+- `Use 1Password Kubernetes Operator as Sole Secrets Mechanism` --conceptually_related_to--> `Apply ArgoCD Bootstrap Manifests Directly via Pulumi`  [INFERRED]
+  /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md → /Users/jordanp/projects/home-server/docs/adr/apply-argocd-bootstrap-manifests-via-pulumi.md
+- `Scope ARC Runners Per-Repo` --semantically_similar_to--> `Commit Image Tag Bumps Back to Git`  [INFERRED] [semantically similar]
+  /Users/jordanp/projects/home-server/docs/adr/scope-arc-runners-per-repo.md → /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md
+- `Continuous Delivery Pipeline` --conceptually_related_to--> `kaniko`  [EXTRACTED]
+  /Users/jordanp/projects/home-server/docs/continous_delivery.md → /Users/jordanp/projects/home-server/docs/adr/use-argo-workflows-for-image-builds.md
+- `Use GHCR, Not a Self-Hosted Registry` --semantically_similar_to--> `Use 1Password Kubernetes Operator as Sole Secrets Mechanism`  [INFERRED] [semantically similar]
+  /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md → /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md
 
 ## Hyperedges (group relationships)
-- **Pulumi ComponentResource Bootstrap Modules Sharing Singleton K8s Provider** — argocd_argocd_class, gatewayapi_gatewayapi_class, gitopsbridge_gitopsbridge_class, onepassword_onepassword_class, raspberrypik0s_getkubernetesprovider [EXTRACTED 0.90]
-- **Dex-ArgoCD OIDC Trust and Secret Sharing Chain** — argocd_dex_oidc_integration, agent_sso_dex_oidc_pattern, agent_dex_argocd_shared_secret_rationale, agent_argocd_hostaliases_rationale, agent_argocd_ca_trust_rationale [INFERRED 0.85]
-- **Placeholder Token Substitution Pattern Across Domain-Dependent Configs** — agent_domain_configuration_pattern, agent_dex_placeholder_sed_pattern, agent_dns_coredns_lan, argocd_applyrootapp [INFERRED 0.80]
-- **1Password-backed secret delivery to ARC runner scale sets** — addon_onepassword_operator_appset_applicationset, addon_arc_runners_appset_onepassword_items_source, addon_arc_controller_appset_applicationset [INFERRED 0.75]
-- **Shared addon bootstrap convention: clusters generator + addons_repo_url/domain annotations + selfHeal syncPolicy** — addons_shared_clusters_generator_pattern, addons_shared_addons_repo_url_annotation, addons_shared_addons_domain_annotation, addons_shared_selfheal_prune_syncpolicy [INFERRED 0.85]
-- **GolfApp CI/CD delivery pipeline across ApplicationSets** — addon_golfapp_appset_applicationset, addon_arc_runners_appset_golfapp_platform_runner_set, addon_argo_rollouts_appset_applicationset, addon_project_template_appset_golf_project_element [INFERRED 0.80]
-- **GitHub Push to Workflow Submission Pipeline (EventSource -> Sensor -> WorkflowTemplate)** — eventsource_build_trigger, sensor_build_trigger, workflowtemplate_build_and_deploy, argo_events_eventbus_default [EXTRACTED 0.95]
-- **Sensor ServiceAccount authorized via cross-namespace RBAC to submit WorkflowTemplate** — sensor_build_trigger_service_account, sensor_rbac_rolebinding, sensor_rbac_role, workflowtemplate_build_and_deploy [EXTRACTED 0.90]
-- **build-and-deploy WorkflowTemplate step sequence (prepare, build-and-push, bump-deploy-repo)** — build_and_deploy_template_prepare, build_and_deploy_template_build_and_push, build_and_deploy_template_bump_deploy_repo [EXTRACTED 0.95]
-- **OnePasswordItem secrets feeding cert/DNS-independent auth and registry flows across dex, monitoring, and ghcr-pull-secret** — onepassword_item_oidc_auth0, onepassword_item_oidc_dex_dex_ns, onepassword_item_oidc_dex_monitoring_ns, onepassword_item_ghcr_push [INFERRED 0.80]
-- **Dex SSO OAuth chain: staticClients, Auth0 connector, and Grafana generic_oauth all tied together via oidc-dex/oidc-auth0 secrets** — dex_values_static_clients, dex_values_auth0_connector, grafana_oauth_config, onepassword_item_oidc_dex_monitoring_ns [EXTRACTED 0.90]
-- **Shared sed-based render-config initContainer pattern for templating domain placeholders across coredns-lan, dex, and grafana** — daemonset_render_config_initcontainer, dex_render_config_initcontainer, grafana_render_config_initcontainer [INFERRED 0.85]
-- **Traefik TLS Certificate Issuance and Gateway Termination Flow** — traefik_certificate_yaml, homelab_ca_issuer, homelab_dev_tls_secret, traefik_websecure_listener, traefik_replacements_addons_domain [EXTRACTED 0.90]
 - **ArgoCD Server Exposure via Gateway API HTTPRoute** — argocd_httproute, lan_gateway, argocd_server_service, traefik_gatewayclass [EXTRACTED 0.85]
-- **ArgoCD App-of-Appsets Bootstrap Pattern** — argocd_root_application, addons_dir_appsets, appproject_platform, appproject_golf_application [INFERRED 0.75]
-- **GitOps Bootstrap and Repo-Targeting Pattern (Pulumi + ArgoCD app-of-appsets + gitops-bridge)** — apply_argocd_bootstrap_manifests_via_pulumi_decision, use_app_of_appsets_gitops_pattern_decision, use_gitops_bridge_for_repo_targeting_decision, concept_pulumi, concept_argocd [EXTRACTED 0.90]
 - **Build-and-Deploy CI/CD Pipeline (ARC trigger to Argo Events/Workflows/Rollouts)** — use_arc_as_trigger_bridge_only_decision, scope_arc_runners_per_repo_decision, use_argo_workflows_for_image_builds_decision, use_ghcr_for_container_registry_decision, commit_image_tags_back_to_git_decision, use_canary_with_manual_pause_for_rollouts_decision, run_single_replica_eventbus_jetstream_decision [EXTRACTED 0.90]
+- **Dex SSO OAuth chain: staticClients, Auth0 connector, and Grafana generic_oauth all tied together via oidc-dex/oidc-auth0 secrets** — dex_values_static_clients, dex_values_auth0_connector, grafana_oauth_config, onepassword_item_oidc_dex_monitoring_ns [EXTRACTED 0.90]
+- **GitOps Bootstrap and Repo-Targeting Pattern (Pulumi + ArgoCD app-of-appsets + gitops-bridge)** — apply_argocd_bootstrap_manifests_via_pulumi_decision, use_app_of_appsets_gitops_pattern_decision, use_gitops_bridge_for_repo_targeting_decision, concept_pulumi, concept_argocd [EXTRACTED 0.90]
+- **Pulumi ComponentResource Bootstrap Modules Sharing Singleton K8s Provider** — argocd_argocd_class, gatewayapi_gatewayapi_class, gitopsbridge_gitopsbridge_class, onepassword_onepassword_class, raspberrypik0s_getkubernetesprovider [EXTRACTED 0.90]
+- **Sensor ServiceAccount authorized via cross-namespace RBAC to submit WorkflowTemplate** — sensor_build_trigger_service_account, sensor_rbac_rolebinding, sensor_rbac_role, workflowtemplate_build_and_deploy [EXTRACTED 0.90]
+- **Traefik TLS Certificate Issuance and Gateway Termination Flow** — traefik_certificate_yaml, homelab_ca_issuer, homelab_dev_tls_secret, traefik_websecure_listener, traefik_replacements_addons_domain [EXTRACTED 0.90]
+- **build-and-deploy WorkflowTemplate step sequence (prepare, build-and-push, bump-deploy-repo)** — build_and_deploy_template_prepare, build_and_deploy_template_build_and_push, build_and_deploy_template_bump_deploy_repo [EXTRACTED 0.95]
+- **GitHub Push to Workflow Submission Pipeline (EventSource -> Sensor -> WorkflowTemplate)** — eventsource_build_trigger, sensor_build_trigger, workflowtemplate_build_and_deploy, argo_events_eventbus_default [EXTRACTED 0.95]
+- **ArgoCD App-of-Appsets Bootstrap Pattern** — argocd_root_application, addons_dir_appsets, appproject_platform, appproject_golf_application [INFERRED 0.75]
+- **1Password-backed secret delivery to ARC runner scale sets** — addon_onepassword_operator_appset_applicationset, addon_arc_runners_appset_onepassword_items_source, addon_arc_controller_appset_applicationset [INFERRED 0.75]
+- **GolfApp CI/CD delivery pipeline across ApplicationSets** — addon_golfapp_appset_applicationset, addon_arc_runners_appset_golfapp_platform_runner_set, addon_argo_rollouts_appset_applicationset, addon_project_template_appset_golf_project_element [INFERRED 0.80]
 - **Homelab Networking, TLS, and Identity Pattern (domain, DNS, TLS, SSO)** — use_homelab_arpa_domain_decision, run_in_cluster_coredns_for_lan_dns_decision, use_self_signed_ca_for_internal_tls_decision, use_traefik_for_gateway_api_decision, use_standalone_dex_for_sso_decision [INFERRED 0.80]
+- **OnePasswordItem secrets feeding cert/DNS-independent auth and registry flows across dex, monitoring, and ghcr-pull-secret** — onepassword_item_oidc_auth0, onepassword_item_oidc_dex_dex_ns, onepassword_item_oidc_dex_monitoring_ns, onepassword_item_ghcr_push [INFERRED 0.80]
+- **Placeholder Token Substitution Pattern Across Domain-Dependent Configs** — agent_domain_configuration_pattern, agent_dex_placeholder_sed_pattern, agent_dns_coredns_lan, argocd_applyrootapp [INFERRED 0.80]
+- **Shared addon bootstrap convention: clusters generator + addons_repo_url/domain annotations + selfHeal syncPolicy** — addons_shared_clusters_generator_pattern, addons_shared_addons_repo_url_annotation, addons_shared_addons_domain_annotation, addons_shared_selfheal_prune_syncpolicy [INFERRED 0.85]
+- **Dex-ArgoCD OIDC Trust and Secret Sharing Chain** — argocd_dex_oidc_integration, agent_sso_dex_oidc_pattern, agent_dex_argocd_shared_secret_rationale, agent_argocd_hostaliases_rationale, agent_argocd_ca_trust_rationale [INFERRED 0.85]
+- **Shared sed-based render-config initContainer pattern for templating domain placeholders across coredns-lan, dex, and grafana** — daemonset_render_config_initcontainer, dex_render_config_initcontainer, grafana_render_config_initcontainer [INFERRED 0.85]
 
-## Communities (27 total, 6 thin omitted)
+## Communities
 
-### Community 0 - "GitOps Platform Concepts"
-Cohesion: 0.10
-Nodes (44): Adding a New Project Workflow, ADR Index, Apply ArgoCD Bootstrap Manifests Directly via Pulumi, Architecture Overview, Commit Image Tag Bumps Back to Git, 1Password Kubernetes Operator, actions-runner-controller (ARC), Argo Events (+36 more)
+### Community 0 - "Community 0"
+Cohesion: 0.12
+Nodes (5): ArgoCd, GatewayApi, GitopsBridge, getKubernetesProvider(), RaspberryPiK0s
 
-### Community 1 - "Homelab Design Rationale"
-Cohesion: 0.08
-Nodes (38): AppProjects Namespace Enforcement Pattern, AGENT.md Architecture Reference, Rationale: Merged CA Bundle via SSL_CERT_FILE Instead of Replacing System Trust Store, Rationale: hostAliases on argocd-server Instead of Patching kube-system CoreDNS, Rationale: oidc-dex Secret Copied Not Second OnePasswordItem, Dex Config Init-Container sed Substitution Pattern, coredns-lan DNS Pattern for homelab.arpa, Domain Configuration Propagation Pattern (+30 more)
-
-### Community 2 - "Pulumi Bootstrap Modules"
-Cohesion: 0.08
-Nodes (18): argocd, argocdUrl, domain, gatewayApi, gitopsBridge, onePassword, ArgoCd, ArgoCdInitOptions (+10 more)
-
-### Community 3 - "Grafana Dashboards & Metrics"
-Cohesion: 0.07
-Nodes (34): Grafana dashboard: CI/CD (Argo Workflows/Events/Rollouts), Panel: CPU Usage by Namespace (aggregate), Panel: CPU Usage by Pod (container_cpu_usage_seconds_total), Panel: Memory Usage by Pod (container_memory_working_set_bytes), Panel: Pod Restarts (1h) (kube_pod_container_status_restarts_total), Panel: Pods by Namespace (kube_pod_status_phase), Panel: Argo Workflows Workflow Count by Phase (argo_workflows_count), Grafana dashboard: GolfApp (+26 more)
-
-### Community 4 - "ARC Runner & Build Infra"
-Cohesion: 0.09
-Nodes (31): gha-runner-scale-set-controller Helm Chart, arc-controller base Kustomization, arc-runner-set Chart.yaml, arc-controller-gha-rs-controller ServiceAccount ref, gha-runner-scale-set Chart Dependency, OnePasswordItem arc-github-token (arc-runners), arc-runners base values.yaml, EventBus default (argo-events) (+23 more)
-
-### Community 5 - "ArgoCD Bootstrap & Ingress"
-Cohesion: 0.11
-Nodes (21): addons/ Directory (addon-*-appset.yaml files), AppProject: golf-application, AppProject: platform, HTTPRoute: argocd, Application: root (ArgoCD App-of-Appsets), Service: argocd-server, HTTPRoute dex, Dex HTTPRoute config (dex.placeholder-domain via lan-gateway) (+13 more)
-
-### Community 6 - "Pulumi npm Dependencies"
-Cohesion: 0.13
-Nodes (14): dependencies, @pulumi/command, @pulumi/kubernetes, @pulumi/pulumi, devDependencies, @types/node, typescript, main (+6 more)
-
-### Community 7 - "ARC Controller & Runners Addons"
-Cohesion: 0.16
-Nodes (14): actions-runner-controller (upstream project), addon-arc-controller ApplicationSet, applications/arc-controller/base path, arc-systems namespace, platform ArgoCD project, addon-arc-runners ApplicationSet, arc-runners namespace, applications/arc-runners/onepassword-items source (+6 more)
-
-### Community 8 - "GolfApp CI Runners & Repos"
-Cohesion: 0.17
-Nodes (13): github.com/atidyshirt/golf-ai-experiment (runner target repo), github.com/atidyshirt/golfapp-platform (runner target repo), golfapp-platform-runner-set (gha-runner-scale-set), golfapp-runner-set (gha-runner-scale-set), golfapp ApplicationSet, golf-canary Web info entry, golf-ai-experiment repo (source code), golf-application ArgoCD project (+5 more)
-
-### Community 9 - "Project Template RBAC & Secrets"
-Cohesion: 0.20
-Nodes (11): 1Password Connect Helm Chart, Onepassword Operator Base Kustomization, Project Template Base Kustomization, Project Template RBAC Resource, Project Template Service Account Resource, RBAC Permission: argoproj.io rollouts, Role: default-restricted, RoleBinding: default-restricted (+3 more)
-
-### Community 10 - "Argo Events/Workflows Addons"
-Cohesion: 0.22
-Nodes (10): addon-argo-events ApplicationSet, argo-events namespace, applications/argo-events/base path, argo-events (upstream project), addon-argo-workflows ApplicationSet, argo-workflows namespace, applications/argo-workflows/base path, argo-workflows (upstream project) (+2 more)
-
-### Community 11 - "TypeScript Config"
-Cohesion: 0.20
-Nodes (9): compilerOptions, module, moduleResolution, outDir, skipLibCheck, strict, target, files (+1 more)
-
-### Community 12 - "GHCR Pull Secret Provisioning"
-Cohesion: 0.31
-Nodes (9): arc-runners onepassword-items (shared ghcr-push item), argo-workflows base onepassword-items (shared ghcr-push item), Job ghcr-pull-secret, ghcr-pull-secret Kustomization, Secret ghcr-pull (docker-registry, ghcr.io), Role ghcr-pull-secret-writer, RoleBinding ghcr-pull-secret-writer, ServiceAccount ghcr-pull-secret-writer (+1 more)
-
-### Community 13 - "Cert-Manager & Dex Addons"
+### Community 1 - "Community 1"
 Cohesion: 0.25
-Nodes (8): addon-cert-manager ApplicationSet, cert-manager namespace, applications/cert-manager/base path, cert-manager (upstream project), addon-dex ApplicationSet, dex namespace, applications/dex/base path, dexidp/dex (upstream project)
+Nodes (14): ADR Index, Auth0, cert-manager, CoreDNS, Dex, Gateway API, Tailscale, Traefik (+6 more)
 
-### Community 14 - "Project Template & Traefik Addons"
+### Community 2 - "Community 2"
+Cohesion: 0.24
+Nodes (13): Commit Image Tag Bumps Back to Git, actions-runner-controller (ARC), Argo Events, Argo Rollouts, gitops-bot Credential, JetStream (NATS), k0s (single-node cluster), Kustomize (+5 more)
+
+### Community 3 - "Community 3"
+Cohesion: 0.56
+Nodes (9): Adding a New Project Workflow, Apply ArgoCD Bootstrap Manifests Directly via Pulumi, Architecture Overview, ArgoCD, homelab-app-template, homelab-deploy-template, Pulumi, Use App-of-Appsets GitOps Pattern (+1 more)
+
+### Community 4 - "Community 4"
 Cohesion: 0.25
-Nodes (8): addon-project-template ApplicationSet, Rationale: per-project defaults live under platform, one Application per project namespace not per project repo, applications/project-template/base path, addon-traefik ApplicationSet, traefik namespace, applications/traefik/base path, traefik/traefik (upstream project), automated selfHeal+prune syncPolicy with CreateNamespace/ServerSideApply
+Nodes (8): 1Password Kubernetes Operator, Argo Workflows, GHCR (GitHub Container Registry), GitHub Actions, kaniko, Use 1Password Kubernetes Operator as Sole Secrets Mechanism, Use Argo Workflows for Image Builds, Not GitHub Actions Compute, Use GHCR, Not a Self-Hosted Registry
 
-### Community 15 - "Home-Server Runner & CoreDNS Addon"
-Cohesion: 0.29
-Nodes (7): github.com/atidyshirt/home-server (runner target repo), home-server-runner-set (gha-runner-scale-set), addon-coredns-lan ApplicationSet, coredns-lan namespace, applications/coredns-lan/base path, CoreDNS (upstream project), addons_domain / addons_node_ip / addons_node_ip_v6 commonAnnotations
+### Community 5 - "Community 5"
+Cohesion: 0.5
+Nodes (4): Rationale: oidc-dex Secret Copied Not Second OnePasswordItem, Dex Config Init-Container sed Substitution Pattern, Domain Configuration Propagation Pattern, Dex Standalone OIDC Broker Pattern
 
-### Community 16 - "TLS Certificate Chain"
-Cohesion: 0.29
-Nodes (7): cert-manager Helm chart (jetstack v1.21.1), cert-manager Kustomization (helm chart + issuers.yaml), Rationale: tls_skip_verify_insecure for Dex OAuth token exchange (self-signed CA), Certificate homelab-ca, ClusterIssuer homelab-ca-issuer, Secret homelab-ca-secret, ClusterIssuer selfsigned-bootstrap
-
-### Community 17 - "CoreDNS LAN Resources"
-Cohesion: 0.60
-Nodes (6): ConfigMap coredns-lan-corefile, ConfigMap coredns-lan-zones, coredns-lan Kustomization, coredns container (coredns/coredns:1.14.6), DaemonSet coredns-lan, render-config initContainer (sed template rendering)
-
-### Community 18 - "Argo Rollouts Addon"
-Cohesion: 0.40
-Nodes (5): addon-argo-rollouts ApplicationSet, argo-rollouts namespace, applications/argo-rollouts/base path, argo-rollouts (upstream project), argo-rollouts Web UI info entry
-
-### Community 19 - "Monitoring Addon"
-Cohesion: 0.50
-Nodes (5): addon-monitoring ApplicationSet, monitoring.stack.enabled=true cluster-label gate, kube-prometheus-stack helm chart (upstream), monitoring namespace, applications/monitoring/base path
-
-### Community 20 - "Pulumi Bootstrap Package"
+### Community 6 - "Community 6"
 Cohesion: 0.67
-Nodes (3): ARC Smoke Test Workflow, home-server-bootstrap Package, home-server-bootstrap Pulumi Project
+Nodes (3): coredns-lan DNS Pattern for homelab.arpa, Rationale: Pi-hole Disabled in Favor of coredns-lan, Rationale: Tailscale 4via6 Route over Subnet Router
 
-## Ambiguous Edges - Review These
-- `home-server-bootstrap Package` → `ARC Smoke Test Workflow`  [AMBIGUOUS]
-  /Users/jordanp/projects/home-server/.github/workflows/arc-smoke-test.yml · relation: conceptually_related_to
-- `monitoring.stack.enabled=true cluster-label gate` → `monitoring.stack.enabled=true cluster-label gate`  [AMBIGUOUS]
-  /Users/jordanp/projects/home-server/addons/addon-monitoring-appset.yaml · relation: rationale_for
-- `Grafana dashboard: GolfApp` → `Grafana auth.generic_oauth config (Dex client)`  [AMBIGUOUS]
-  /Users/jordanp/projects/home-server/applications/monitoring/base/values.yaml · relation: conceptually_related_to
+### Community 7 - "Community 7"
+Cohesion: 0.67
+Nodes (3): AGENT.md Architecture Reference, Pulumi ComponentResource Provisioning Pattern, home-server GitOps Repo Overview
+
+### Community 8 - "Community 8"
+Cohesion: 1.0
+Nodes (2): cert-manager CA Bootstrap Sync Waves, Rationale: homelab.arpa Domain Switch for TLS
+
+### Community 9 - "Community 9"
+Cohesion: 1.0
+Nodes (2): Documentation Conciseness Philosophy, No Code Comments Philosophy
+
+### Community 10 - "Community 10"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 11 - "Community 11"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 12 - "Community 12"
+Cohesion: 1.0
+Nodes (1): index.ts
+
+### Community 13 - "Community 13"
+Cohesion: 1.0
+Nodes (1): @pulumi/command
+
+### Community 14 - "Community 14"
+Cohesion: 1.0
+Nodes (1): @pulumi/kubernetes
+
+### Community 15 - "Community 15"
+Cohesion: 1.0
+Nodes (1): @pulumi/pulumi
+
+### Community 16 - "Community 16"
+Cohesion: 1.0
+Nodes (1): @types/node
+
+### Community 17 - "Community 17"
+Cohesion: 1.0
+Nodes (1): typescript
+
+### Community 18 - "Community 18"
+Cohesion: 1.0
+Nodes (1): AppProjects Namespace Enforcement Pattern
+
+### Community 19 - "Community 19"
+Cohesion: 1.0
+Nodes (1): Rationale: Merged CA Bundle via SSL_CERT_FILE Instead of Replacing System Trust Store
+
+### Community 20 - "Community 20"
+Cohesion: 1.0
+Nodes (1): Rationale: hostAliases on argocd-server Instead of Patching kube-system CoreDNS
+
+### Community 21 - "Community 21"
+Cohesion: 1.0
+Nodes (1): Rationale: Traefik Chosen over Envoy Gateway
+
+### Community 22 - "Community 22"
+Cohesion: 1.0
+Nodes (1): Gitops-Bridge Revision Pinning Pattern
+
+### Community 23 - "Community 23"
+Cohesion: 1.0
+Nodes (1): Rationale: KubernetesProvider Interface as Swap Seam
+
+### Community 24 - "Community 24"
+Cohesion: 1.0
+Nodes (1): Rationale: protect true on argocd/onepassword Namespaces
+
+### Community 25 - "Community 25"
+Cohesion: 1.0
+Nodes (1): 1Password Kubernetes Operator Secrets Pattern
+
+### Community 26 - "Community 26"
+Cohesion: 1.0
+Nodes (1): Rationale: per-project defaults live under platform, one Application per project namespace not per project repo
+
+### Community 27 - "Community 27"
+Cohesion: 1.0
+Nodes (1): Graphify Project Rules
 
 ## Knowledge Gaps
-- **137 isolated node(s):** `gatewayApi`, `argocd`, `gitopsBridge`, `onePassword`, `domain` (+132 more)
+- **38 isolated node(s):** `index.ts`, `@pulumi/command`, `@pulumi/kubernetes`, `@pulumi/pulumi`, `@types/node` (+33 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **Thin community `Community 8`** (2 nodes): `cert-manager CA Bootstrap Sync Waves`, `Rationale: homelab.arpa Domain Switch for TLS`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 9`** (2 nodes): `Documentation Conciseness Philosophy`, `No Code Comments Philosophy`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 10`** (1 nodes): `index.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 11`** (1 nodes): `kubernetesProvider.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 12`** (1 nodes): `index.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 13`** (1 nodes): `@pulumi/command`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 14`** (1 nodes): `@pulumi/kubernetes`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 15`** (1 nodes): `@pulumi/pulumi`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 16`** (1 nodes): `@types/node`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 17`** (1 nodes): `typescript`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 18`** (1 nodes): `AppProjects Namespace Enforcement Pattern`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 19`** (1 nodes): `Rationale: Merged CA Bundle via SSL_CERT_FILE Instead of Replacing System Trust Store`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 20`** (1 nodes): `Rationale: hostAliases on argocd-server Instead of Patching kube-system CoreDNS`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 21`** (1 nodes): `Rationale: Traefik Chosen over Envoy Gateway`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 22`** (1 nodes): `Gitops-Bridge Revision Pinning Pattern`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 23`** (1 nodes): `Rationale: KubernetesProvider Interface as Swap Seam`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 24`** (1 nodes): `Rationale: protect true on argocd/onepassword Namespaces`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 25`** (1 nodes): `1Password Kubernetes Operator Secrets Pattern`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 26`** (1 nodes): `Rationale: per-project defaults live under platform, one Application per project namespace not per project repo`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 27`** (1 nodes): `Graphify Project Rules`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What is the exact relationship between `home-server-bootstrap Package` and `ARC Smoke Test Workflow`?**
-  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **What is the exact relationship between `monitoring.stack.enabled=true cluster-label gate` and `monitoring.stack.enabled=true cluster-label gate`?**
-  _Edge tagged AMBIGUOUS (relation: rationale_for) - confidence is low._
-- **What is the exact relationship between `Grafana dashboard: GolfApp` and `Grafana auth.generic_oauth config (Dex client)`?**
-  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `HTTPRoute grafana` connect `ArgoCD Bootstrap & Ingress` to `Grafana Dashboards & Metrics`?**
-  _High betweenness centrality (0.021) - this node is a cross-community bridge._
-- **Why does `monitoring Kustomization (kube-prometheus-stack)` connect `Grafana Dashboards & Metrics` to `ArgoCD Bootstrap & Ingress`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Are the 11 inferred relationships involving `clusters: {} generator pattern (all-clusters rollout)` (e.g. with `addon-arc-controller ApplicationSet` and `addon-arc-runners ApplicationSet`) actually correct?**
-  _`clusters: {} generator pattern (all-clusters rollout)` has 11 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 11 inferred relationships involving `addons_repo_url / addons_repo_revision cluster annotations` (e.g. with `addon-arc-controller ApplicationSet` and `addon-argo-events ApplicationSet`) actually correct?**
-  _`addons_repo_url / addons_repo_revision cluster annotations` has 11 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `ADR Index` connect `Community 1` to `Community 2`, `Community 3`, `Community 4`?**
+  _High betweenness centrality (0.088) - this node is a cross-community bridge._
+- **Why does `Commit Image Tag Bumps Back to Git` connect `Community 2` to `Community 1`, `Community 3`, `Community 4`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+- **Why does `Provisioning Guide` connect `Community 1` to `Community 3`, `Community 4`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Are the 3 inferred relationships involving `Commit Image Tag Bumps Back to Git` (e.g. with `Scope ARC Runners Per-Repo` and `GHCR (GitHub Container Registry)`) actually correct?**
+  _`Commit Image Tag Bumps Back to Git` has 3 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 3 inferred relationships involving `Adding a New Project Workflow` (e.g. with `Use App-of-Appsets GitOps Pattern` and `Use the gitops-bridge Pattern for Repo/Revision Targeting`) actually correct?**
+  _`Adding a New Project Workflow` has 3 INFERRED edges - model-reasoned connections that need verification._
+- **What connects `index.ts`, `@pulumi/command`, `@pulumi/kubernetes` to the rest of the system?**
+  _38 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 0` be split into smaller, more focused modules?**
+  _Cohesion score 0.12 - nodes in this community are weakly interconnected._

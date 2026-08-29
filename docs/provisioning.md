@@ -59,6 +59,57 @@ Router/network/IdP-dashboard specific — can't be automated from here.
   };
   ```
 
+## Adding a transient laptop worker node
+
+See [docs/adr/add-transient-laptop-worker-node.md](adr/add-transient-laptop-worker-node.md) for
+the full design. Three one-time steps, in order:
+
+### 1. Rebuild the Pi (single → multi-node)
+
+`k0s install controller --single` can never accept a worker join (see the ADR) — this replaces
+the whole cluster from git + 1Password, the same way a fresh-Pi bootstrap works today. Not a
+live migration: everything is reconstructed, nothing is preserved in place.
+
+```bash
+ssh clusteradmin@home-server.local "sudo k0s stop && sudo k0s reset"
+cd provisioning/pulumi
+PULUMI_CONFIG_PASSPHRASE=<your passphrase> pulumi up
+```
+
+Verify: `ssh clusteradmin@home-server.local "sudo k0s kubectl get nodes"` shows one `Ready`
+node, and ArgoCD has synced every addon (including the new `nfs-provisioner`).
+
+### 2. NFS export for the shared build workspace
+
+`applications/nfs-provisioner` needs an NFS server to point at — this runs at the host level on
+the Pi, the same pattern as Tailscale/CA-trust above, rather than as an in-cluster server pod.
+
+```bash
+ssh clusteradmin@home-server.local "sudo apt-get install -y nfs-kernel-server && sudo mkdir -p /srv/nfs/homelab-workspace"
+ssh clusteradmin@home-server.local "echo '/srv/nfs/homelab-workspace 10.244.0.0/16(rw,sync,no_subtree_check,no_root_squash)' | sudo tee -a /etc/exports && sudo exportfs -ra"
+```
+
+`10.244.0.0/16` is k0s's default pod CIDR (kube-router) — confirm it matches post-rebuild
+(`sudo k0s kubectl cluster-info dump | grep -m1 cluster-cidr`) before relying on it, since a
+custom CIDR would need the export range adjusted to match.
+
+### 3. Laptop worker join
+
+Requires [Lima](https://lima-vm.io) (`brew install lima`) on the laptop.
+
+```bash
+provisioning/laptop-worker/join.sh
+```
+
+Starts a Linux VM, brings up Tailscale inside it (opens a login URL on first run, same as the
+Pi's own Tailscale step above), mints a k0s worker join token from the Pi, and joins the VM as
+a tainted (`node-role.homelab/tier=transient`), laptop-only-eligible worker node. Verify:
+`ssh clusteradmin@home-server.local "sudo k0s kubectl get nodes"` shows two nodes.
+
+`provisioning/laptop-worker/leave.sh` stops the VM (add `--delete` to fully remove it) — a
+stopped VM alone is enough to trigger `NotReady` → eviction, no explicit decommissioning step
+needed for routine disconnects.
+
 > [!IMPORTANT]
 > The DNS forwarding rule is explicitly *not* setting it as the primary DNS server — only queries for `*.homelab.arpa` get forwarded there. If your router doesn't support conditional forwarding, set `192.168.1.146` as a secondary DNS server on individual devices instead.
 

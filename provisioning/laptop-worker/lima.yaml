@@ -1,0 +1,31 @@
+# Overlay applied on top of Lima's built-in `template://ubuntu-lts` (see join.sh) - carries
+# no `images:` block on purpose, so the base OS image stays whatever ships with the user's
+# installed Lima version rather than a URL/digest pinned here that goes stale.
+vmType: vz
+arch: aarch64
+cpus: 2
+memory: "4GiB"
+disk: "20GiB"
+
+# No host filesystem exposed - this VM only ever runs floating ARC runner / Argo Workflows
+# build pods, nothing needs to read the Mac's own files.
+mounts: []
+
+containerd:
+  system: false
+  user: false
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      export DEBIAN_FRONTEND=noninteractive
+
+      if ! command -v tailscale >/dev/null 2>&1; then
+        curl -fsSL https://tailscale.com/install.sh | sh
+      fi
+
+      if ! command -v k0s >/dev/null 2>&1; then
+        curl -sSLf https://get.k0s.sh | sh
+      fi

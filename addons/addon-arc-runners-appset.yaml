@@ -31,6 +31,13 @@ spec:
               gha-runner-scale-set:
                 githubConfigUrl: https://github.com/atidyshirt/home-server
                 runnerScaleSetName: home-server-runner-set
+                template:
+                  spec:
+                    tolerations:
+                      - key: node-role.homelab/tier
+                        operator: Equal
+                        value: transient
+                        effect: NoSchedule
         - repoURL: '{{metadata.annotations.addons_repo_url}}'
           targetRevision: '{{metadata.annotations.addons_repo_revision}}'
           path: applications/arc-runners/base
@@ -39,6 +46,13 @@ spec:
               gha-runner-scale-set:
                 githubConfigUrl: https://github.com/atidyshirt/golf-ai-experiment
                 runnerScaleSetName: golfapp-runner-set
+                template:
+                  spec:
+                    tolerations:
+                      - key: node-role.homelab/tier
+                        operator: Equal
+                        value: transient
+                        effect: NoSchedule
         - repoURL: '{{metadata.annotations.addons_repo_url}}'
           targetRevision: '{{metadata.annotations.addons_repo_revision}}'
           path: applications/arc-runners/base
@@ -47,6 +61,13 @@ spec:
               gha-runner-scale-set:
                 githubConfigUrl: https://github.com/atidyshirt/golfapp-platform
                 runnerScaleSetName: golfapp-platform-runner-set
+                template:
+                  spec:
+                    tolerations:
+                      - key: node-role.homelab/tier
+                        operator: Equal
+                        value: transient
+                        effect: NoSchedule
       destination:
         server: https://kubernetes.default.svc
         namespace: arc-runners

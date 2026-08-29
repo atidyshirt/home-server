@@ -13,3 +13,13 @@ gha-runner-scale-set:
   controllerServiceAccount:
     namespace: arc-systems
     name: arc-controller-gha-rs-controller
+
+  # Self-contained ephemeral pods, no shared/local-path volume across a workflow run -
+  # safe to float onto the transient laptop node (see docs/adr/add-transient-laptop-worker-node.md).
+  template:
+    spec:
+      tolerations:
+        - key: node-role.homelab/tier
+          operator: Equal
+          value: transient
+          effect: NoSchedule
