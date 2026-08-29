@@ -1,0 +1,1 @@
+{"nodes": [{"id": "argo_events_eventbus_default", "label": "EventBus default (argo-events)", "file_type": "code", "source_file": "applications/argo-events/base/eventbus.yaml", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

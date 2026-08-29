@@ -9,6 +9,14 @@ spec:
   synchronization:
     mutexes:
       - name: build-and-deploy
+  # Self-contained ephemeral pods, no shared/local-path volume across a workflow run -
+  # safe to float onto the transient laptop node (see docs/adr/add-transient-laptop-worker-node.md).
+  # Applies to every step's pod (Argo Workflows propagates spec-level tolerations down).
+  tolerations:
+    - key: node-role.homelab/tier
+      operator: Equal
+      value: transient
+      effect: NoSchedule
   arguments:
     parameters:
       - name: repo
@@ -36,7 +44,12 @@ spec:
     - metadata:
         name: workspace
       spec:
-        accessModes: ["ReadWriteOnce"]
+        # workspace-nfs (see applications/nfs-provisioner) instead of the default local-path -
+        # a shared workspace lets steps in the same run land on different nodes and lets a
+        # step killed by the laptop disconnecting be retried onto the Pi instead of getting
+        # stuck waiting for a PV that only the vanished node can mount.
+        accessModes: ["ReadWriteMany"]
+        storageClassName: workspace-nfs
         resources:
           requests:
             storage: 2Gi
@@ -118,6 +131,11 @@ spec:
       inputs:
         parameters:
           - name: image
+      # A step killed mid-run by the laptop worker disconnecting is retried, not resumed -
+      # acceptable since kaniko's own --cache flag above makes a retried build cheap.
+      retryStrategy:
+        limit: 2
+        retryPolicy: OnError
       container:
         image: gcr.io/kaniko-project/executor:latest
         args:

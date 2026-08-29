@@ -1,0 +1,578 @@
+{
+  "/Users/jordanp/projects/home-server/.claude/settings.json": {
+    "mtime": 1787837075.5835493,
+    "seen": 1787838204.856645,
+    "ast_hash": "5c511cbdc7fcda005c8112e781c563bd",
+    "semantic_hash": "5c511cbdc7fcda005c8112e781c563bd"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/index.ts": {
+    "mtime": 1787459719.789537,
+    "seen": 1787838204.856648,
+    "ast_hash": "25d0449d68167049ff48205671840466",
+    "semantic_hash": "25d0449d68167049ff48205671840466"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/package.json": {
+    "mtime": 1787459719.7928388,
+    "seen": 1787838204.856649,
+    "ast_hash": "a8645c0626ad0e0f517a9664f0d92157",
+    "semantic_hash": "a8645c0626ad0e0f517a9664f0d92157"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/scripts/ensure-k0s.sh": {
+    "mtime": 1787061441.307622,
+    "seen": 1787838204.8566499,
+    "ast_hash": "1c42250c806409feceb9297f72da5c72",
+    "semantic_hash": "1c42250c806409feceb9297f72da5c72"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/argocd.ts": {
+    "mtime": 1787527039.94417,
+    "seen": 1787838204.856651,
+    "ast_hash": "c67c94fbf6f9fcd1361964ee05c38b8f",
+    "semantic_hash": "c67c94fbf6f9fcd1361964ee05c38b8f"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/gatewayApi.ts": {
+    "mtime": 1787459719.793833,
+    "seen": 1787838204.856651,
+    "ast_hash": "b0a3a22703589193c73d6f90fdd4e44d",
+    "semantic_hash": "b0a3a22703589193c73d6f90fdd4e44d"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/gitopsBridge.ts": {
+    "mtime": 1787484738.8790865,
+    "seen": 1787838204.856652,
+    "ast_hash": "b727fcfa6c3c75f8aa21f424773d4ae2",
+    "semantic_hash": "b727fcfa6c3c75f8aa21f424773d4ae2"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/kubernetesProvider.ts": {
+    "mtime": 1787057593.2201452,
+    "seen": 1787838204.856653,
+    "ast_hash": "11ee3b5cd4e7210e19e5737faae38acc",
+    "semantic_hash": "11ee3b5cd4e7210e19e5737faae38acc"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/onePassword.ts": {
+    "mtime": 1787459719.794519,
+    "seen": 1787838204.856653,
+    "ast_hash": "9a04653cd2e98fdb83efe29c69bf6f3e",
+    "semantic_hash": "9a04653cd2e98fdb83efe29c69bf6f3e"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/src/raspberryPiK0s.ts": {
+    "mtime": 1787459719.7947946,
+    "seen": 1787838204.8566542,
+    "ast_hash": "41ecbb15657d9ad072f8e4a64ac04214",
+    "semantic_hash": "41ecbb15657d9ad072f8e4a64ac04214"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/tsconfig.json": {
+    "mtime": 1787046312.0816405,
+    "seen": 1787838204.8566551,
+    "ast_hash": "8bf0966c10ccf607808cea05675463c6",
+    "semantic_hash": "8bf0966c10ccf607808cea05675463c6"
+  },
+  "/Users/jordanp/projects/home-server/.github/workflows/arc-smoke-test.yml": {
+    "mtime": 1787105066.8880882,
+    "seen": 1787838204.8566551,
+    "ast_hash": "af6a5cce9fa275fddf204af1498ab033",
+    "semantic_hash": "af6a5cce9fa275fddf204af1498ab033"
+  },
+  "/Users/jordanp/projects/home-server/AGENT.md": {
+    "mtime": 1787485054.7940333,
+    "seen": 1787838204.8566558,
+    "ast_hash": "ae9fb13e97541afdad8eefbcdbca594e",
+    "semantic_hash": "ae9fb13e97541afdad8eefbcdbca594e"
+  },
+  "/Users/jordanp/projects/home-server/CLAUDE.md": {
+    "mtime": 1787837075.5832586,
+    "seen": 1787838204.8566568,
+    "ast_hash": "f07b9404a71a45b783c9ebe550db4459",
+    "semantic_hash": "f07b9404a71a45b783c9ebe550db4459"
+  },
+  "/Users/jordanp/projects/home-server/README.md": {
+    "mtime": 1787061441.3035822,
+    "seen": 1787838204.8566568,
+    "ast_hash": "a677622907e0ae45d6c360175d757ec8",
+    "semantic_hash": "a677622907e0ae45d6c360175d757ec8"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-arc-controller-appset.yaml": {
+    "mtime": 1787484886.2330384,
+    "seen": 1787838204.856658,
+    "ast_hash": "febc8b611ae930822c8a7c6ed8858b43",
+    "semantic_hash": "febc8b611ae930822c8a7c6ed8858b43"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-arc-runners-appset.yaml": {
+    "mtime": 1787459719.780431,
+    "seen": 1787838204.856658,
+    "ast_hash": "0ca73ce747f61b839dbdb5f78e7cbc8a",
+    "semantic_hash": "0ca73ce747f61b839dbdb5f78e7cbc8a"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-argo-events-appset.yaml": {
+    "mtime": 1787484886.2038512,
+    "seen": 1787838204.856659,
+    "ast_hash": "fb1a07e438ac6f69ed7c9a8c20dcf538",
+    "semantic_hash": "fb1a07e438ac6f69ed7c9a8c20dcf538"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-argo-rollouts-appset.yaml": {
+    "mtime": 1787484886.216772,
+    "seen": 1787838204.85666,
+    "ast_hash": "b4cc5fc44ffbc949e2fb8fc8112ccad0",
+    "semantic_hash": "b4cc5fc44ffbc949e2fb8fc8112ccad0"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-argo-workflows-appset.yaml": {
+    "mtime": 1787484886.2432177,
+    "seen": 1787838204.85666,
+    "ast_hash": "8d7d9e07baf6e562e58698f730f2d8cf",
+    "semantic_hash": "8d7d9e07baf6e562e58698f730f2d8cf"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-cert-manager-appset.yaml": {
+    "mtime": 1787484886.2106085,
+    "seen": 1787838204.856661,
+    "ast_hash": "5188e3fd0dc5757113383bfb79ebb65e",
+    "semantic_hash": "5188e3fd0dc5757113383bfb79ebb65e"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-coredns-lan-appset.yaml": {
+    "mtime": 1787484886.2224493,
+    "seen": 1787838204.856662,
+    "ast_hash": "d512bcf7c2b57c807b997cf87920f3a4",
+    "semantic_hash": "d512bcf7c2b57c807b997cf87920f3a4"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-dex-appset.yaml": {
+    "mtime": 1787484886.2380743,
+    "seen": 1787838204.856662,
+    "ast_hash": "0226d8e9b494d24e80aa1bd70085de8d",
+    "semantic_hash": "0226d8e9b494d24e80aa1bd70085de8d"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-golfapp-appset.yaml": {
+    "mtime": 1787459719.7839718,
+    "seen": 1787838204.856663,
+    "ast_hash": "2828c184b3cd7da99da601aa8645ca09",
+    "semantic_hash": "2828c184b3cd7da99da601aa8645ca09"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-monitoring-appset.yaml": {
+    "mtime": 1787571320.42992,
+    "seen": 1787838204.8566642,
+    "ast_hash": "436a16a38f715b0a12bb979bd18b864f",
+    "semantic_hash": "436a16a38f715b0a12bb979bd18b864f"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-onepassword-operator-appset.yaml": {
+    "mtime": 1787484886.2278693,
+    "seen": 1787838204.8566642,
+    "ast_hash": "cf101aed8067e1e931c0bc8e6929b7f5",
+    "semantic_hash": "cf101aed8067e1e931c0bc8e6929b7f5"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-project-template-appset.yaml": {
+    "mtime": 1787459719.7845852,
+    "seen": 1787838204.8566651,
+    "ast_hash": "6d689ac968c2efda45e4e0b28e2aba85",
+    "semantic_hash": "6d689ac968c2efda45e4e0b28e2aba85"
+  },
+  "/Users/jordanp/projects/home-server/addons/addon-traefik-appset.yaml": {
+    "mtime": 1787484886.2477582,
+    "seen": 1787838204.8566651,
+    "ast_hash": "5e4c1822595a25bb9fbf5f6d93265af2",
+    "semantic_hash": "5e4c1822595a25bb9fbf5f6d93265af2"
+  },
+  "/Users/jordanp/projects/home-server/applications/arc-controller/base/kustomization.yaml": {
+    "mtime": 1787100574.331902,
+    "seen": 1787838204.856666,
+    "ast_hash": "5f5e52cf79f2096eb0c4ef1270d22b48",
+    "semantic_hash": "5f5e52cf79f2096eb0c4ef1270d22b48"
+  },
+  "/Users/jordanp/projects/home-server/applications/arc-runners/base/Chart.yaml": {
+    "mtime": 1787140959.0110748,
+    "seen": 1787838204.8566668,
+    "ast_hash": "7e43e8587195311182482fcc6f30006e",
+    "semantic_hash": "7e43e8587195311182482fcc6f30006e"
+  },
+  "/Users/jordanp/projects/home-server/applications/arc-runners/base/values.yaml": {
+    "mtime": 1787140959.0128763,
+    "seen": 1787838204.8566668,
+    "ast_hash": "710941c106e1b38eb6a5aa7e39283ebe",
+    "semantic_hash": "710941c106e1b38eb6a5aa7e39283ebe"
+  },
+  "/Users/jordanp/projects/home-server/applications/arc-runners/onepassword-items/onepassword-items.yaml": {
+    "mtime": 1787140959.012966,
+    "seen": 1787838204.856668,
+    "ast_hash": "a438ddb32f6684aec1be2b2124a83929",
+    "semantic_hash": "a438ddb32f6684aec1be2b2124a83929"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-events/base/eventbus.yaml": {
+    "mtime": 1787114027.7455478,
+    "seen": 1787838204.856668,
+    "ast_hash": "b372c3727c12b4a036f234e18ea1454f",
+    "semantic_hash": "b372c3727c12b4a036f234e18ea1454f"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-events/base/kustomization.yaml": {
+    "mtime": 1787103252.5635052,
+    "seen": 1787838204.856669,
+    "ast_hash": "3ecb75526e0cba45237be57d23022d38",
+    "semantic_hash": "3ecb75526e0cba45237be57d23022d38"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-events/base/pipeline/eventsource.yaml": {
+    "mtime": 1787100574.3344631,
+    "seen": 1787838204.85667,
+    "ast_hash": "2354dce686ae5d66d48db3f88848af05",
+    "semantic_hash": "2354dce686ae5d66d48db3f88848af05"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-events/base/pipeline/sensor.yaml": {
+    "mtime": 1787568660.5464215,
+    "seen": 1787838204.85667,
+    "ast_hash": "8d3c883466224462d8aa9cc25554fd1f",
+    "semantic_hash": "8d3c883466224462d8aa9cc25554fd1f"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-rollouts/base/httproute.yaml": {
+    "mtime": 1787309933.0050182,
+    "seen": 1787838204.856671,
+    "ast_hash": "619337da54db40f0fb6bf837fa7567ae",
+    "semantic_hash": "619337da54db40f0fb6bf837fa7567ae"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-rollouts/base/kustomization.yaml": {
+    "mtime": 1787144133.9616442,
+    "seen": 1787838204.856672,
+    "ast_hash": "bdb7f1f50ca4202d49445c338c6bee57",
+    "semantic_hash": "bdb7f1f50ca4202d49445c338c6bee57"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/httproute.yaml": {
+    "mtime": 1787309922.9987266,
+    "seen": 1787838204.856672,
+    "ast_hash": "0cd73dae01fae191713ffacf230c4923",
+    "semantic_hash": "0cd73dae01fae191713ffacf230c4923"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/kustomization.yaml": {
+    "mtime": 1787570182.3695998,
+    "seen": 1787838204.856673,
+    "ast_hash": "ef5b9741adb40ae953024fe24a76ec15",
+    "semantic_hash": "ef5b9741adb40ae953024fe24a76ec15"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/onepassword-items.yaml": {
+    "mtime": 1787143315.6335402,
+    "seen": 1787838204.856673,
+    "ast_hash": "2278f2c9bef23195f116f5afcbac2bdb",
+    "semantic_hash": "2278f2c9bef23195f116f5afcbac2bdb"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/sensor-rbac.yaml": {
+    "mtime": 1787115958.3298619,
+    "seen": 1787838204.856674,
+    "ast_hash": "e25687689184b8889933686463f096b6",
+    "semantic_hash": "e25687689184b8889933686463f096b6"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/servicemonitor.yaml": {
+    "mtime": 1787570166.3075182,
+    "seen": 1787838204.8566751,
+    "ast_hash": "1637451fa91410e140f7e5f012f14ef5",
+    "semantic_hash": "1637451fa91410e140f7e5f012f14ef5"
+  },
+  "/Users/jordanp/projects/home-server/applications/argo-workflows/base/workflowtemplates/build-and-deploy.yaml": {
+    "mtime": 1787568660.5470827,
+    "seen": 1787838204.8566751,
+    "ast_hash": "e732a29e0b5680320489962cf1618c7a",
+    "semantic_hash": "e732a29e0b5680320489962cf1618c7a"
+  },
+  "/Users/jordanp/projects/home-server/applications/cert-manager/base/issuers.yaml": {
+    "mtime": 1787064213.0511308,
+    "seen": 1787838204.856676,
+    "ast_hash": "4858b8d7dbbe5b136a8e9d370c4f2a71",
+    "semantic_hash": "4858b8d7dbbe5b136a8e9d370c4f2a71"
+  },
+  "/Users/jordanp/projects/home-server/applications/cert-manager/base/kustomization.yaml": {
+    "mtime": 1787064213.0516021,
+    "seen": 1787838204.856677,
+    "ast_hash": "e8e6ba7878adeb0b202da1f7dc9409e3",
+    "semantic_hash": "e8e6ba7878adeb0b202da1f7dc9409e3"
+  },
+  "/Users/jordanp/projects/home-server/applications/coredns-lan/base/configmap-corefile.yaml": {
+    "mtime": 1787064213.0520184,
+    "seen": 1787838204.856677,
+    "ast_hash": "80f511a60a0617ec3be046a747e43058",
+    "semantic_hash": "80f511a60a0617ec3be046a747e43058"
+  },
+  "/Users/jordanp/projects/home-server/applications/coredns-lan/base/configmap-zone.yaml": {
+    "mtime": 1787484892.294173,
+    "seen": 1787838204.8566778,
+    "ast_hash": "ef7026d1493be0b725130aaacdd6982d",
+    "semantic_hash": "ef7026d1493be0b725130aaacdd6982d"
+  },
+  "/Users/jordanp/projects/home-server/applications/coredns-lan/base/daemonset.yaml": {
+    "mtime": 1787484902.8677576,
+    "seen": 1787838204.8566778,
+    "ast_hash": "d742fcfbd9f8873508da15407b1e5f26",
+    "semantic_hash": "d742fcfbd9f8873508da15407b1e5f26"
+  },
+  "/Users/jordanp/projects/home-server/applications/coredns-lan/base/kustomization.yaml": {
+    "mtime": 1787064213.054253,
+    "seen": 1787838204.856679,
+    "ast_hash": "5f61314805c7bd88a20397d108588211",
+    "semantic_hash": "5f61314805c7bd88a20397d108588211"
+  },
+  "/Users/jordanp/projects/home-server/applications/dex/base/kustomization.yaml": {
+    "mtime": 1787568271.6898696,
+    "seen": 1787838204.85668,
+    "ast_hash": "acafcaf3b13d4c2a20f95a0efebcce1b",
+    "semantic_hash": "acafcaf3b13d4c2a20f95a0efebcce1b"
+  },
+  "/Users/jordanp/projects/home-server/applications/dex/base/onepassword-items.yaml": {
+    "mtime": 1787087023.6645226,
+    "seen": 1787838204.85668,
+    "ast_hash": "fbd8b7622df8e539c87c4c6b34a47b15",
+    "semantic_hash": "fbd8b7622df8e539c87c4c6b34a47b15"
+  },
+  "/Users/jordanp/projects/home-server/applications/dex/base/values.yaml": {
+    "mtime": 1787568271.6903145,
+    "seen": 1787838204.8566809,
+    "ast_hash": "a0c7457efd600327b8f2bd40aa6b91df",
+    "semantic_hash": "a0c7457efd600327b8f2bd40aa6b91df"
+  },
+  "/Users/jordanp/projects/home-server/applications/ghcr-pull-secret/base/job.yaml": {
+    "mtime": 1787308672.587581,
+    "seen": 1787838204.8566809,
+    "ast_hash": "d292c6856804f63d1e233394e6803100",
+    "semantic_hash": "d292c6856804f63d1e233394e6803100"
+  },
+  "/Users/jordanp/projects/home-server/applications/ghcr-pull-secret/base/kustomization.yaml": {
+    "mtime": 1787222342.4822688,
+    "seen": 1787838204.856682,
+    "ast_hash": "6bb7eb52ca20b4a7e3dd4246aa43d8d7",
+    "semantic_hash": "6bb7eb52ca20b4a7e3dd4246aa43d8d7"
+  },
+  "/Users/jordanp/projects/home-server/applications/ghcr-pull-secret/base/onepassword-items.yaml": {
+    "mtime": 1787316222.558906,
+    "seen": 1787838204.856683,
+    "ast_hash": "b0f361b0748d9ada48e52dc5c095bc5b",
+    "semantic_hash": "b0f361b0748d9ada48e52dc5c095bc5b"
+  },
+  "/Users/jordanp/projects/home-server/applications/ghcr-pull-secret/base/rbac.yaml": {
+    "mtime": 1787316091.8269186,
+    "seen": 1787838204.856683,
+    "ast_hash": "1b2836d2d91772b2b953cdd756874d5e",
+    "semantic_hash": "1b2836d2d91772b2b953cdd756874d5e"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/dashboard-cicd.yaml": {
+    "mtime": 1787570230.431692,
+    "seen": 1787838204.856684,
+    "ast_hash": "c7d9d5f7dd203afa0ad5ecda6bbceaf3",
+    "semantic_hash": "c7d9d5f7dd203afa0ad5ecda6bbceaf3"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/dashboard-golfapp.yaml": {
+    "mtime": 1787570214.1657727,
+    "seen": 1787838204.856684,
+    "ast_hash": "6ca159207f9ff7d2b0431b29b4f34af1",
+    "semantic_hash": "6ca159207f9ff7d2b0431b29b4f34af1"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/httproute.yaml": {
+    "mtime": 1787568271.6911569,
+    "seen": 1787838204.8566852,
+    "ast_hash": "489e4854dc2ee05c5c637ae4499b306d",
+    "semantic_hash": "489e4854dc2ee05c5c637ae4499b306d"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/kustomization.yaml": {
+    "mtime": 1787570235.8954887,
+    "seen": 1787838204.856686,
+    "ast_hash": "12e35b5cbbefe58241b708ae638de847",
+    "semantic_hash": "12e35b5cbbefe58241b708ae638de847"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/onepassword-items.yaml": {
+    "mtime": 1787568271.691817,
+    "seen": 1787838204.856686,
+    "ast_hash": "a0c1580203e2e37f7f13315dfca242b1",
+    "semantic_hash": "a0c1580203e2e37f7f13315dfca242b1"
+  },
+  "/Users/jordanp/projects/home-server/applications/monitoring/base/values.yaml": {
+    "mtime": 1787569691.7223694,
+    "seen": 1787838204.856687,
+    "ast_hash": "643b87dfe2a9814364da28a2b8745be0",
+    "semantic_hash": "643b87dfe2a9814364da28a2b8745be0"
+  },
+  "/Users/jordanp/projects/home-server/applications/onepassword-operator/base/kustomization.yaml": {
+    "mtime": 1787307785.6241043,
+    "seen": 1787838204.856687,
+    "ast_hash": "22bd4e79c0cf27d675d8345f9b245fb9",
+    "semantic_hash": "22bd4e79c0cf27d675d8345f9b245fb9"
+  },
+  "/Users/jordanp/projects/home-server/applications/project-template/base/kustomization.yaml": {
+    "mtime": 1787313712.0549302,
+    "seen": 1787838204.856688,
+    "ast_hash": "b08749758df7c4bc87856d71d0fc1490",
+    "semantic_hash": "b08749758df7c4bc87856d71d0fc1490"
+  },
+  "/Users/jordanp/projects/home-server/applications/project-template/base/rbac.yaml": {
+    "mtime": 1787314418.2636538,
+    "seen": 1787838204.856689,
+    "ast_hash": "7003e2f8e50583ea70bc0221a5c3310b",
+    "semantic_hash": "7003e2f8e50583ea70bc0221a5c3310b"
+  },
+  "/Users/jordanp/projects/home-server/applications/traefik/base/certificate.yaml": {
+    "mtime": 1787064213.0546513,
+    "seen": 1787838204.856689,
+    "ast_hash": "b4f036f5ee04f081c9fcee30fe34714d",
+    "semantic_hash": "b4f036f5ee04f081c9fcee30fe34714d"
+  },
+  "/Users/jordanp/projects/home-server/applications/traefik/base/kustomization.yaml": {
+    "mtime": 1787064213.0554702,
+    "seen": 1787838204.85669,
+    "ast_hash": "6c6d93002ace3864226efe9c2ee37c6b",
+    "semantic_hash": "6c6d93002ace3864226efe9c2ee37c6b"
+  },
+  "/Users/jordanp/projects/home-server/applications/traefik/base/values.yaml": {
+    "mtime": 1787087460.8783326,
+    "seen": 1787838204.85669,
+    "ast_hash": "c56e9bfb946d38706ac63eb5c3094d9c",
+    "semantic_hash": "c56e9bfb946d38706ac63eb5c3094d9c"
+  },
+  "/Users/jordanp/projects/home-server/bootstrap/argocd/httproute.yaml": {
+    "mtime": 1787087460.8786983,
+    "seen": 1787838204.856691,
+    "ast_hash": "9ac69451f1c735c9cb913a428d32a3dd",
+    "semantic_hash": "9ac69451f1c735c9cb913a428d32a3dd"
+  },
+  "/Users/jordanp/projects/home-server/bootstrap/argocd/projects.yaml": {
+    "mtime": 1787459719.785356,
+    "seen": 1787838204.856692,
+    "ast_hash": "003eb74c757d4dc24061c2f6efc1846a",
+    "semantic_hash": "003eb74c757d4dc24061c2f6efc1846a"
+  },
+  "/Users/jordanp/projects/home-server/bootstrap/argocd/root-app.yaml": {
+    "mtime": 1787064213.0581963,
+    "seen": 1787838204.856692,
+    "ast_hash": "48f22595f09e49baedf4a91b91527b2b",
+    "semantic_hash": "48f22595f09e49baedf4a91b91527b2b"
+  },
+  "/Users/jordanp/projects/home-server/devenv.yaml": {
+    "mtime": 1787047004.8296852,
+    "seen": 1787838204.856693,
+    "ast_hash": "83118d0a4a4ded0837f6e4f55ccca46d",
+    "semantic_hash": "83118d0a4a4ded0837f6e4f55ccca46d"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/README.md": {
+    "mtime": 1787568660.5476482,
+    "seen": 1787838204.856693,
+    "ast_hash": "8cec1b7c7a01b64ec88a8141701b66eb",
+    "semantic_hash": "8cec1b7c7a01b64ec88a8141701b66eb"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/apply-argocd-bootstrap-manifests-via-pulumi.md": {
+    "mtime": 1787140958.9794374,
+    "seen": 1787838204.856694,
+    "ast_hash": "051d973919cc6b4cdedc95667e45484c",
+    "semantic_hash": "051d973919cc6b4cdedc95667e45484c"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md": {
+    "mtime": 1787140958.9798348,
+    "seen": 1787838204.856695,
+    "ast_hash": "582d48a17b7c3872285941c268d33047",
+    "semantic_hash": "582d48a17b7c3872285941c268d33047"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/run-in-cluster-coredns-for-lan-dns.md": {
+    "mtime": 1787140958.979996,
+    "seen": 1787838204.856695,
+    "ast_hash": "53a5163be8e9de100107a7a318dde59b",
+    "semantic_hash": "53a5163be8e9de100107a7a318dde59b"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/run-single-replica-eventbus-jetstream.md": {
+    "mtime": 1787140958.9801528,
+    "seen": 1787838204.8566961,
+    "ast_hash": "2ecb7aa1506879a376c8b19cee049cc0",
+    "semantic_hash": "2ecb7aa1506879a376c8b19cee049cc0"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/scope-arc-runners-per-repo.md": {
+    "mtime": 1787140958.9804506,
+    "seen": 1787838204.856697,
+    "ast_hash": "aad135956c9e4b29ff6afb4c24263831",
+    "semantic_hash": "aad135956c9e4b29ff6afb4c24263831"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md": {
+    "mtime": 1787140958.9806278,
+    "seen": 1787838204.856697,
+    "ast_hash": "4145ef916f386ab30ca3377c0de5fada",
+    "semantic_hash": "4145ef916f386ab30ca3377c0de5fada"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-app-of-appsets-gitops-pattern.md": {
+    "mtime": 1787140958.9815798,
+    "seen": 1787838204.856698,
+    "ast_hash": "46b57b9b4abd23b784d55d1401e8d9e4",
+    "semantic_hash": "46b57b9b4abd23b784d55d1401e8d9e4"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-arc-as-trigger-bridge-only.md": {
+    "mtime": 1787140958.9838817,
+    "seen": 1787838204.856699,
+    "ast_hash": "d33752539ddfa82703e2d8ee916afcdb",
+    "semantic_hash": "d33752539ddfa82703e2d8ee916afcdb"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-argo-workflows-for-image-builds.md": {
+    "mtime": 1787140958.984678,
+    "seen": 1787838204.856699,
+    "ast_hash": "e3122596f40bcd51e2c672fb7e2802b4",
+    "semantic_hash": "e3122596f40bcd51e2c672fb7e2802b4"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-canary-with-manual-pause-for-rollouts.md": {
+    "mtime": 1787140958.9854887,
+    "seen": 1787838204.8567,
+    "ast_hash": "de8e8cfad34b2043c19add0a904085e5",
+    "semantic_hash": "de8e8cfad34b2043c19add0a904085e5"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md": {
+    "mtime": 1787140958.9866927,
+    "seen": 1787838204.8567,
+    "ast_hash": "b854cdecde285a6e0ba8a3964fcbc8f5",
+    "semantic_hash": "b854cdecde285a6e0ba8a3964fcbc8f5"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-gitops-bridge-for-repo-targeting.md": {
+    "mtime": 1787140958.9870903,
+    "seen": 1787838204.856701,
+    "ast_hash": "25829423b0a5c54515d07b92fffde615",
+    "semantic_hash": "25829423b0a5c54515d07b92fffde615"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-homelab-arpa-domain.md": {
+    "mtime": 1787140958.9876215,
+    "seen": 1787838204.8567019,
+    "ast_hash": "fe315a2693cb72b7afed6949de753a51",
+    "semantic_hash": "fe315a2693cb72b7afed6949de753a51"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-self-signed-ca-for-internal-tls.md": {
+    "mtime": 1787140958.9885616,
+    "seen": 1787838204.856703,
+    "ast_hash": "5e12d37f0d3eda57aa72eda74d380317",
+    "semantic_hash": "5e12d37f0d3eda57aa72eda74d380317"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-standalone-dex-for-sso.md": {
+    "mtime": 1787140958.989024,
+    "seen": 1787838204.856703,
+    "ast_hash": "85a5371e6466a5eb6bb2e218406908fd",
+    "semantic_hash": "85a5371e6466a5eb6bb2e218406908fd"
+  },
+  "/Users/jordanp/projects/home-server/docs/adr/use-traefik-for-gateway-api.md": {
+    "mtime": 1787140958.9894276,
+    "seen": 1787838204.856704,
+    "ast_hash": "5c6e5d34540b5ded7e87aca5fa4a0523",
+    "semantic_hash": "5c6e5d34540b5ded7e87aca5fa4a0523"
+  },
+  "/Users/jordanp/projects/home-server/docs/architecture.md": {
+    "mtime": 1787484700.3056343,
+    "seen": 1787838204.856705,
+    "ast_hash": "e2ca3c484fadb09e4e7c6ac45b46036f",
+    "semantic_hash": "e2ca3c484fadb09e4e7c6ac45b46036f"
+  },
+  "/Users/jordanp/projects/home-server/docs/continous_delivery.md": {
+    "mtime": 1787312340.1377273,
+    "seen": 1787838204.856705,
+    "ast_hash": "90f7a9ba1894ff53c27fb2666ec1f3aa",
+    "semantic_hash": "90f7a9ba1894ff53c27fb2666ec1f3aa"
+  },
+  "/Users/jordanp/projects/home-server/docs/provisioning.md": {
+    "mtime": 1787485047.0993128,
+    "seen": 1787838204.8567061,
+    "ast_hash": "4648825f58357f9d7e80808a7c20fb07",
+    "semantic_hash": "4648825f58357f9d7e80808a7c20fb07"
+  },
+  "/Users/jordanp/projects/home-server/docs/workflows/adding_a_new_project.md": {
+    "mtime": 1787313316.4613645,
+    "seen": 1787838204.8567061,
+    "ast_hash": "b75805331672885f98519f91af676075",
+    "semantic_hash": "b75805331672885f98519f91af676075"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/Pulumi.homelab.yaml": {
+    "mtime": 1787484733.5125973,
+    "seen": 1787838204.856707,
+    "ast_hash": "d9e740ed40a0f2c1415e9e828717d4cf",
+    "semantic_hash": "d9e740ed40a0f2c1415e9e828717d4cf"
+  },
+  "/Users/jordanp/projects/home-server/provisioning/pulumi/Pulumi.yaml": {
+    "mtime": 1787046312.0793474,
+    "seen": 1787838204.856708,
+    "ast_hash": "73d5f2852464ccd84a65989575d3a58a",
+    "semantic_hash": "73d5f2852464ccd84a65989575d3a58a"
+  }
+}

@@ -45,9 +45,14 @@ these are the files that make ArgoCD able to read the rest of the repo at all). 
 
 Every `addon-*-appset.yaml` is generic across environments because it never hardcodes
 `repoURL`/`targetRevision`/domain — it reads them from the `in-cluster` cluster Secret's
-annotations via ArgoCD's `clusters: {}` generator (`{{metadata.annotations.addons_domain}}` and
+annotations via ArgoCD's cluster generator (`{{metadata.annotations.addons_domain}}` and
 friends). Change `homelab:domain` or point the tree at a branch, and every appset picks it up
 without being touched. See [the ADR](adr/use-gitops-bridge-for-repo-targeting.md).
+
+The same generator also selects on a `<toggle-name>.stack.enabled: "true"` label on that Secret
+— `platform.stack.enabled` for the core addons, plus independent toggles for `coredns-lan`,
+`monitoring`, and `golfapp`. Pulumi is the sole owner of those labels, driven by
+`homelab:addonToggles`. See [the ADR](adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md).
 
 The root `Application` ("app of appsets") scans `addons/*-appset.yaml` and applies whatever it
 finds — platform addons (`applications/<name>/base`, same repo) and per-project appsets

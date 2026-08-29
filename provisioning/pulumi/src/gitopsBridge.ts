@@ -6,6 +6,17 @@ export interface GitopsBridgeInstallOptions {
   dependsOn?: pulumi.Resource | pulumi.Resource[];
 }
 
+// One label per addon-*-appset.yaml cluster-generator selector (see
+// docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md). "platform" covers the
+// core addons that are always expected to be on together; coredns-lan/monitoring/golfapp are
+// independently toggleable since each is optional on its own.
+interface AddonToggles {
+  platform: boolean;
+  "coredns-lan": boolean;
+  monitoring: boolean;
+  golfapp: boolean;
+}
+
 export class GitopsBridge extends pulumi.ComponentResource {
   private static instance: GitopsBridge | undefined;
 
@@ -22,11 +33,16 @@ export class GitopsBridge extends pulumi.ComponentResource {
     const argocdConfig = new pulumi.Config("argocd");
     const gitRepoUrl = argocdConfig.require("gitRepoUrl");
     const gitRevision = argocdConfig.require("gitRevision");
-    const domain = new pulumi.Config("homelab").require("domain");
+    const homelabConfig = new pulumi.Config("homelab");
+    const domain = homelabConfig.require("domain");
+    const addonToggles = homelabConfig.requireObject<AddonToggles>("addonToggles");
     const raspberrypiConfig = new pulumi.Config("raspberrypi");
     const nodeLanIp = raspberrypiConfig.require("nodeLanIp");
     const nodeLanIpV6 = raspberrypiConfig.require("nodeLanIpV6");
-    const monitoringEnabled = new pulumi.Config("monitoring").requireBoolean("enabled");
+
+    const stackToggleLabels = Object.fromEntries(
+      Object.entries(addonToggles).map(([name, enabled]) => [`${name}.stack.enabled`, String(enabled)]),
+    );
 
     new k8s.core.v1.Secret(
       "argocd-in-cluster",
@@ -34,10 +50,7 @@ export class GitopsBridge extends pulumi.ComponentResource {
         metadata: {
           name: "in-cluster",
           namespace: "argocd",
-          labels: {
-            "argocd.argoproj.io/secret-type": "cluster",
-            "monitoring.stack.enabled": String(monitoringEnabled),
-          },
+          labels: { "argocd.argoproj.io/secret-type": "cluster", ...stackToggleLabels },
           annotations: {
             addons_repo_url: gitRepoUrl,
             addons_repo_revision: gitRevision,
