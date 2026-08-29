@@ -26,6 +26,7 @@ export class GitopsBridge extends pulumi.ComponentResource {
     const raspberrypiConfig = new pulumi.Config("raspberrypi");
     const nodeLanIp = raspberrypiConfig.require("nodeLanIp");
     const nodeLanIpV6 = raspberrypiConfig.require("nodeLanIpV6");
+    const monitoringEnabled = new pulumi.Config("monitoring").requireBoolean("enabled");
 
     new k8s.core.v1.Secret(
       "argocd-in-cluster",
@@ -33,7 +34,10 @@ export class GitopsBridge extends pulumi.ComponentResource {
         metadata: {
           name: "in-cluster",
           namespace: "argocd",
-          labels: { "argocd.argoproj.io/secret-type": "cluster" },
+          labels: {
+            "argocd.argoproj.io/secret-type": "cluster",
+            "monitoring.stack.enabled": String(monitoringEnabled),
+          },
           annotations: {
             addons_repo_url: gitRepoUrl,
             addons_repo_revision: gitRevision,

@@ -86,6 +86,14 @@ everything at a PR branch instead of main: `pulumi config set argocd:gitRevision
 then `pulumi up` — see [docs/pr-workflow.md](docs/pr-workflow.md). `root-app.yaml` itself is
 templated directly by Pulumi (it's the one file Pulumi applies, not ArgoCD-generated).
 
+**Toggling an addon off (monitoring pattern)**
+
+`addon-monitoring-appset.yaml`'s cluster generator is gated on a label
+(`monitoring.stack.enabled: "true"`) on the same `in-cluster` Secret, sourced from
+`monitoring:enabled` Pulumi config — dropping it to zero generated `Application`s lets ArgoCD's
+finalizer cascade-delete the addon's resources without touching `applications/monitoring/base`.
+Toggle: `pulumi config set monitoring:enabled true` (or `false`) then `pulumi up`.
+
 **AppProjects**
 
 One `ApplicationSet` controls exactly one namespace — enforced, not just convention, via each
