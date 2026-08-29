@@ -4,6 +4,7 @@ provisioning/pulumi/state/
 .claude/settings.local.json
 .devenv/
 .direnv/
+.pre-commit-config.yaml
 
 # local `kustomize build --enable-helm` chart cache
 applications/*/base/charts/
