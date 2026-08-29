@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphify-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphify-ui
+  template:
+    metadata:
+      labels:
+        app: graphify-ui
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: graph-html
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+      volumes:
+        - name: graph-html
+          configMap:
+            name: graphify-ui

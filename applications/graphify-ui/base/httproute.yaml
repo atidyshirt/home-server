@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: graphify-ui
+  annotations:
+    addons_domain: placeholder-domain
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: lan-gateway
+      namespace: traefik
+  hostnames:
+    - graphify.placeholder-domain
+  rules:
+    # matches/weight declared explicitly - see applications/argo-rollouts/base's HTTPRoute for
+    # why (server-side defaulting otherwise looks like permanent git drift to ArgoCD).
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: graphify-ui
+          port: 80
+          weight: 1
