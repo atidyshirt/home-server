@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-graphify-ui
+  namespace: argocd
+spec:
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            graphify-ui.stack.enabled: "true"
+  template:
+    metadata:
+      name: graphify-ui
+    spec:
+      project: platform
+      info:
+        - name: Web
+          value: 'graphify.{{metadata.annotations.addons_domain}}'
+        - name: Source Code
+          value: https://github.com/atidyshirt/home-server/tree/main/graphify-out
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/graphify-ui/base
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: graphify-ui
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
