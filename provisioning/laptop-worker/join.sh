@@ -6,10 +6,17 @@ set -euo pipefail
 
 VM_NAME="k0s-laptop-worker"
 PI_SSH="clusteradmin@home-server.local"
-# Must match raspberrypi:nodeLanIpV6 in provisioning/pulumi/Pulumi.homelab.yaml - the Pi's
-# Tailscale 4via6 address, reachable regardless of which physical network the laptop is on.
-PI_TAILSCALE_IP="fd7a:115c:a1e0:b1a:0:1:c0a8:192"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Deliberately the Pi's own Tailscale IP, not its 4via6 address (raspberrypi:nodeLanIpV6) -
+# confirmed via a live join attempt that the k0s API server's TLS cert SANs only cover
+# addresses actually bound to a Pi interface (LAN IP, loopback, and the Pi's own tailscale0
+# IPv4/IPv6), not the 4via6 address, which is a *routed* address never bound to any interface
+# on the Pi itself. The 4via6 route exists to solve a different problem entirely (LAN-subnet
+# collision avoidance for coredns-lan's A/AAAA records, see docs/adr) - the Pi's own Tailscale
+# IP is simpler and already collision-free for this join, so use that instead. Fetched live
+# rather than hardcoded since it's not otherwise tracked anywhere in this repo.
+PI_TAILSCALE_IP="$(ssh "${PI_SSH}" "tailscale ip -4")"
 
 if ! command -v orbctl >/dev/null 2>&1; then
   echo "orbctl not found - install OrbStack first (https://orbstack.dev)" >&2
@@ -35,13 +42,17 @@ if orbctl run -m "${VM_NAME}" sudo k0s status >/dev/null 2>&1; then
   exit 0
 fi
 
-# Worker tokens are a base64-encoded bootstrap kubeconfig pointing at the join API (port
-# 9443). Minted fresh on the Pi's LAN address each time, then rewritten to the Pi's
-# Tailscale address - the laptop may not be on the Pi's LAN at all when this runs.
+# Worker tokens are base64(gzip(bootstrap kubeconfig)) pointing at the join API on port
+# 6443 (the standard kube-apiserver port - not 9443, confirmed from a live token's actual
+# contents; k0s's join-token docs are ambiguous on this and 9443 was a wrong assumption
+# during initial development, caught by a live join failing "illegal base64 data" until the
+# missing gunzip/gzip round-trip was added, then TLS-cert-SAN-mismatch until the address
+# above was fixed). Minted fresh on the Pi's LAN address each time, then rewritten to the
+# Pi's Tailscale address - the laptop may not be on the Pi's LAN at all when this runs.
 RAW_TOKEN="$(ssh "${PI_SSH}" "sudo k0s token create --role=worker --expiry=1h")"
-REWRITTEN_TOKEN="$(echo "${RAW_TOKEN}" | base64 -d \
-  | sed -E "s#https://[^:]+:9443#https://[${PI_TAILSCALE_IP}]:9443#" \
-  | base64)"
+REWRITTEN_TOKEN="$(echo "${RAW_TOKEN}" | base64 -d | gunzip \
+  | sed -E "s#https://[0-9.]+:6443#https://${PI_TAILSCALE_IP}:6443#" \
+  | gzip | base64)"
 
 echo "${REWRITTEN_TOKEN}" | orbctl run -m "${VM_NAME}" sudo tee /etc/k0s/worker-token >/dev/null
 
