@@ -26,13 +26,37 @@ resources:
   - workflowtemplates/build-and-deploy.yaml
   - httproute.yaml
   - ghcr-pull-secret.yaml
-  # The chart's own ServiceMonitor template is gated behind
-  # `.Capabilities.APIVersions.Has "monitoring.coreos.com/v1"`, which requires live
-  # cluster API access ArgoCD's repo-server doesn't have during `kustomize build`
-  # (same class of limitation as the Grafana admin-password `lookup` issue) - so it
-  # never renders regardless of the values toggle. Hand-written here instead,
-  # targeting the metrics port the chart's own Service already exposes.
   - servicemonitor.yaml
+  # The argo-workflows chart's own CRDs (Workflow/WorkflowTemplate/CronWorkflow/etc.) don't
+  # come through `kustomize build --enable-helm` at all - confirmed via local render, zero
+  # CustomResourceDefinition objects in the output despite the chart bundling them (same class
+  # of gap as onepassword-operator's OnePasswordItem CRD, ATI - both charts ship CRDs in a
+  # `crds/` dir kustomize's helm inflator doesn't pick up). Vendored here as a direct upstream
+  # kustomize resource, pinned to the exact release the chart version (2.0.1) maps to
+  # (appVersion v4.1.1, confirmed via that chart's own Chart.yaml) rather than checked into
+  # this repo, so bumping the chart version is the only place version drift can creep in.
+  - https://github.com/argoproj/argo-workflows/manifests/base/crds/full?ref=v4.1.1
+
+patches:
+  # Some of these CRDs (Workflow, WorkflowTemplate, CronWorkflow, ClusterWorkflowTemplate)
+  # have large enough OpenAPI schemas to blow past the 256KB last-applied-configuration
+  # annotation limit under client-side apply - confirmed empirically. ServerSideApply=true
+  # (every addon-*-appset.yaml's syncPolicy) sidesteps that automatically, but ArgoCD still
+  # validates the whole sync batch up front, and a WorkflowTemplate CR failing to validate
+  # because its CRD doesn't exist *yet* fails the entire sync, not just that one resource.
+  # sync-wave -1 (same pattern as cert-manager's bootstrap-issuer -> CA -> issuer chain)
+  # forces these to land, and their apiextensions.k8s.io/v1 status to settle, in their own
+  # earlier phase before anything else in this Application - including the WorkflowTemplate
+  # CR two waves later - is even considered.
+  - target:
+      kind: CustomResourceDefinition
+    patch: |-
+      apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      metadata:
+        name: placeholder
+        annotations:
+          argocd.argoproj.io/sync-wave: "-1"
 
 replacements:
   - source:

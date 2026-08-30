@@ -9,9 +9,6 @@ spec:
   synchronization:
     mutexes:
       - name: build-and-deploy
-  # Self-contained ephemeral pods, no shared/local-path volume across a workflow run -
-  # safe to float onto the transient laptop node (see docs/adr/add-transient-laptop-worker-node.md).
-  # Applies to every step's pod (Argo Workflows propagates spec-level tolerations down).
   tolerations:
     - key: node-role.homelab/tier
       operator: Equal
@@ -30,24 +27,12 @@ spec:
         value: Dockerfile
       - name: deploy_path
         value: deploy
-      # Opt-in escape hatch: when set, prepare/build-and-push (kaniko) are
-      # skipped entirely and bump-deploy-repo uses this ref directly. Lets a
-      # project build+push on its own GitHub-hosted Actions runners instead
-      # of this template's in-cluster kaniko step, while still going through
-      # the same shared deploy step. See home-server's
-      # build-golfapp-images-with-github-actions ADR - golfapp's monorepo
-      # (3 images) was hitting ~15min kaniko builds on the Pi's hardware.
-      # Every other project leaves this empty and is unaffected.
       - name: prebuilt_image
         value: ""
   volumeClaimTemplates:
     - metadata:
         name: workspace
       spec:
-        # workspace-nfs (see applications/nfs-provisioner) instead of the default local-path -
-        # a shared workspace lets steps in the same run land on different nodes and lets a
-        # step killed by the laptop disconnecting be retried onto the Pi instead of getting
-        # stuck waiting for a PV that only the vanished node can mount.
         accessModes: ["ReadWriteMany"]
         storageClassName: workspace-nfs
         resources:
@@ -131,8 +116,6 @@ spec:
       inputs:
         parameters:
           - name: image
-      # A step killed mid-run by the laptop worker disconnecting is retried, not resumed -
-      # acceptable since kaniko's own --cache flag above makes a retried build cheap.
       retryStrategy:
         limit: 2
         retryPolicy: OnError
