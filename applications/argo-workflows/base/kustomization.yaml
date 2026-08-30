@@ -11,6 +11,32 @@ helmCharts:
       controller:
         metricsConfig:
           enabled: true
+        # home-server (the Pi) runs the whole control plane plus nearly every
+        # workload - confirmed live via etcd timeouts cascading into cluster-
+        # wide probe failures under load. `ubuntu` (an orbstack VM, tainted
+        # node-role.homelab/tier=transient since it's a laptop that can
+        # disappear) has far more headroom (8 CPU/4Gi vs the Pi's 4 CPU/8Gi)
+        # and is otherwise nearly idle - tolerate that taint and prefer it,
+        # both for the controller itself and (via workflowDefaults) every
+        # Workflow pod it spawns, since those are the actual build/deploy work.
+        tolerations: &transientToleration
+          - key: node-role.homelab/tier
+            operator: Equal
+            value: transient
+            effect: NoSchedule
+        affinity: &transientAffinity
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: node-role.homelab/tier
+                      operator: In
+                      values: ["transient"]
+        workflowDefaults:
+          spec:
+            tolerations: *transientToleration
+            affinity: *transientAffinity
       server:
         extraArgs:
           - --auth-mode=server
