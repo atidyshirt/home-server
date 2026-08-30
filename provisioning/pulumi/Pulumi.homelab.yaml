@@ -13,7 +13,7 @@ config:
   homelab:addonToggles:
     platform: true
     coredns-lan: true
-    monitoring: false
+    monitoring: true
     golfapp: true
     graphify-ui: true
   onepassword:connectCredentials:

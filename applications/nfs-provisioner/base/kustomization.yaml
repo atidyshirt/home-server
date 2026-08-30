@@ -32,3 +32,10 @@ replacements:
           name: nfs-subdir-external-provisioner
         fieldPaths:
           - spec.template.spec.containers.[name=nfs-subdir-external-provisioner].env.[name=NFS_SERVER].value
+          # The chart also templates nfs.server directly into its own volume mount (what the
+          # provisioner pod itself mounts to manage subdirectories) - a separate field from the
+          # env var above, easy to miss since both come from the same values.yaml key. Volumes
+          # can't use the Downward API (unlike env vars), so this has to be a real kustomize
+          # replacement, not a runtime fieldRef - confirmed missing this caused the actual
+          # mount failure ("Failed to resolve server placeholder-node-ip"), not the env var.
+          - spec.template.spec.volumes.[name=nfs-subdir-external-provisioner-root].nfs.server

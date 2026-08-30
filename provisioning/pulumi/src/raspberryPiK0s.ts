@@ -15,6 +15,12 @@ export class RaspberryPiK0s implements KubernetesProvider {
   readonly ready: pulumi.Resource;
   readonly provider: k8s.Provider;
   private readonly connection: command.types.input.remote.ConnectionArgs;
+  // Proxy for "the cluster was rebuilt from scratch" - every applyManifest() command below
+  // needs to re-run when this changes, not just when its own (static) `create` text does.
+  // See get-kubeconfig's own `triggers` above for why: a full k0s reset leaves every
+  // manifest-apply command believing it already succeeded against a cluster that no longer
+  // has any of it, since none of their command text ever changes.
+  private readonly rebuildTrigger: pulumi.Output<string>;
 
   constructor(args: RaspberryPiK0sArgs) {
     this.connection = { host: args.sshHost, user: args.sshUser };
@@ -29,6 +35,12 @@ export class RaspberryPiK0s implements KubernetesProvider {
       {
         connection: this.connection,
         create: "sudo k0s kubeconfig admin",
+        // `create`'s text never changes, so without this Pulumi treats the command as
+        // unchanged even when ensure-k0s actually re-ran underneath it (e.g. a full
+        // k0s reset generates a brand-new cluster CA) - stale cached kubeconfig then
+        // fails TLS verification against the new cluster. Re-run whenever ensure-k0s's
+        // own output changes, not just when this command's literal text does.
+        triggers: [ensureK0s.stdout],
       },
       { dependsOn: ensureK0s },
     );
@@ -39,6 +51,7 @@ export class RaspberryPiK0s implements KubernetesProvider {
 
     this.provider = new k8s.Provider("k0s", { kubeconfig });
     this.ready = getKubeconfig;
+    this.rebuildTrigger = getKubeconfig.stdout;
   }
 
   applyManifest(name: string, manifestUrl: string, options: ApplyManifestOptions = {}): pulumi.Resource {
@@ -53,6 +66,7 @@ export class RaspberryPiK0s implements KubernetesProvider {
       {
         connection: this.connection,
         create: `sudo k0s kubectl apply ${namespaceFlag}${serverSideFlag}-f ${manifestUrl}${waitCommand}`,
+        triggers: [this.rebuildTrigger],
       },
       { dependsOn: options.dependsOn ?? this.ready, parent: options.parent },
     );
