@@ -1,6 +1,30 @@
 crds:
   enabled: true
 
+# home-server (the Pi) runs the whole control plane (etcd/API server/scheduler)
+# plus nearly every workload - confirmed live via etcd timeouts cascading into
+# probe failures cluster-wide under load. `ubuntu` (an orbstack VM, tainted
+# node-role.homelab/tier=transient since it's a laptop that can disappear) has
+# far more headroom (8 CPU/4Gi vs the Pi's 4 CPU/8Gi) and is otherwise sitting
+# nearly idle. This stack is the heaviest tenant on the Pi, so every component
+# below tolerates that taint and prefers scheduling there. Prometheus/Grafana's
+# PVCs are local-path (node-pinned) - the preference is a no-op for already-
+# bound volumes until they're recreated on ubuntu.
+x-transientToleration: &transientToleration
+  - key: node-role.homelab/tier
+    operator: Equal
+    value: transient
+    effect: NoSchedule
+x-transientAffinity: &transientAffinity
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+            - key: node-role.homelab/tier
+              operator: In
+              values: ["transient"]
+
 prometheusOperator:
   resources:
     requests:
@@ -9,6 +33,8 @@ prometheusOperator:
     limits:
       cpu: 100m
       memory: 128Mi
+  tolerations: *transientToleration
+  affinity: *transientAffinity
 
 prometheus:
   prometheusSpec:
@@ -30,6 +56,8 @@ prometheus:
           resources:
             requests:
               storage: 4Gi
+    tolerations: *transientToleration
+    affinity: *transientAffinity
 
 alertmanager:
   alertmanagerSpec:
@@ -48,6 +76,8 @@ alertmanager:
           resources:
             requests:
               storage: 1Gi
+    tolerations: *transientToleration
+    affinity: *transientAffinity
 
 kube-state-metrics:
   resources:
@@ -57,6 +87,8 @@ kube-state-metrics:
     limits:
       cpu: 100m
       memory: 128Mi
+  tolerations: *transientToleration
+  affinity: *transientAffinity
 
 prometheus-node-exporter:
   # Traefik (hostNetwork: true) already binds the host's port 9100 for its own metrics
@@ -71,6 +103,9 @@ prometheus-node-exporter:
     limits:
       cpu: 50m
       memory: 32Mi
+  # DaemonSet - needs both nodes covered for full metrics, not preferentially
+  # scheduled on one, so tolerate the taint without an affinity preference.
+  tolerations: *transientToleration
 
 # k0s doesn't expose these the standard upstream way - default ServiceMonitors for
 # them just sit permanently down. kubelet (incl. cAdvisor per-pod/container CPU+memory)
@@ -153,6 +188,8 @@ grafana:
       secretKeyRef:
         name: oidc-dex
         key: grafana
+  tolerations: *transientToleration
+  affinity: *transientAffinity
   grafana.ini:
     server:
       root_url: https://grafana.PLACEHOLDER_DOMAIN
