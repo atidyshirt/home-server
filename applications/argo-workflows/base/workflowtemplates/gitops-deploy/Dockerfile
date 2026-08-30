@@ -1,3 +1,7 @@
+# git + a pinned, checksum-verified kustomize baked in, so
+# bump-deploy-repo (build-and-deploy.yaml) doesn't apk-install and
+# curl|bash an unpinned installer script from kustomize's `master`
+# branch on every single workflow run.
 FROM alpine/git:2.43.0
 
 ARG TARGETARCH
