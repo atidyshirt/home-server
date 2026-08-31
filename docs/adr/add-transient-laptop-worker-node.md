@@ -40,15 +40,15 @@ strands that run rather than shifting it back to the Pi.
   stable address until after it joins. This matches the existing precedent of per-device manual
   steps (CA trust, Tailscale admin approval, Auth0 setup) living in `docs/provisioning.md` as
   plain shell commands.
-- **The worker runs inside an OrbStack Linux machine**, with `tailscaled` running inside the
-  guest, not the macOS host. The requirement is the same regardless of which VM tool is used:
-  the guest's kubelet/pod traffic needs its own distinct, Tailscale-routable node identity, not
-  one collapsed into the host's own Tailscale IP via NAT. `orbctl create` supports the same
-  resource-limit knobs (`--cpus`/`--memory`/`--disk`) the original Lima config used, and
-  `--user-data` accepts a plain cloud-init file for the same idempotent `tailscale`/`k0s`
-  install this needs — see `provisioning/laptop-worker/cloud-init.yaml`. `--node-ip` is pinned
-  explicitly to the VM's Tailscale IP rather than auto-detected, which would follow whatever
-  Wi-Fi is currently active.
+- **The worker runs inside a Lima VM** (back from a brief detour through OrbStack — see
+  Alternatives Considered), with `tailscaled` running inside the guest, not the macOS host. The
+  requirement is the same regardless of which VM tool is used: the guest's kubelet/pod traffic
+  needs its own distinct, Tailscale-routable node identity, not one collapsed into the host's
+  own Tailscale IP via NAT. `limactl start` takes the same resource-limit knobs
+  (`cpus`/`memory`/`disk`) as a plain YAML config, with a `provision.script` covering the same
+  idempotent `tailscale`/`k0s`/`nfs-common` install this needs — see
+  `provisioning/laptop-worker/lima.yaml`. `--node-ip` is pinned explicitly to the VM's Tailscale
+  IP rather than auto-detected, which would follow whatever Wi-Fi is currently active.
 - **A taint on the laptop node, tolerations on the two allowed workloads.** Every existing addon
   has zero node-placement config today (there's only ever been one node); the moment a second
   schedulable node exists, everything becomes schedulable there unless something stops it.
@@ -76,12 +76,18 @@ strands that run rather than shifting it back to the Pi.
 - **Tailscale on the macOS host, VM routed through it**: rejected — the VM's own traffic would
   originate from a NAT'd address unreachable from the Pi; Tailscale has to originate inside the
   network namespace that needs to be reached.
-- **Lima** (the original choice for this ADR): superseded by OrbStack before this PR merged —
-  the user already runs OrbStack for other workflows, so it avoids maintaining a second
-  virtualization stack purely for this one feature, and its `--user-data` cloud-init flag covers
-  the same two-package guest provisioning Lima's `provision.script` did. Nothing about the
-  underlying design (Tailscale-inside-guest, pinned `--node-ip`, taint/toleration scheme) changes
-  — only the tool that creates and runs the guest.
+- **OrbStack** (briefly swapped in for Lima, then reverted): tried to avoid maintaining a second
+  virtualization stack, since the user already runs OrbStack for other (Docker) workflows.
+  Reverted after OrbStack's own hypervisor VM was found to crash-loop on this Mac — repeated
+  full boot cycles minutes apart (confirmed live via `~/.orbstack/log/vmgr.log`), triggered by
+  continuous IPv6 STUN failures with no route to any of Tailscale's DERP relays (this Mac's
+  Wi-Fi network provides no real IPv6 uplink at all). That instability meant kube-proxy/
+  kube-router never got a long enough stable window to finish programming their netfilter
+  rules, breaking cluster-DNS reachability for every pod scheduled on the node - not a
+  capability or config issue, just never enough uptime. Lima uses macOS's
+  Virtualization.framework directly, without OrbStack's Docker-optimized NAT/port-forwarding
+  layer the crash-loop traced back to. Nothing about the underlying design (Tailscale-inside-
+  guest, pinned `--node-ip`, taint/toleration scheme) changes across either tool.
 - **Per-workload `nodeSelector` pinning every Pi-only addon**: rejected — doesn't generalize,
   and it's easy to forget one addon when a new one is added later. A taint makes "stay on the
   Pi" the default that costs nothing to maintain.

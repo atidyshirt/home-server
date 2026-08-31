@@ -95,16 +95,18 @@ custom CIDR would need the export range adjusted to match.
 
 ### 3. Laptop worker join
 
-Requires [OrbStack](https://orbstack.dev) (`brew install --cask orbstack` if not already
-installed) on the laptop.
+Requires [Lima](https://lima-vm.io) (installed via the dotfiles' nix packages - see
+`users/jordanp/packages.nix` in the dotfiles repo) on the laptop. Not OrbStack: its own
+hypervisor VM was found to crash-loop on this Mac (see the ADR's Alternatives Considered),
+breaking cluster-DNS reachability for anything scheduled on it.
 
 ```bash
 provisioning/laptop-worker/join.sh
 ```
 
-Creates an OrbStack Linux machine, brings up Tailscale inside it (opens a login URL on first
-run, same as the Pi's own Tailscale step above), mints a k0s worker join token from the Pi, and
-joins the machine as a tainted (`node-role.homelab/tier=transient`), laptop-only-eligible worker
+Starts a Linux VM, brings up Tailscale inside it (opens a login URL on first run, same as the
+Pi's own Tailscale step above), mints a k0s worker join token from the Pi, and joins the VM as
+a tainted (`node-role.homelab/tier=transient`), laptop-only-eligible worker
 node. Verify:
 `ssh clusteradmin@home-server.local "sudo k0s kubectl get nodes"` shows two nodes.
 
