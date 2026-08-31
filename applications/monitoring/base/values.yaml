@@ -33,8 +33,13 @@ prometheusOperator:
     limits:
       cpu: 100m
       memory: 128Mi
-  tolerations: *transientToleration
-  affinity: *transientAffinity
+  # Kept on home-server deliberately (no toleration/affinity toward the
+  # transient node): this constantly watches/lists CRDs via the API server,
+  # which - like CoreDNS - only lives on home-server, so every one of those
+  # calls from ubuntu crosses the same DERP-relayed Tailscale link (that
+  # node has no direct peer connection, confirmed via `tailscale ping`).
+  # Confirmed live: crash-looped repeatedly on ubuntu, healthy immediately
+  # back on home-server. Its footprint is tiny, so there's no relief lost.
 
 prometheus:
   prometheusSpec:
@@ -87,8 +92,10 @@ kube-state-metrics:
     limits:
       cpu: 100m
       memory: 128Mi
-  tolerations: *transientToleration
-  affinity: *transientAffinity
+  # Kept on home-server - same reasoning as prometheusOperator above: this
+  # continuously lists/watches nearly every object in the cluster via the
+  # API server, which only lives on home-server. Confirmed live: unhealthy/
+  # restarting repeatedly on ubuntu.
 
 prometheus-node-exporter:
   # Traefik (hostNetwork: true) already binds the host's port 9100 for its own metrics
