@@ -11,32 +11,36 @@ helmCharts:
       controller:
         metricsConfig:
           enabled: true
-        # home-server (the Pi) runs the whole control plane plus nearly every
-        # workload - confirmed live via etcd timeouts cascading into cluster-
-        # wide probe failures under load. `ubuntu` (an orbstack VM, tainted
-        # node-role.homelab/tier=transient since it's a laptop that can
-        # disappear) has far more headroom (8 CPU/4Gi vs the Pi's 4 CPU/8Gi)
-        # and is otherwise nearly idle - tolerate that taint and prefer it,
-        # both for the controller itself and (via workflowDefaults) every
-        # Workflow pod it spawns, since those are the actual build/deploy work.
-        tolerations: &transientToleration
-          - key: node-role.homelab/tier
-            operator: Equal
-            value: transient
-            effect: NoSchedule
-        affinity: &transientAffinity
-          nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                preference:
-                  matchExpressions:
-                    - key: node-role.homelab/tier
-                      operator: In
-                      values: ["transient"]
+        # The controller itself stays on home-server (no toleration for
+        # ubuntu's transient taint) - it's a continuous, heavy API-server
+        # watcher (every Workflow/WorkflowTemplate cluster-wide), and the
+        # API server + CoreDNS only run on home-server. ubuntu's Tailscale
+        # connection is DERP-relayed, not direct (confirmed via `tailscale
+        # ping` - no direct CurAddr, always routes via DERP syd), so every
+        # one of those API calls from ubuntu crosses that relay. Confirmed
+        # live: crash-looped repeatedly there, healthy immediately back on
+        # home-server - same failure mode hit prometheus-operator and
+        # kube-state-metrics (applications/monitoring/base/values.yaml).
+        #
+        # workflowDefaults below is unaffected by this and still applies:
+        # the actual build/deploy Workflow pods it spawns are the compute-
+        # heavy, mostly-self-contained work ubuntu's extra headroom is for.
         workflowDefaults:
           spec:
-            tolerations: *transientToleration
-            affinity: *transientAffinity
+            tolerations:
+              - key: node-role.homelab/tier
+                operator: Equal
+                value: transient
+                effect: NoSchedule
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: node-role.homelab/tier
+                          operator: In
+                          values: ["transient"]
       server:
         extraArgs:
           - --auth-mode=server
