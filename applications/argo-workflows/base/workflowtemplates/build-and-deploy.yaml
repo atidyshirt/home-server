@@ -17,6 +17,14 @@ spec:
       operator: Equal
       value: transient
       effect: NoSchedule
+  # Steps here only ever resolve external hostnames (github.com, ghcr.io), never
+  # in-cluster service names, so they don't need CoreDNS at all. The transient
+  # node's pods currently can't reach CoreDNS's ClusterIP (no kube-router
+  # service-proxy rule there - a separate, still-open issue), which broke
+  # git clone/push with "Could not resolve host" (git exit 128). Using the
+  # node's own working resolver instead sidesteps that entirely - confirmed
+  # live via a test pod with this same policy successfully cloning over git.
+  dnsPolicy: Default
   arguments:
     parameters:
       - name: repo
