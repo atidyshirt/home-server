@@ -23,3 +23,15 @@ gha-runner-scale-set:
           operator: Equal
           value: transient
           effect: NoSchedule
+      # Pods on the transient node can't reach CoreDNS's ClusterIP (no
+      # kube-router service-proxy rule there - a separate, still-open
+      # issue). The scale-set listener (on home-server) can still poll
+      # GitHub fine and shows these runners as "Running", but the runner
+      # itself can't resolve api.github.com/pipelines.actions.
+      # githubusercontent.com to actually pick up an assigned job -
+      # confirmed live, jobs stayed queued on GitHub's side indefinitely
+      # against an idle "Running" runner. dnsPolicy: Default (the node's
+      # own working resolver) fixes this the same way it did for
+      # build-and-deploy (applications/argo-workflows/base/
+      # workflowtemplates/build-and-deploy.yaml).
+      dnsPolicy: Default
