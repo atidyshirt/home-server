@@ -28,6 +28,9 @@ export class RaspberryPiK0s implements KubernetesProvider {
     const ensureK0s = new command.remote.Command("ensure-k0s", {
       connection: this.connection,
       create: fs.readFileSync(path.join(__dirname, "..", "scripts", "ensure-k0s.sh"), "utf8"),
+      // The script needs this to list both the LAN IP and its own live-fetched
+      // Tailscale IP in the API server's cert SANs (see the script's own comment).
+      environment: { NODE_LAN_IP: args.nodeLanIp },
     });
 
     const getKubeconfig = new command.remote.Command(
