@@ -1,0 +1,54 @@
+# `base:` composes Lima's own built-in ubuntu-lts template (Lima >=2.1's replacement for
+# the old `limactl start template://X overlay.yaml` two-positional-arg CLI merge, removed
+# in this version - see join.sh) - carries no `images:` block on purpose, so the base OS
+# image stays whatever ships with the user's installed Lima version rather than a URL/
+# digest pinned here that goes stale.
+#
+# Uses Lima instead of OrbStack for this VM specifically (see docs/adr/
+# add-transient-laptop-worker-node.md) - OrbStack's own hypervisor VM was found to
+# crash-loop on this Mac (repeated full boot cycles minutes apart, confirmed live via
+# ~/.orbstack/log/vmgr.log), triggered by continuous IPv6 STUN failures with no route to
+# any of Tailscale's DERP relays. That instability meant kube-proxy/kube-router never got
+# a long enough stable window to finish programming their netfilter rules, breaking
+# cluster-DNS reachability for every pod scheduled here - not a capability/config issue,
+# just never enough uptime. Lima uses macOS's Virtualization.framework directly, without
+# OrbStack's Docker-optimized NAT/port-forwarding layer that the crash-loop traced back to.
+base:
+  - template:ubuntu-lts
+
+vmType: vz
+arch: aarch64
+cpus: 2
+memory: "4GiB"
+disk: "20GiB"
+
+# No host filesystem exposed - this VM only ever runs floating ARC runner / Argo Workflows
+# build pods, nothing needs to read the Mac's own files.
+mounts: []
+
+containerd:
+  system: false
+  user: false
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      export DEBIAN_FRONTEND=noninteractive
+
+      if ! command -v tailscale >/dev/null 2>&1; then
+        curl -fsSL https://tailscale.com/install.sh | sh
+      fi
+
+      if ! command -v k0s >/dev/null 2>&1; then
+        curl -sSLf https://get.k0s.sh | sh
+      fi
+
+      # Needed for workspace-nfs-backed PVCs (e.g. Argo Workflows' build-and-deploy
+      # workspace volume) - without it, kubelet's NFS mount fails with "bad option;
+      # ... you might need a /sbin/mount.<type> helper program" (confirmed live,
+      # missing on every fresh VM since ubuntu:noble doesn't ship it by default).
+      if ! command -v mount.nfs >/dev/null 2>&1; then
+        apt-get update && apt-get install -y nfs-common
+      fi
