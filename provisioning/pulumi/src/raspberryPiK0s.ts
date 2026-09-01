@@ -3,7 +3,7 @@ import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as command from "@pulumi/command";
 import * as k8s from "@pulumi/kubernetes";
-import { ApplyManifestOptions, KubernetesProvider } from "./kubernetesProvider";
+import { ApplyManifestOptions, KubernetesProvider, RunCommandOptions } from "./kubernetesProvider";
 
 interface RaspberryPiK0sArgs {
   sshHost: string;
@@ -25,12 +25,16 @@ export class RaspberryPiK0s implements KubernetesProvider {
   constructor(args: RaspberryPiK0sArgs) {
     this.connection = { host: args.sshHost, user: args.sshUser };
 
+    const ensureK0sScript = fs.readFileSync(path.join(__dirname, "..", "scripts", "ensure-k0s.sh"), "utf8");
     const ensureK0s = new command.remote.Command("ensure-k0s", {
       connection: this.connection,
-      create: fs.readFileSync(path.join(__dirname, "..", "scripts", "ensure-k0s.sh"), "utf8"),
       // The script needs this to list both the LAN IP and its own live-fetched
       // Tailscale IP in the API server's cert SANs (see the script's own comment).
-      environment: { NODE_LAN_IP: args.nodeLanIp },
+      // Set via an inline `export` rather than command.remote.Command's `environment`
+      // field, since that relies on SSH's SetEnv - which requires the remote sshd to
+      // have `AcceptEnv NODE_LAN_IP` configured (it doesn't, confirmed live: "ssh:
+      // setenv failed").
+      create: `export NODE_LAN_IP=${args.nodeLanIp}\n${ensureK0sScript}`,
     });
 
     const getKubeconfig = new command.remote.Command(
@@ -71,6 +75,14 @@ export class RaspberryPiK0s implements KubernetesProvider {
         create: `sudo k0s kubectl apply ${namespaceFlag}${serverSideFlag}-f ${manifestUrl}${waitCommand}`,
         triggers: [this.rebuildTrigger],
       },
+      { dependsOn: options.dependsOn ?? this.ready, parent: options.parent },
+    );
+  }
+
+  runCommand(name: string, script: string, options: RunCommandOptions = {}): command.remote.Command {
+    return new command.remote.Command(
+      name,
+      { connection: this.connection, create: script, triggers: [this.rebuildTrigger] },
       { dependsOn: options.dependsOn ?? this.ready, parent: options.parent },
     );
   }
