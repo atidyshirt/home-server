@@ -7,6 +7,11 @@ set -euo pipefail
 VM_NAME="k0s-laptop-worker"
 PI_SSH="clusteradmin@home-server.local"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Without this, some shell/agent setups only offer the first configured identity and
+# never fall through to an agent-forwarded key (e.g. 1Password's SSH agent) - confirmed
+# live as a "Permission denied (publickey,password)" failure that plain `ssh-add -l`
+# showed a usable key for.
+SSH_PI=(ssh -o IdentitiesOnly=no "${PI_SSH}")
 
 # Deliberately the Pi's own Tailscale IP, not its 4via6 address (raspberrypi:nodeLanIpV6) -
 # confirmed via a live join attempt that the k0s API server's TLS cert SANs only cover
@@ -16,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # collision avoidance for coredns-lan's A/AAAA records, see docs/adr) - the Pi's own Tailscale
 # IP is simpler and already collision-free for this join, so use that instead. Fetched live
 # rather than hardcoded since it's not otherwise tracked anywhere in this repo.
-PI_TAILSCALE_IP="$(ssh "${PI_SSH}" "tailscale ip -4")"
+PI_TAILSCALE_IP="$("${SSH_PI[@]}" "tailscale ip -4")"
 
 if ! command -v limactl >/dev/null 2>&1; then
   echo "limactl not found - install Lima first (e.g. via the dotfiles' nix packages)" >&2
@@ -26,7 +31,10 @@ fi
 if limactl list --format '{{.Name}} {{.Status}}' 2>/dev/null | grep -q "^${VM_NAME} Running$"; then
   echo "${VM_NAME} already running"
 else
-  limactl start --name="${VM_NAME}" --tty=false template://ubuntu-lts "${SCRIPT_DIR}/lima.yaml"
+  # Lima >=2.1 dropped the old `start template://X overlay.yaml` two-positional-arg
+  # merge in favor of composing templates via a `base:` field inside a single YAML
+  # (see lima.yaml's own `base: [template:ubuntu-lts]`).
+  limactl start --name="${VM_NAME}" --tty=false "${SCRIPT_DIR}/lima.yaml"
 fi
 
 if ! limactl shell "${VM_NAME}" sudo tailscale status >/dev/null 2>&1; then
@@ -49,11 +57,12 @@ fi
 # missing gunzip/gzip round-trip was added, then TLS-cert-SAN-mismatch until the address
 # above was fixed). Minted fresh on the Pi's LAN address each time, then rewritten to the
 # Pi's Tailscale address - the laptop may not be on the Pi's LAN at all when this runs.
-RAW_TOKEN="$(ssh "${PI_SSH}" "sudo k0s token create --role=worker --expiry=1h")"
+RAW_TOKEN="$("${SSH_PI[@]}" "sudo k0s token create --role=worker --expiry=1h")"
 REWRITTEN_TOKEN="$(echo "${RAW_TOKEN}" | base64 -d | gunzip \
   | sed -E "s#https://[0-9.]+:6443#https://${PI_TAILSCALE_IP}:6443#" \
   | gzip | base64)"
 
+limactl shell "${VM_NAME}" sudo mkdir -p /etc/k0s
 echo "${REWRITTEN_TOKEN}" | limactl shell "${VM_NAME}" sudo tee /etc/k0s/worker-token >/dev/null
 
 limactl shell "${VM_NAME}" sudo k0s install worker \

@@ -1,6 +1,8 @@
-# Overlay applied on top of Lima's built-in `template://ubuntu-lts` (see join.sh) - carries
-# no `images:` block on purpose, so the base OS image stays whatever ships with the user's
-# installed Lima version rather than a URL/digest pinned here that goes stale.
+# `base:` composes Lima's own built-in ubuntu-lts template (Lima >=2.1's replacement for
+# the old `limactl start template://X overlay.yaml` two-positional-arg CLI merge, removed
+# in this version - see join.sh) - carries no `images:` block on purpose, so the base OS
+# image stays whatever ships with the user's installed Lima version rather than a URL/
+# digest pinned here that goes stale.
 #
 # Uses Lima instead of OrbStack for this VM specifically (see docs/adr/
 # add-transient-laptop-worker-node.md) - OrbStack's own hypervisor VM was found to
@@ -11,6 +13,9 @@
 # cluster-DNS reachability for every pod scheduled here - not a capability/config issue,
 # just never enough uptime. Lima uses macOS's Virtualization.framework directly, without
 # OrbStack's Docker-optimized NAT/port-forwarding layer that the crash-loop traced back to.
+base:
+  - template:ubuntu-lts
+
 vmType: vz
 arch: aarch64
 cpus: 2
