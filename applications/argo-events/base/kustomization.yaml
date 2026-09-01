@@ -10,5 +10,21 @@ helmCharts:
 
 resources:
   - eventbus.yaml
+  - httproute.yaml
   - pipeline/eventsource.yaml
   - pipeline/sensor.yaml
+
+replacements:
+  - source:
+      kind: HTTPRoute
+      name: build-trigger
+      fieldPath: metadata.annotations.addons_domain
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: build-trigger
+        fieldPaths:
+          - spec.hostnames.0
+        options:
+          delimiter: '.'
+          index: 1
