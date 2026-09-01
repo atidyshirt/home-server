@@ -1,0 +1,105 @@
+# Copies cert-manager's homelab CA cert into a ConfigMap in arc-runners' own
+# namespace (Secrets/ConfigMaps are namespace-scoped, same reason ghcr-push/
+# gitops-bot get synced per-namespace elsewhere) - wired into gha-runner-
+# scale-set's own githubServerTLS.certificateFrom (see base/values.yaml),
+# which mounts it into every runner pod and reloads the OS trust store.
+# Needed because ARC runner pods otherwise have no way to trust
+# *.homelab.arpa's self-signed cert (confirmed live: curl exit 60,
+# "unable to get local issuer certificate" calling the build-trigger
+# webhook - see golfapp's trigger-*.yml notify step).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: homelab-ca-sync
+  namespace: arc-runners
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: '-1'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: homelab-ca-sync-reader
+  namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: '-1'
+rules:
+  - apiGroups: ['']
+    resources: [secrets]
+    resourceNames: [homelab-ca-secret]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: homelab-ca-sync-reader
+  namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: '-1'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: homelab-ca-sync-reader
+subjects:
+  - kind: ServiceAccount
+    name: homelab-ca-sync
+    namespace: arc-runners
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: homelab-ca-sync-writer
+  namespace: arc-runners
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: '-1'
+rules:
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, create, update, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: homelab-ca-sync-writer
+  namespace: arc-runners
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: '-1'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: homelab-ca-sync-writer
+subjects:
+  - kind: ServiceAccount
+    name: homelab-ca-sync
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: homelab-ca-sync
+  namespace: arc-runners
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      serviceAccountName: homelab-ca-sync
+      restartPolicy: Never
+      containers:
+        - name: sync-ca
+          image: alpine:3.20
+          command: [sh, -c]
+          args:
+            - |
+              set -eu
+              apk add --no-cache curl >/dev/null
+              curl -sL "https://dl.k8s.io/release/v1.35.8/bin/linux/arm64/kubectl" -o /usr/local/bin/kubectl
+              chmod +x /usr/local/bin/kubectl
+
+              kubectl get secret homelab-ca-secret -n cert-manager -o jsonpath='{.data.ca\.crt}' | base64 -d > /tmp/ca.crt
+              kubectl create configmap homelab-ca --from-file=ca.crt=/tmp/ca.crt -n arc-runners --dry-run=client -o yaml | kubectl apply -f -

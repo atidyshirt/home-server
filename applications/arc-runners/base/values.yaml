@@ -14,6 +14,23 @@ gha-runner-scale-set:
     namespace: arc-systems
     name: arc-controller-gha-rs-controller
 
+  # Runner pods otherwise have no way to trust *.homelab.arpa's self-signed
+  # cert (confirmed live: curl exit 60, "unable to get local issuer
+  # certificate" calling the build-trigger webhook from golfapp's notify
+  # step). This is the chart's own first-class mechanism for a custom CA:
+  # mounts the cert at runnerMountPath and sets RUNNER_UPDATE_CA_CERTS=1,
+  # which makes the runner reload the OS trust store on start - curl (and
+  # everything else) then trusts it system-wide, no per-call flag needed.
+  # The ConfigMap itself is synced from cert-manager's homelab-ca-secret by
+  # ../ca-sync's PreSync hook (Secrets/ConfigMaps are namespace-scoped, so
+  # it has to be copied into this namespace).
+  githubServerTLS:
+    certificateFrom:
+      configMapKeyRef:
+        name: homelab-ca
+        key: ca.crt
+    runnerMountPath: /usr/local/share/ca-certificates/
+
   # Self-contained ephemeral pods, no shared/local-path volume across a workflow run -
   # safe to float onto the transient laptop node (see docs/adr/add-transient-laptop-worker-node.md).
   template:
