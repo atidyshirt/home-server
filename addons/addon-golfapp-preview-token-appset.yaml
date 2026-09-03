@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-golfapp-preview-token
+  namespace: argocd
+spec:
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            platform.stack.enabled: "true"
+  template:
+    metadata:
+      name: golfapp-preview-token
+    spec:
+      project: platform
+      info:
+        - name: Purpose
+          value: GitHub PR-read token for addon-golfapp-preview-appset.yaml's pullRequest generator
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/golfapp-preview-token/base
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

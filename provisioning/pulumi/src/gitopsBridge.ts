@@ -9,13 +9,16 @@ export interface GitopsBridgeInstallOptions {
 // One label per addon-*-appset.yaml cluster-generator selector (see
 // docs/adr/gate-addon-stacks-via-pulumi-managed-cluster-labels.md). "platform" covers the
 // core addons that are always expected to be on together; coredns-lan/monitoring/golfapp/
-// graphify-ui are independently toggleable since each is optional on its own.
+// graphify-ui/golfapp-preview are independently toggleable since each is optional on its own.
+// golfapp-preview stays false until ATI-80 (per-PR image builds, a golf-ai-experiment CI
+// change) lands - see docs/adr/golfapp-pr-preview-environments.md.
 interface AddonToggles {
   platform: boolean;
   "coredns-lan": boolean;
   monitoring: boolean;
   golfapp: boolean;
   "graphify-ui": boolean;
+  "golfapp-preview": boolean;
 }
 
 export class GitopsBridge extends pulumi.ComponentResource {
