@@ -276,10 +276,10 @@ implementation details, which live in the code and rot fast if duplicated in pro
 **Code comments**
 
 None — names and structure carry the meaning. Non-trivial context belongs in the Linear issue
-for that change (this project has one per fix already) or, if it's a reusable pattern, here.
-If something is genuinely undiscoverable from code + these docs, use a Kubernetes `annotation`
-linking to the doc/issue rather than a comment — none needed yet, this project is too early for
-anything to have earned one.
+for that change (one per fix, required — see [docs/pr-workflow.md](docs/pr-workflow.md)) or, if
+it's a reusable pattern, here. If something is genuinely undiscoverable from code + these docs,
+use a Kubernetes `annotation` linking to the doc/issue rather than a comment — none needed yet,
+this project is too early for anything to have earned one.
 
 **Deployment**
 
