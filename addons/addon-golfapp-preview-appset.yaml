@@ -41,7 +41,7 @@ spec:
       source:
         repoURL: https://github.com/atidyshirt/golfapp-platform
         targetRevision: main
-        path: deploy/preview
+        path: deploy/overlays/pr-preview
         kustomize:
           images:
             - 'ghcr.io/atidyshirt/golfapp-api:{{head_sha}}'

@@ -111,10 +111,10 @@ spec:
 Push. From here it's pure GitOps — `root-app.yaml` already scans `addons/*-appset.yaml`.
 
 > [!NOTE]
-> Multiple apps in one deploy repo (a monorepo, e.g. `golfapp-platform`)? Point `path: deploy`
-> at a directory that itself aggregates each app's own `deploy/<app>/` — see that repo's
-> `deploy/kustomization.yaml`. One `Application`, one health status, still one commit per app
-> from the build pipeline.
+> Multiple environments in one deploy repo (a monorepo, e.g. `golfapp-platform`)? Use a
+> kustomize base/overlays layout — `deploy/base/` plus one `deploy/overlays/<env>/` per
+> environment — and point each `ApplicationSet`'s `path` at the relevant overlay. One
+> `Application` per environment, still one commit per app from the build pipeline.
 
 ## 4. Runner (git)
 

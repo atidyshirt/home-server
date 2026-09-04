@@ -28,7 +28,7 @@ spec:
       source:
         repoURL: https://github.com/atidyshirt/golfapp-platform
         targetRevision: main
-        path: deploy
+        path: deploy/overlays/production
         kustomize:
           commonAnnotations:
             addons_domain: '{{metadata.annotations.addons_domain}}'
