@@ -1,12 +1,12 @@
-# Graph Report - /Users/jordanp/projects/home-server__worktrees/feat-explore-transient-k3s-node  (2026-08-29)
+# Graph Report - /Users/jordanp/projects/home-server__worktrees/golfapp-appset-path-patch  (2026-09-04)
 
 ## Corpus Check
-- 6 files · ~45,830 words
+- 6 files · ~50,500 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 95 nodes · 125 edges · 28 communities detected
-- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.77)
+- 98 nodes · 132 edges · 28 communities detected
+- Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -46,22 +46,22 @@
 4. `Continuous Delivery Pipeline` - 10 edges
 5. `Adding a New Project Workflow` - 8 edges
 6. `Provisioning Guide` - 8 edges
-7. `Apply ArgoCD Bootstrap Manifests Directly via Pulumi` - 7 edges
-8. `Use App-of-Appsets GitOps Pattern` - 7 edges
-9. `Use ARC Only as NAT-Traversal Trigger Bridge` - 7 edges
-10. `Use Argo Workflows for Image Builds, Not GitHub Actions Compute` - 7 edges
+7. `ArgoCd` - 7 edges
+8. `Apply ArgoCD Bootstrap Manifests Directly via Pulumi` - 7 edges
+9. `Use App-of-Appsets GitOps Pattern` - 7 edges
+10. `Use ARC Only as NAT-Traversal Trigger Bridge` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `GHCR (GitHub Container Registry)` --conceptually_related_to--> `Commit Image Tag Bumps Back to Git`  [INFERRED]
-  /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md → /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md
-- `Use 1Password Kubernetes Operator as Sole Secrets Mechanism` --conceptually_related_to--> `Apply ArgoCD Bootstrap Manifests Directly via Pulumi`  [INFERRED]
-  /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md → /Users/jordanp/projects/home-server/docs/adr/apply-argocd-bootstrap-manifests-via-pulumi.md
-- `Scope ARC Runners Per-Repo` --semantically_similar_to--> `Commit Image Tag Bumps Back to Git`  [INFERRED] [semantically similar]
-  /Users/jordanp/projects/home-server/docs/adr/scope-arc-runners-per-repo.md → /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md
-- `Continuous Delivery Pipeline` --conceptually_related_to--> `kaniko`  [EXTRACTED]
-  /Users/jordanp/projects/home-server/docs/continous_delivery.md → /Users/jordanp/projects/home-server/docs/adr/use-argo-workflows-for-image-builds.md
-- `Use GHCR, Not a Self-Hosted Registry` --semantically_similar_to--> `Use 1Password Kubernetes Operator as Sole Secrets Mechanism`  [INFERRED] [semantically similar]
-  /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md → /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md
+- `Use 1Password Kubernetes Operator as Sole Secrets Mechanism` --semantically_similar_to--> `Use GHCR, Not a Self-Hosted Registry`  [INFERRED] [semantically similar]
+  /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md → /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md
+- `Apply ArgoCD Bootstrap Manifests Directly via Pulumi` --conceptually_related_to--> `Use 1Password Kubernetes Operator as Sole Secrets Mechanism`  [INFERRED]
+  /Users/jordanp/projects/home-server/docs/adr/apply-argocd-bootstrap-manifests-via-pulumi.md → /Users/jordanp/projects/home-server/docs/adr/use-1password-operator-for-secrets.md
+- `Commit Image Tag Bumps Back to Git` --semantically_similar_to--> `Scope ARC Runners Per-Repo`  [INFERRED] [semantically similar]
+  /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md → /Users/jordanp/projects/home-server/docs/adr/scope-arc-runners-per-repo.md
+- `Commit Image Tag Bumps Back to Git` --conceptually_related_to--> `GHCR (GitHub Container Registry)`  [INFERRED]
+  /Users/jordanp/projects/home-server/docs/adr/commit-image-tags-back-to-git.md → /Users/jordanp/projects/home-server/docs/adr/use-ghcr-for-container-registry.md
+- `Use App-of-Appsets GitOps Pattern` --semantically_similar_to--> `Use the gitops-bridge Pattern for Repo/Revision Targeting`  [INFERRED] [semantically similar]
+  /Users/jordanp/projects/home-server/docs/adr/use-app-of-appsets-gitops-pattern.md → /Users/jordanp/projects/home-server/docs/adr/use-gitops-bridge-for-repo-targeting.md
 
 ## Hyperedges (group relationships)
 - **ArgoCD Server Exposure via Gateway API HTTPRoute** — argocd_httproute, lan_gateway, argocd_server_service, traefik_gatewayclass [EXTRACTED 0.85]
@@ -86,24 +86,24 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.12
-Nodes (5): ArgoCd, GatewayApi, GitopsBridge, getKubernetesProvider(), RaspberryPiK0s
+Cohesion: 0.16
+Nodes (19): Commit Image Tag Bumps Back to Git, actions-runner-controller (ARC), Argo Events, Argo Rollouts, Argo Workflows, GHCR (GitHub Container Registry), GitHub Actions, gitops-bot Credential (+11 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.25
-Nodes (14): ADR Index, Auth0, cert-manager, CoreDNS, Dex, Gateway API, Tailscale, Traefik (+6 more)
+Cohesion: 0.22
+Nodes (16): ADR Index, 1Password Kubernetes Operator, Auth0, cert-manager, CoreDNS, Dex, Gateway API, Tailscale (+8 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.24
-Nodes (13): Commit Image Tag Bumps Back to Git, actions-runner-controller (ARC), Argo Events, Argo Rollouts, gitops-bot Credential, JetStream (NATS), k0s (single-node cluster), Kustomize (+5 more)
+Cohesion: 0.17
+Nodes (4): GatewayApi, GitopsBridge, getKubernetesProvider(), RaspberryPiK0s
 
 ### Community 3 - "Community 3"
-Cohesion: 0.56
-Nodes (9): Adding a New Project Workflow, Apply ArgoCD Bootstrap Manifests Directly via Pulumi, Architecture Overview, ArgoCD, homelab-app-template, homelab-deploy-template, Pulumi, Use App-of-Appsets GitOps Pattern (+1 more)
+Cohesion: 0.36
+Nodes (1): ArgoCd
 
 ### Community 4 - "Community 4"
-Cohesion: 0.25
-Nodes (8): 1Password Kubernetes Operator, Argo Workflows, GHCR (GitHub Container Registry), GitHub Actions, kaniko, Use 1Password Kubernetes Operator as Sole Secrets Mechanism, Use Argo Workflows for Image Builds, Not GitHub Actions Compute, Use GHCR, Not a Self-Hosted Registry
+Cohesion: 0.56
+Nodes (9): Adding a New Project Workflow, Apply ArgoCD Bootstrap Manifests Directly via Pulumi, Architecture Overview, ArgoCD, homelab-app-template, homelab-deploy-template, Pulumi, Use App-of-Appsets GitOps Pattern (+1 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.5
@@ -111,11 +111,11 @@ Nodes (4): Rationale: oidc-dex Secret Copied Not Second OnePasswordItem, Dex Con
 
 ### Community 6 - "Community 6"
 Cohesion: 0.67
-Nodes (3): coredns-lan DNS Pattern for homelab.arpa, Rationale: Pi-hole Disabled in Favor of coredns-lan, Rationale: Tailscale 4via6 Route over Subnet Router
+Nodes (3): AGENT.md Architecture Reference, Pulumi ComponentResource Provisioning Pattern, home-server GitOps Repo Overview
 
 ### Community 7 - "Community 7"
 Cohesion: 0.67
-Nodes (3): AGENT.md Architecture Reference, Pulumi ComponentResource Provisioning Pattern, home-server GitOps Repo Overview
+Nodes (3): coredns-lan DNS Pattern for homelab.arpa, Rationale: Pi-hole Disabled in Favor of coredns-lan, Rationale: Tailscale 4via6 Route over Subnet Router
 
 ### Community 8 - "Community 8"
 Cohesion: 1.0
@@ -244,17 +244,15 @@ Nodes (1): Graphify Project Rules
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ADR Index` connect `Community 1` to `Community 2`, `Community 3`, `Community 4`?**
-  _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **Why does `Commit Image Tag Bumps Back to Git` connect `Community 2` to `Community 1`, `Community 3`, `Community 4`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **Why does `Provisioning Guide` connect `Community 1` to `Community 3`, `Community 4`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `ADR Index` connect `Community 1` to `Community 0`, `Community 4`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `Commit Image Tag Bumps Back to Git` connect `Community 0` to `Community 1`, `Community 4`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Why does `Provisioning Guide` connect `Community 1` to `Community 4`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `Commit Image Tag Bumps Back to Git` (e.g. with `Scope ARC Runners Per-Repo` and `GHCR (GitHub Container Registry)`) actually correct?**
   _`Commit Image Tag Bumps Back to Git` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 3 inferred relationships involving `Adding a New Project Workflow` (e.g. with `Use App-of-Appsets GitOps Pattern` and `Use the gitops-bridge Pattern for Repo/Revision Targeting`) actually correct?**
   _`Adding a New Project Workflow` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `index.ts`, `@pulumi/command`, `@pulumi/kubernetes` to the rest of the system?**
   _38 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.12 - nodes in this community are weakly interconnected._
