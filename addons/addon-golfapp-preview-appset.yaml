@@ -1,9 +1,3 @@
-# ATI-82. Combines the same toggle-gated clusters generator every other addon uses (for the
-# golfapp-preview.stack.enabled off-switch and the addons_domain/addons_repo_url annotations)
-# with ArgoCD's pullRequest generator via `matrix`, so each generated Application gets both
-# sets of template values. Shipped inert: golfapp-preview.stack.enabled is false in
-# Pulumi.homelab.yaml until ATI-80 (per-PR image builds) lands and ATI-81's GitHub token
-# actually exists - see docs/adr/golfapp-pr-preview-environments.md.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -52,12 +46,6 @@ spec:
           images:
             - 'ghcr.io/atidyshirt/golfapp-api:{{head_sha}}'
             - 'ghcr.io/atidyshirt/golfapp-web:{{head_sha}}'
-          # The existing addons_domain-suffix replacement trick (see AGENT.md) can't rewrite a
-          # hostname's first label, which is what a per-PR flat golf-pr-<number>.<domain>
-          # hostname needs - so this patches the web HTTPRoute's hostname directly instead. Only
-          # web is exposed; its nginx already proxies /api to the in-cluster golfapp-api Service
-          # (see golfapp-platform's deploy/web/rollout.yaml API_UPSTREAM env var), so the api
-          # HTTPRoute is dropped entirely in deploy/preview - no direct external access needed.
           patches:
             - target:
                 kind: HTTPRoute
@@ -76,9 +64,6 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
-        # CreateNamespace=true alone doesn't make ArgoCD track the namespace it creates for
-        # pruning - without this, a closed (unlabeled/merged) PR would stop being generated but
-        # leak its golf-pr-<number> namespace forever.
         managedNamespaceMetadata:
           labels:
             app.kubernetes.io/part-of: golfapp-preview
