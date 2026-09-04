@@ -34,7 +34,7 @@ spec:
       labels:
         app.kubernetes.io/part-of: golfapp-preview
     spec:
-      project: golf-application
+      project: golfapp-preview
       info:
         - name: Web
           value: 'golf-pr-{{number}}.{{metadata.annotations.addons_domain}}'
