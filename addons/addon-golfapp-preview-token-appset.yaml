@@ -13,7 +13,7 @@ spec:
     metadata:
       name: golfapp-preview-token
     spec:
-      project: platform
+      project: golf-application
       info:
         - name: Purpose
           value: GitHub PR-read token for addon-golfapp-preview-appset.yaml's pullRequest generator
