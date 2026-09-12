@@ -55,7 +55,7 @@ resources:
   - onepassword-items.yaml
   - workflowtemplates/build-and-deploy.yaml
   - httproute.yaml
-  - ghcr-pull-secret.yaml
+  - ../../ghcr-pull-secret/base
   - servicemonitor.yaml
   # The argo-workflows chart's own CRDs (Workflow/WorkflowTemplate/CronWorkflow/etc.) don't
   # come through `kustomize build --enable-helm` at all - confirmed via local render, zero
