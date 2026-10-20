@@ -8,7 +8,9 @@ spec:
     - clusters:
         selector:
           matchLabels:
-            monitoring.stack.enabled: "true"
+            # monitoring.stack.enabled: "true"
+            # Intentionally disable monitoring stack
+            monitoring.stack.disabled: "true"
   template:
     metadata:
       name: monitoring
