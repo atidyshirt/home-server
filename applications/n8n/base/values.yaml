@@ -1,0 +1,39 @@
+# sqlite (chart default db.type) - no postgres/redis, single `main` pod in `regular`
+# mode (chart defaults) is enough for a single-node homelab cluster and avoids the extra
+# resource pressure a queue-mode worker/webhook split + Postgres would add.
+main:
+  persistence:
+    enabled: true
+    storageClass: workspace-nfs
+    accessMode: ReadWriteOnce
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 768Mi
+  # ADDONS_DOMAIN is read from the pod's own `addons_domain` annotation (stamped by every
+  # addon-*-appset.yaml's commonAnnotations, same mechanism CoreDNS/Grafana use) via the
+  # Downward API, then expanded into the other vars with Kubernetes' native $(VAR) dependent-
+  # env-var substitution - no sed initContainer needed since these are plain env values, not a
+  # free-text config file. N8N_HOST/N8N_EDITOR_BASE_URL/WEBHOOK_URL must reflect the real
+  # external hostname (not localhost:5678) or links n8n emits and webhook callback URLs it
+  # registers with external services are wrong.
+  extraEnv:
+    - name: ADDONS_DOMAIN
+      valueFrom:
+        fieldRef:
+          fieldPath: "metadata.annotations['addons_domain']"
+    - name: N8N_PROTOCOL
+      value: https
+    - name: N8N_HOST
+      value: n8n.$(ADDONS_DOMAIN)
+    - name: N8N_EDITOR_BASE_URL
+      value: https://n8n.$(ADDONS_DOMAIN)
+    - name: WEBHOOK_URL
+      value: https://n8n.$(ADDONS_DOMAIN)/
+
+# Secret must carry a key literally named N8N_ENCRYPTION_KEY - see onepassword-items.yaml.
+existingEncryptionKeySecret: n8n-encryption-key

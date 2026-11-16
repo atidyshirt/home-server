@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addon-n8n
+  namespace: argocd
+spec:
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            n8n.stack.enabled: "true"
+  template:
+    metadata:
+      name: n8n
+    spec:
+      project: platform
+      info:
+        - name: Web
+          value: 'n8n.{{metadata.annotations.addons_domain}}'
+        - name: Documentation
+          value: https://docs.n8n.io/
+        - name: Source Code
+          value: https://github.com/community-charts/helm-charts/tree/main/charts/n8n
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: applications/n8n/base
+        kustomize:
+          commonAnnotations:
+            addons_domain: '{{metadata.annotations.addons_domain}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: n8n
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
