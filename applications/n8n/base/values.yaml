@@ -2,6 +2,27 @@
 # mode (chart defaults) is enough for a single-node homelab cluster and avoids the extra
 # resource pressure a queue-mode worker/webhook split + Postgres would add.
 main:
+  # Chart defaults (failureThreshold: 3, periodSeconds: 10 -> ~30s) kill the pod before n8n's
+  # first-boot SQLite migrations finish on Pi-class ARM hardware over an NFS-backed PVC -
+  # confirmed empirically: CrashLoopBackOff with the container never reaching "connection
+  # refused" -> listening, each restart re-running the same slow migration pass. Generous
+  # thresholds here, not a startupProbe, since this chart version has no main.startupProbe.
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+  readinessProbe:
+    httpGet:
+      path: /healthz/readiness
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
   persistence:
     enabled: true
     storageClass: workspace-nfs
